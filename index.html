@@ -276,13 +276,17 @@
         target: "podcasts-grid",
         items: [
           { name: "KSR", shortcut: "KSR" },
-          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture" },
+          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture", noReturn: true },
           { name: "Bible Recap Podcast", shortcut: "Bible Recap Podcast" }
         ]
       }
     ];
 
-    function runShortcut(shortcutName) {
+    function runShortcut(shortcutName, noReturn) {
+      if (noReturn) {
+        window.location.href = "shortcuts://run-shortcut?name=" + encodeURIComponent(shortcutName);
+        return;
+      }
       const dashboardShortcutName = "Radio Grid";
       const returnToGrid = "shortcuts://run-shortcut?name=" + encodeURIComponent(dashboardShortcutName);
       const url =
@@ -308,7 +312,7 @@
 
       tile.addEventListener("click", () => {
         tile.classList.add("pressed");
-        setTimeout(() => runShortcut(item.shortcut), 300);
+        setTimeout(() => runShortcut(item.shortcut, item.noReturn), 300);
       });
       return tile;
     }

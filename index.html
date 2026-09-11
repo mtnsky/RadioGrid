@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Audio Test" />
+  <meta name="apple-mobile-web-app-title" content="Audio" />
   <meta name="theme-color" content="#0f1115" />
-  <title>Audio Test</title>
+  <title>Audio</title>
   <style>
     :root {
       color-scheme: dark;
@@ -16,8 +16,11 @@
       --text: #f5f7fa;
       --muted: #9ca3af;
       --red: #d2453f;
+      --blue: #2f8fb8;
+      --purple: #7c55aa;
       --shadow: 0 10px 22px rgba(0,0,0,.34);
       --radius: 14px;
+      --gap: 7px;
       --tile-h: 58px;
     }
 
@@ -26,38 +29,103 @@
     html, body {
       margin: 0;
       min-height: 100%;
+      overflow: hidden;
       background: var(--bg);
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       color: var(--text);
-      padding: 20px;
+      padding: max(11px, env(safe-area-inset-top)) 10px max(9px, env(safe-area-inset-bottom));
+      background:
+        radial-gradient(circle at 18% -10%, rgba(210,69,63,.20), transparent 34%),
+        radial-gradient(circle at 92% 0%, rgba(47,143,184,.13), transparent 34%),
+        linear-gradient(180deg, #171a20 0%, #0f1115 42%, #0b0d10 100%);
+    }
+
+    .wrap {
+      width: min(100%, 760px);
+      height: calc(100dvh - max(11px, env(safe-area-inset-top)) - max(9px, env(safe-area-inset-bottom)) - 2px);
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
+      min-height: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 15px 0 11px;
+      flex: 0 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(27px, 7vw, 38px);
+      letter-spacing: -.05em;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--text);
+      text-shadow: 0 2px 10px rgba(0,0,0,.28);
+    }
+
+    .sections {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .section {
+      min-height: 0;
+    }
+
+    .section-title {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
+      gap: 8px;
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: clamp(12px, 3.15vw, 15px);
+      font-weight: 950;
+      letter-spacing: .095em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .section-title::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: .55;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--gap);
     }
 
     .tile {
       position: relative;
       display: grid;
       place-items: center;
-      width: 220px;
+      min-width: 0;
       height: var(--tile-h);
       border: 1px solid rgba(255,255,255,.08);
       border-top-color: rgba(255,255,255,.22);
       border-radius: var(--radius);
-      padding: 7px;
+      padding: 7px 7px;
       color: var(--text);
       background:
         linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.015)),
         linear-gradient(145deg, var(--tile-2), var(--tile));
       box-shadow: var(--shadow);
-      cursor: pointer;
+      overflow: hidden;
       font: inherit;
-      --accent: var(--red);
+      cursor: pointer;
+      transform: translateZ(0);
     }
 
     .tile::before {
@@ -84,31 +152,178 @@
       opacity: .9;
     }
 
-    .tile:active {
+    .tile:active,
+    .tile.pressed {
       transform: scale(.972);
       filter: brightness(1.16);
+    }
+
+    .tile.pressed {
+      border-color: rgba(255,255,255,.24);
     }
 
     .name {
       position: relative;
       z-index: 1;
-      font-size: 17px;
+      justify-self: center;
+      align-self: center;
+      max-width: 100%;
+      text-align: center;
+      font-size: clamp(13px, 3.35vw, 17px);
+      line-height: 1.04;
       font-weight: 900;
       letter-spacing: -.025em;
+      overflow: hidden;
       text-shadow: 0 1px 8px rgba(0,0,0,.38);
+    }
+
+    .frequency,
+    .station-name {
+      display: block;
+    }
+
+    .frequency {
+      font-size: .9em;
+      color: rgba(245,247,250,.88);
+    }
+
+    .station-name {
+      margin-top: 1px;
+      color: #fff;
+    }
+
+    .stations { --accent: var(--red); }
+    .radio { --accent: var(--blue); }
+    .podcasts { --accent: var(--purple); }
+
+    @media (max-height: 760px) {
+      :root { --tile-h: 52px; --gap: 6px; --radius: 13px; }
+      header { padding: 11px 0 8px; }
+      h1 { font-size: clamp(24px, 6.5vw, 34px); }
+      .sections { gap: 10px; }
+      .section-title { margin-bottom: 5px; font-size: 12px; }
+      .name { font-size: clamp(12px, 3vw, 15px); }
+    }
+
+    @media (max-height: 700px) {
+      :root { --tile-h: 47px; --gap: 5px; --radius: 12px; }
+      header { padding: 7px 0 6px; }
+      h1 { font-size: 23px; }
+      .sections { gap: 8px; }
+      .section-title { margin-bottom: 4px; font-size: 11px; }
+      .name { font-size: clamp(10.5px, 2.7vw, 13px); }
     }
   </style>
 </head>
 <body>
-  <button type="button" class="tile" onclick="openChristian()">
-    <div class="name">Christian</div>
-  </button>
+  <main class="wrap">
+    <header>
+      <h1>Audio</h1>
+    </header>
+
+    <div class="sections" aria-label="Audio groups">
+      <section class="section stations" aria-labelledby="stations-heading">
+        <h2 id="stations-heading" class="section-title">Stations</h2>
+        <div id="stations-grid" class="grid"></div>
+      </section>
+
+      <section class="section radio" aria-labelledby="radio-heading">
+        <h2 id="radio-heading" class="section-title">Radio Stations</h2>
+        <div id="radio-grid" class="grid"></div>
+      </section>
+
+      <section class="section podcasts" aria-labelledby="podcasts-heading">
+        <h2 id="podcasts-heading" class="section-title">Podcasts</h2>
+        <div id="podcasts-grid" class="grid"></div>
+      </section>
+    </div>
+  </main>
 
   <script>
-    function openChristian() {
-      // Direct native Apple Music link test for the Christian playlist[span_0](start_span)[span_0](end_span)
-      window.location.href = "https://music.apple.com/us/playlist/todays-christian/pl.fecfa8a26ea44ad581d4fe501892c8ff";
+    const groups = [
+      {
+        target: "stations-grid",
+        items: [
+          { name: "80’s", shortcut: "80’s" },
+          { name: "Americana", shortcut: "Americana" },
+          { name: "The Beatles", shortcut: "The Beatles" },
+          { name: "Christian", shortcut: "Christian", type: "direct-music", url: "music://music.apple.com/us/playlist/todays-christian/pl.fecfa8a26ea44ad581d4fe501892c8ff" },
+          { name: "Classic Rock", shortcut: "Classic Rock" },
+          { name: "Coffee House", shortcut: "Coffee House" },
+          { name: "Country", shortcut: "Country" },
+          { name: "Dance", shortcut: "Dance" },
+          { name: "Focus", shortcut: "Focus" },
+          { name: "Hip-Hop", shortcut: "Hip-Hop" },
+          { name: "Kids", shortcut: "Kids" },
+          { name: "Oldies", shortcut: "Oldies" },
+          { name: "Pop", shortcut: "Pop" },
+          { name: "Worship", shortcut: "Worship" }
+        ]
+      },
+      {
+        target: "radio-grid",
+        items: [
+          { name: "1300 ESPN", frequency: "1300", stationName: "ESPN", shortcut: "1300 ESPN" },
+          { name: "630 WLAP", frequency: "630", stationName: "WLAP", shortcut: "630 WLAP" },
+          { name: "95.3 air1", frequency: "95.3", stationName: "air1", shortcut: "95.3 air1" },
+          { name: "96.3 K-Love", frequency: "96.3", stationName: "K-Love", shortcut: "96.3 K-Love" },
+          { name: "98.1 The Bull", frequency: "98.1", stationName: "The Bull", shortcut: "98.1 The Bull" },
+          { name: "104.5 The Cat", frequency: "104.5", stationName: "The Cat", shortcut: "104.5 The Cat" },
+          { name: "91.3 WUKY", frequency: "91.3", stationName: "WUKY", shortcut: "91.3 WUKY" }
+        ]
+      },
+      {
+        target: "podcasts-grid",
+        items: [
+          { name: "KSR", shortcut: "KSR" },
+          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture", type: "direct-shortcut" },
+          { name: "Bible Recap Podcast", shortcut: "Bible Recap Podcast" }
+        ]
+      }
+    ];
+
+    function runShortcut(item) {
+      if (item.type === "direct-music") {
+        window.location.href = item.url;
+      } else if (item.shortcut === "Bible Recap Scripture") {
+        const url = "shortcuts://run-shortcut?name=" + encodeURIComponent(item.shortcut);
+        window.location.href = url;
+      } else {
+        const dashboardShortcutName = "Radio Grid";
+        const returnToGrid = "https://mtnsky.github.io/RadioGrid/";
+        const url =
+          "shortcuts://x-callback-url/run-shortcut" +
+          "?name=" + encodeURIComponent(item.shortcut) +
+          "&x-success=" + encodeURIComponent(returnToGrid) +
+          "&x-cancel=" + encodeURIComponent(returnToGrid) +
+          "&x-error=" + encodeURIComponent(returnToGrid);
+        window.location.href = url;
+      }
     }
+
+    function makeTile(item) {
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "tile";
+      tile.setAttribute("aria-label", "Run " + item.shortcut);
+
+      if (item.frequency && item.stationName) {
+        tile.innerHTML = `<div class="name"><span class="frequency">${item.frequency}</span><span class="station-name">${item.stationName}</span></div>`;
+      } else {
+        tile.innerHTML = `<div class="name">${item.name}</div>`;
+      }
+
+      tile.addEventListener("click", () => {
+        tile.classList.add("pressed");
+        setTimeout(() => runShortcut(item), 300);
+      });
+      return tile;
+    }
+
+    groups.forEach(group => {
+      const grid = document.getElementById(group.target);
+      group.items.forEach(item => grid.appendChild(makeTile(item)));
+    });
   </script>
 </body>
 </html>

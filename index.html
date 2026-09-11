@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Radio Grid" />
+  <meta name="apple-mobile-web-app-title" content="Audio" />
   <meta name="theme-color" content="#0f1115" />
-  <title>Radio Grid</title>
+  <title>Audio</title>
   <style>
     :root {
       color-scheme: dark;
@@ -34,7 +34,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       color: var(--text);
       padding: max(11px, env(safe-area-inset-top)) 10px max(9px, env(safe-area-inset-bottom));
       background:
@@ -218,7 +218,7 @@
 <body>
   <main class="wrap">
     <header>
-      <h1>Radio Grid</h1>
+      <h1>Audio</h1>
     </header>
 
     <div class="sections" aria-label="Audio groups">
@@ -283,7 +283,8 @@
     ];
 
     function runShortcut(shortcutName) {
-      const returnToGrid = "https://mtnsky.github.io/RadioGrid/";
+      const dashboardShortcutName = "Radio Grid";
+      const returnToGrid = "shortcuts://run-shortcut?name=" + encodeURIComponent(dashboardShortcutName);
       const url =
         "shortcuts://x-callback-url/run-shortcut" +
         "?name=" + encodeURIComponent(shortcutName) +

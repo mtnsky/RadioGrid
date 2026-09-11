@@ -283,15 +283,20 @@
     ];
 
     function runShortcut(shortcutName) {
-      const dashboardShortcutName = "Radio Grid";
-      const returnToGrid = "shortcuts://run-shortcut?name=" + encodeURIComponent(dashboardShortcutName);
-      const url =
-        "shortcuts://x-callback-url/run-shortcut" +
-        "?name=" + encodeURIComponent(shortcutName) +
-        "&x-success=" + encodeURIComponent(returnToGrid) +
-        "&x-cancel=" + encodeURIComponent(returnToGrid) +
-        "&x-error=" + encodeURIComponent(returnToGrid);
-      window.location.href = url;
+      if (shortcutName === "Bible Recap Scripture") {
+        const url = "shortcuts://run-shortcut?name=" + encodeURIComponent(shortcutName);
+        window.location.href = url;
+      } else {
+        const dashboardShortcutName = "Radio Grid";
+        const returnToGrid = "https://mtnsky.github.io/RadioGrid/";
+        const url =
+          "shortcuts://x-callback-url/run-shortcut" +
+          "?name=" + encodeURIComponent(shortcutName) +
+          "&x-success=" + encodeURIComponent(returnToGrid) +
+          "&x-cancel=" + encodeURIComponent(returnToGrid) +
+          "&x-error=" + encodeURIComponent(returnToGrid);
+        window.location.href = url;
+      }
     }
 
     function makeTile(item) {

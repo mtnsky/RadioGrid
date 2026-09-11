@@ -276,27 +276,29 @@
         target: "podcasts-grid",
         items: [
           { name: "KSR", shortcut: "KSR" },
-          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture" },
+          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture", skipCallback: true },
           { name: "Bible Recap Podcast", shortcut: "Bible Recap Podcast" }
         ]
       }
     ];
 
-    function runShortcut(shortcutName) {
-      if (shortcutName === "Bible Recap Scripture") {
+    function runShortcut(shortcutName, skipCallback) {
+      if (skipCallback) {
+        // No x-success/x-cancel/x-error — just fire the shortcut and stop.
         const url = "shortcuts://run-shortcut?name=" + encodeURIComponent(shortcutName);
         window.location.href = url;
-      } else {
-        const dashboardShortcutName = "Radio Grid";
-        const returnToGrid = "https://mtnsky.github.io/RadioGrid/";
-        const url =
-          "shortcuts://x-callback-url/run-shortcut" +
-          "?name=" + encodeURIComponent(shortcutName) +
-          "&x-success=" + encodeURIComponent(returnToGrid) +
-          "&x-cancel=" + encodeURIComponent(returnToGrid) +
-          "&x-error=" + encodeURIComponent(returnToGrid);
-        window.location.href = url;
+        return;
       }
+
+      const dashboardShortcutName = "Radio Grid";
+      const returnToGrid = "shortcuts://run-shortcut?name=" + encodeURIComponent(dashboardShortcutName);
+      const url =
+        "shortcuts://x-callback-url/run-shortcut" +
+        "?name=" + encodeURIComponent(shortcutName) +
+        "&x-success=" + encodeURIComponent(returnToGrid) +
+        "&x-cancel=" + encodeURIComponent(returnToGrid) +
+        "&x-error=" + encodeURIComponent(returnToGrid);
+      window.location.href = url;
     }
 
     function makeTile(item) {
@@ -313,7 +315,7 @@
 
       tile.addEventListener("click", () => {
         tile.classList.add("pressed");
-        setTimeout(() => runShortcut(item.shortcut), 300);
+        setTimeout(() => runShortcut(item.shortcut, item.skipCallback), 300);
       });
       return tile;
     }

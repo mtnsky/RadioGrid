@@ -244,54 +244,61 @@
       {
         target: "stations-grid",
         items: [
-          { name: "80’s", shortcut: "80’s" },
-          { name: "Americana", shortcut: "Americana" },
-          { name: "The Beatles", shortcut: "The Beatles" },
-          { name: "Christian", shortcut: "Christian" },
-          { name: "Classic Rock", shortcut: "Classic Rock" },
-          { name: "Coffee House", shortcut: "Coffee House" },
-          { name: "Country", shortcut: "Country" },
-          { name: "Dance", shortcut: "Dance" },
-          { name: "Focus", shortcut: "Focus" },
-          { name: "Hip-Hop", shortcut: "Hip-Hop" },
-          { name: "Kids", shortcut: "Kids" },
-          { name: "Oldies", shortcut: "Oldies" },
-          { name: "Pop", shortcut: "Pop" },
-          { name: "Worship", shortcut: "Worship" }
+          { name: "80’s", shortcut: "80’s", type: "shortcut" },
+          { name: "Americana", shortcut: "Americana", type: "shortcut" },
+          { name: "The Beatles", shortcut: "The Beatles", type: "shortcut" },
+          { name: "Christian", shortcut: "Christian", type: "shortcut" },
+          { name: "Classic Rock", shortcut: "Classic Rock", type: "shortcut" },
+          { name: "Coffee House", shortcut: "Coffee House", type: "shortcut" },
+          { name: "Country", shortcut: "Country", type: "shortcut" },
+          { name: "Dance", shortcut: "Dance", type: "shortcut" },
+          { name: "Focus", shortcut: "Focus", type: "shortcut" },
+          { name: "Hip-Hop", shortcut: "Hip-Hop", type: "shortcut" },
+          { name: "Kids", shortcut: "Kids", type: "shortcut" },
+          { name: "Oldies", shortcut: "Oldies", type: "shortcut" },
+          { name: "Pop", shortcut: "Pop", type: "shortcut" },
+          { name: "Worship", shortcut: "Worship", type: "shortcut" }
         ]
       },
       {
         target: "radio-grid",
         items: [
-          { name: "1300 ESPN", frequency: "1300", stationName: "ESPN", shortcut: "1300 ESPN" },
-          { name: "630 WLAP", frequency: "630", stationName: "WLAP", shortcut: "630 WLAP" },
-          { name: "95.3 air1", frequency: "95.3", stationName: "air1", shortcut: "95.3 air1" },
-          { name: "96.3 K-Love", frequency: "96.3", stationName: "K-Love", shortcut: "96.3 K-Love" },
-          { name: "98.1 The Bull", frequency: "98.1", stationName: "The Bull", shortcut: "98.1 The Bull" },
-          { name: "104.5 The Cat", frequency: "104.5", stationName: "The Cat", shortcut: "104.5 The Cat" },
-          { name: "91.3 WUKY", frequency: "91.3", stationName: "WUKY", shortcut: "91.3 WUKY" }
+          { name: "1300 ESPN", frequency: "1300", stationName: "ESPN", shortcut: "1300 ESPN", type: "shortcut" },
+          { name: "630 WLAP", frequency: "630", stationName: "WLAP", shortcut: "630 WLAP", type: "shortcut" },
+          { name: "95.3 air1", frequency: "95.3", stationName: "air1", shortcut: "95.3 air1", type: "shortcut" },
+          { name: "96.3 K-Love", frequency: "96.3", stationName: "K-Love", shortcut: "96.3 K-Love", type: "shortcut" },
+          { name: "98.1 The Bull", frequency: "98.1", stationName: "The Bull", shortcut: "98.1 The Bull", type: "shortcut" },
+          { name: "104.5 The Cat", frequency: "104.5", stationName: "The Cat", shortcut: "104.5 The Cat", type: "shortcut" },
+          { name: "91.3 WUKY", frequency: "91.3", stationName: "WUKY", shortcut: "91.3 WUKY", type: "shortcut" }
         ]
       },
       {
         target: "podcasts-grid",
         items: [
-          { name: "KSR", shortcut: "KSR" },
-          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture" },
-          { name: "Bible Recap Podcast", shortcut: "Bible Recap Podcast" }
+          { name: "KSR", shortcut: "KSR", type: "shortcut" },
+          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture", type: "direct" },
+          { name: "Bible Recap Podcast", shortcut: "Bible Recap Podcast", type: "shortcut" }
         ]
       }
     ];
 
-    function runShortcut(shortcutName) {
-      const dashboardShortcutName = "Radio Grid";
-      const returnToGrid = "shortcuts://run-shortcut?name=" + encodeURIComponent(dashboardShortcutName);
-      const url =
-        "shortcuts://x-callback-url/run-shortcut" +
-        "?name=" + encodeURIComponent(shortcutName) +
-        "&x-success=" + encodeURIComponent(returnToGrid) +
-        "&x-cancel=" + encodeURIComponent(returnToGrid) +
-        "&x-error=" + encodeURIComponent(returnToGrid);
-      window.location.href = url;
+    function handleTile(item) {
+      if (item.type === "direct" && item.shortcut === "Bible Recap Scripture") {
+        // Direct link execution without callback loop
+        const url = "shortcuts://run-shortcut?name=" + encodeURIComponent(item.shortcut);
+        window.location.href = url;
+      } else {
+        // Standard callback loop for everything else
+        const dashboardShortcutName = "Radio Grid";
+        const returnToGrid = "https://mtnsky.github.io/RadioGrid/";
+        const url =
+          "shortcuts://x-callback-url/run-shortcut" +
+          "?name=" + encodeURIComponent(item.shortcut) +
+          "&x-success=" + encodeURIComponent(returnToGrid) +
+          "&x-cancel=" + encodeURIComponent(returnToGrid) +
+          "&x-error=" + encodeURIComponent(returnToGrid);
+        window.location.href = url;
+      }
     }
 
     function makeTile(item) {
@@ -308,7 +315,7 @@
 
       tile.addEventListener("click", () => {
         tile.classList.add("pressed");
-        setTimeout(() => runShortcut(item.shortcut), 300);
+        setTimeout(() => handleTile(item), 300);
       });
       return tile;
     }

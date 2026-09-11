@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Audio" />
+  <meta name="apple-mobile-web-app-title" content="Radio Grid" />
   <meta name="theme-color" content="#0f1115" />
-  <title>Audio</title>
+  <title>Radio Grid</title>
   <style>
     :root {
       color-scheme: dark;
@@ -218,7 +218,7 @@
 <body>
   <main class="wrap">
     <header>
-      <h1>Audio</h1>
+      <h1>Radio Grid</h1>
     </header>
 
     <div class="sections" aria-label="Audio groups">
@@ -283,14 +283,7 @@
     ];
 
     function runShortcut(shortcutName) {
-      const dashboardShortcutName = "Radio Grid";
-      const returnToGrid = "shortcuts://run-shortcut?name=" + encodeURIComponent(dashboardShortcutName);
-      const url =
-        "shortcuts://x-callback-url/run-shortcut" +
-        "?name=" + encodeURIComponent(shortcutName) +
-        "&x-success=" + encodeURIComponent(returnToGrid) +
-        "&x-cancel=" + encodeURIComponent(returnToGrid) +
-        "&x-error=" + encodeURIComponent(returnToGrid);
+      const url = "shortcuts://run-shortcut?name=" + encodeURIComponent(shortcutName);
       window.location.href = url;
     }
 

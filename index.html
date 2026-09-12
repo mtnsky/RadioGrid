@@ -24,7 +24,10 @@
       --tile-h: 58px;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     html, body {
       margin: 0;
@@ -36,7 +39,11 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       color: var(--text);
-      padding: max(11px, env(safe-area-inset-top)) 10px max(9px, env(safe-area-inset-bottom));
+      padding:
+        max(11px, env(safe-area-inset-top))
+        10px
+        max(9px, env(safe-area-inset-bottom));
+
       background:
         radial-gradient(circle at 18% -10%, rgba(210,69,63,.20), transparent 34%),
         radial-gradient(circle at 92% 0%, rgba(47,143,184,.13), transparent 34%),
@@ -45,7 +52,12 @@
 
     .wrap {
       width: min(100%, 760px);
-      height: calc(100dvh - max(11px, env(safe-area-inset-top)) - max(9px, env(safe-area-inset-bottom)) - 2px);
+      height: calc(
+        100dvh
+        - max(11px, env(safe-area-inset-top))
+        - max(9px, env(safe-area-inset-bottom))
+        - 2px
+      );
       margin: 0 auto;
       display: flex;
       flex-direction: column;
@@ -192,50 +204,105 @@
       color: #fff;
     }
 
-    .stations { --accent: var(--red); }
-    .radio { --accent: var(--blue); }
-    .podcasts { --accent: var(--purple); }
+    .stations {
+      --accent: var(--red);
+    }
+
+    .radio {
+      --accent: var(--blue);
+    }
+
+    .podcasts {
+      --accent: var(--purple);
+    }
 
     @media (max-height: 760px) {
-      :root { --tile-h: 52px; --gap: 6px; --radius: 13px; }
-      header { padding: 11px 0 8px; }
-      h1 { font-size: clamp(24px, 6.5vw, 34px); }
-      .sections { gap: 10px; }
-      .section-title { margin-bottom: 5px; font-size: 12px; }
-      .name { font-size: clamp(12px, 3vw, 15px); }
+      :root {
+        --tile-h: 52px;
+        --gap: 6px;
+        --radius: 13px;
+      }
+
+      header {
+        padding: 11px 0 8px;
+      }
+
+      h1 {
+        font-size: clamp(24px, 6.5vw, 34px);
+      }
+
+      .sections {
+        gap: 10px;
+      }
+
+      .section-title {
+        margin-bottom: 5px;
+        font-size: 12px;
+      }
+
+      .name {
+        font-size: clamp(12px, 3vw, 15px);
+      }
     }
 
     @media (max-height: 700px) {
-      :root { --tile-h: 47px; --gap: 5px; --radius: 12px; }
-      header { padding: 7px 0 6px; }
-      h1 { font-size: 23px; }
-      .sections { gap: 8px; }
-      .section-title { margin-bottom: 4px; font-size: 11px; }
-      .name { font-size: clamp(10.5px, 2.7vw, 13px); }
+      :root {
+        --tile-h: 47px;
+        --gap: 5px;
+        --radius: 12px;
+      }
+
+      header {
+        padding: 7px 0 6px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .sections {
+        gap: 8px;
+      }
+
+      .section-title {
+        margin-bottom: 4px;
+        font-size: 11px;
+      }
+
+      .name {
+        font-size: clamp(10.5px, 2.7vw, 13px);
+      }
     }
   </style>
 </head>
+
 <body>
   <main class="wrap">
+
     <header>
       <h1>Audio</h1>
     </header>
 
     <div class="sections" aria-label="Audio groups">
+
+      <!-- PODCASTS -->
+      <section class="section podcasts" aria-labelledby="podcasts-heading">
+        <h2 id="podcasts-heading" class="section-title">Podcasts</h2>
+        <div id="podcasts-grid" class="grid"></div>
+      </section>
+
+      <!-- STATIONS -->
       <section class="section stations" aria-labelledby="stations-heading">
         <h2 id="stations-heading" class="section-title">Stations</h2>
         <div id="stations-grid" class="grid"></div>
       </section>
 
+      <!-- RADIO STATIONS -->
       <section class="section radio" aria-labelledby="radio-heading">
         <h2 id="radio-heading" class="section-title">Radio Stations</h2>
         <div id="radio-grid" class="grid"></div>
       </section>
 
-      <section class="section podcasts" aria-labelledby="podcasts-heading">
-        <h2 id="podcasts-heading" class="section-title">Podcasts</h2>
-        <div id="podcasts-grid" class="grid"></div>
-      </section>
     </div>
   </main>
 
@@ -258,65 +325,130 @@
           { name: "Worship", shortcut: "Worship" }
         ]
       },
+
       {
         target: "radio-grid",
         items: [
-          { name: "1300 ESPN", frequency: "1300", stationName: "ESPN", shortcut: "1300 ESPN" },
-          { name: "630 WLAP", frequency: "630", stationName: "WLAP", shortcut: "630 WLAP" },
-          { name: "95.3 air1", frequency: "95.3", stationName: "air1", shortcut: "95.3 air1" },
-          { name: "96.3 K-Love", frequency: "96.3", stationName: "K-Love", shortcut: "96.3 K-Love" },
-          { name: "98.1 The Bull", frequency: "98.1", stationName: "The Bull", shortcut: "98.1 The Bull" }, 
-          { name: "91.3 WUKY", frequency: "91.3", stationName: "WUKY", shortcut: "91.3 WUKY" }
+          {
+            name: "1300 ESPN",
+            frequency: "1300",
+            stationName: "ESPN",
+            shortcut: "1300 ESPN"
+          },
+          {
+            name: "630 WLAP",
+            frequency: "630",
+            stationName: "WLAP",
+            shortcut: "630 WLAP"
+          },
+          {
+            name: "95.3 air1",
+            frequency: "95.3",
+            stationName: "air1",
+            shortcut: "95.3 air1"
+          },
+          {
+            name: "96.3 K-Love",
+            frequency: "96.3",
+            stationName: "K-Love",
+            shortcut: "96.3 K-Love"
+          },
+          {
+            name: "98.1 The Bull",
+            frequency: "98.1",
+            stationName: "The Bull",
+            shortcut: "98.1 The Bull"
+          },
+          {
+            name: "91.3 WUKY",
+            frequency: "91.3",
+            stationName: "WUKY",
+            shortcut: "91.3 WUKY"
+          }
         ]
       },
+
       {
         target: "podcasts-grid",
         items: [
-          { name: "KSR", shortcut: "KSR" },
-          { name: "Bible Recap Scripture", shortcut: "Bible Recap Scripture", noReturn: true },
-          { name: "Bible Recap Podcast", shortcut: "Bible Recap Podcast" }
+          {
+            name: "KSR",
+            shortcut: "KSR"
+          },
+          {
+            name: "Bible Recap Scripture",
+            shortcut: "Bible Recap Scripture",
+            noReturn: true
+          },
+          {
+            name: "Bible Recap Podcast",
+            shortcut: "Bible Recap Podcast"
+          }
         ]
       }
     ];
 
     function runShortcut(shortcutName, noReturn) {
       if (noReturn) {
-        window.location.href = "shortcuts://run-shortcut?name=" + encodeURIComponent(shortcutName);
+        window.location.href =
+          "shortcuts://run-shortcut?name=" +
+          encodeURIComponent(shortcutName);
         return;
       }
+
       const dashboardShortcutName = "Radio Grid";
-      const returnToGrid = "shortcuts://run-shortcut?name=" + encodeURIComponent(dashboardShortcutName);
+
+      const returnToGrid =
+        "shortcuts://run-shortcut?name=" +
+        encodeURIComponent(dashboardShortcutName);
+
       const url =
         "shortcuts://x-callback-url/run-shortcut" +
         "?name=" + encodeURIComponent(shortcutName) +
         "&x-success=" + encodeURIComponent(returnToGrid) +
         "&x-cancel=" + encodeURIComponent(returnToGrid) +
         "&x-error=" + encodeURIComponent(returnToGrid);
+
       window.location.href = url;
     }
 
     function makeTile(item) {
       const tile = document.createElement("button");
+
       tile.type = "button";
       tile.className = "tile";
       tile.setAttribute("aria-label", "Run " + item.shortcut);
 
       if (item.frequency && item.stationName) {
-        tile.innerHTML = `<div class="name"><span class="frequency">${item.frequency}</span><span class="station-name">${item.stationName}</span></div>`;
+        tile.innerHTML = `
+          <div class="name">
+            <span class="frequency">${item.frequency}</span>
+            <span class="station-name">${item.stationName}</span>
+          </div>
+        `;
       } else {
-        tile.innerHTML = `<div class="name">${item.name}</div>`;
+        tile.innerHTML = `
+          <div class="name">${item.name}</div>
+        `;
       }
 
       tile.addEventListener("click", () => {
         tile.classList.add("pressed");
-        setTimeout(() => runShortcut(item.shortcut, item.noReturn), 300);
+
+        setTimeout(() => {
+          runShortcut(item.shortcut, item.noReturn);
+        }, 300);
       });
+
       return tile;
     }
 
     groups.forEach(group => {
       const grid = document.getElementById(group.target);
-      group.items.forEach(item => grid.appendChild(makeTile(item)));
+
+      group.items.forEach(item => {
+        grid.appendChild(makeTile(item));
+      });
     });
   </script>
 </body>

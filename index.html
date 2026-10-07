@@ -3,23 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Radio Grid" />
   <meta name="theme-color" content="#0f1115" />
+
   <title>Radio Grid</title>
 
   <style>
     :root {
       color-scheme: dark;
+
       --bg: #0f1115;
       --tile: #1c2027;
       --tile-2: #232832;
+
       --text: #f5f7fa;
       --muted: #9ca3af;
+
       --red: #d2453f;
       --blue: #2f8fb8;
       --purple: #7c55aa;
+
       --shadow: 0 10px 22px rgba(0,0,0,.34);
+
       --radius: 14px;
       --gap: 7px;
       --section-gap: 42px;
@@ -31,7 +38,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
+    html,
+    body {
       margin: 0;
       min-height: 100%;
       overflow: hidden;
@@ -39,30 +47,54 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Segoe UI",
+        sans-serif;
+
       color: var(--text);
+
       padding:
         max(11px, env(safe-area-inset-top))
         10px
         max(9px, env(safe-area-inset-bottom));
 
       background:
-        radial-gradient(circle at 18% -10%, rgba(210,69,63,.20), transparent 34%),
-        radial-gradient(circle at 92% 0%, rgba(47,143,184,.13), transparent 34%),
-        linear-gradient(180deg, #171a20 0%, #0f1115 42%, #0b0d10 100%);
+        radial-gradient(
+          circle at 18% -10%,
+          rgba(210,69,63,.20),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 92% 0%,
+          rgba(47,143,184,.13),
+          transparent 34%
+        ),
+        linear-gradient(
+          180deg,
+          #171a20 0%,
+          #0f1115 42%,
+          #0b0d10 100%
+        );
     }
 
     .wrap {
       width: min(100%, 760px);
+
       height: calc(
         100dvh
         - max(11px, env(safe-area-inset-top))
         - max(9px, env(safe-area-inset-bottom))
         - 2px
       );
+
       margin: 0 auto;
+
       display: flex;
       flex-direction: column;
+
       min-height: 0;
     }
 
@@ -74,19 +106,27 @@
 
     h1 {
       margin: 0;
+
       font-size: clamp(27px, 7vw, 38px);
       letter-spacing: -.05em;
       line-height: 1;
+
       font-weight: 900;
+
       color: var(--text);
-      text-shadow: 0 2px 10px rgba(0,0,0,.28);
+
+      text-shadow:
+        0 2px 10px rgba(0,0,0,.28);
     }
 
     .sections {
       display: flex;
       flex-direction: column;
+
       gap: var(--section-gap);
+
       flex: 1 1 auto;
+
       min-height: 0;
     }
 
@@ -97,76 +137,136 @@
     .section-title {
       display: flex;
       align-items: center;
+
       gap: 8px;
+
       margin: 0 0 6px;
+
       color: var(--muted);
+
       font-size: clamp(12px, 3.15vw, 15px);
+
       font-weight: 950;
+
       letter-spacing: .095em;
+
       text-transform: uppercase;
+
       line-height: 1;
     }
 
     .section-title::after {
       content: "";
+
       height: 1px;
       flex: 1;
-      background: linear-gradient(90deg, var(--accent), transparent);
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--accent),
+          transparent
+        );
+
       opacity: .55;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
       gap: var(--gap);
     }
 
     .tile {
       position: relative;
+
       display: grid;
       place-items: center;
+
       min-width: 0;
+
       height: var(--tile-h);
-      border: 1px solid rgba(255,255,255,.08);
-      border-top-color: rgba(255,255,255,.22);
+
+      border:
+        1px solid rgba(255,255,255,.08);
+
+      border-top-color:
+        rgba(255,255,255,.22);
+
       border-radius: var(--radius);
+
       padding: 7px;
+
       color: var(--text);
 
       background:
-        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.015)),
-        linear-gradient(145deg, var(--tile-2), var(--tile));
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,.055),
+          rgba(255,255,255,.015)
+        ),
+        linear-gradient(
+          145deg,
+          var(--tile-2),
+          var(--tile)
+        );
 
       box-shadow: var(--shadow);
+
       overflow: hidden;
+
       font: inherit;
+
       cursor: pointer;
+
       transform: translateZ(0);
     }
 
     .tile::before {
       content: "";
+
       position: absolute;
       inset: 0;
+
       border-radius: inherit;
 
       background:
-        linear-gradient(90deg, var(--accent), transparent 42%),
-        radial-gradient(circle at 12% 0%, var(--accent), transparent 42%);
+        linear-gradient(
+          90deg,
+          var(--accent),
+          transparent 42%
+        ),
+        radial-gradient(
+          circle at 12% 0%,
+          var(--accent),
+          transparent 42%
+        );
 
       opacity: .18;
+
       pointer-events: none;
     }
 
     .tile::after {
       content: "";
+
       position: absolute;
+
       left: 0;
       top: 12px;
       bottom: 12px;
+
       width: 3px;
-      border-radius: 0 6px 6px 0;
-      background: var(--accent);
+
+      border-radius:
+        0 6px 6px 0;
+
+      background:
+        var(--accent);
+
       opacity: .9;
     }
 
@@ -177,22 +277,34 @@
     }
 
     .tile.pressed {
-      border-color: rgba(255,255,255,.24);
+      border-color:
+        rgba(255,255,255,.24);
     }
 
     .name {
       position: relative;
       z-index: 1;
+
       justify-self: center;
       align-self: center;
+
       max-width: 100%;
+
       text-align: center;
-      font-size: clamp(13px, 3.35vw, 17px);
+
+      font-size:
+        clamp(13px, 3.35vw, 17px);
+
       line-height: 1.04;
+
       font-weight: 900;
+
       letter-spacing: -.025em;
+
       overflow: hidden;
-      text-shadow: 0 1px 8px rgba(0,0,0,.38);
+
+      text-shadow:
+        0 1px 8px rgba(0,0,0,.38);
     }
 
     .frequency,
@@ -202,7 +314,9 @@
 
     .frequency {
       font-size: .9em;
-      color: rgba(245,247,250,.88);
+
+      color:
+        rgba(245,247,250,.88);
     }
 
     .station-name {
@@ -223,6 +337,7 @@
     }
 
     @media (max-height: 760px) {
+
       :root {
         --tile-h: 52px;
         --gap: 6px;
@@ -235,7 +350,8 @@
       }
 
       h1 {
-        font-size: clamp(24px, 6.5vw, 34px);
+        font-size:
+          clamp(24px, 6.5vw, 34px);
       }
 
       .section-title {
@@ -244,11 +360,13 @@
       }
 
       .name {
-        font-size: clamp(12px, 3vw, 15px);
+        font-size:
+          clamp(12px, 3vw, 15px);
       }
     }
 
     @media (max-height: 700px) {
+
       :root {
         --tile-h: 47px;
         --gap: 5px;
@@ -270,186 +388,520 @@
       }
 
       .name {
-        font-size: clamp(10.5px, 2.7vw, 13px);
+        font-size:
+          clamp(10.5px, 2.7vw, 13px);
       }
     }
   </style>
 </head>
 
 <body>
+
   <main class="wrap">
 
     <header>
       <h1>Radio Grid</h1>
     </header>
 
+
     <div class="sections" aria-label="Audio groups">
 
+
       <!-- PODCASTS -->
-      <section class="section podcasts" aria-labelledby="podcasts-heading">
-        <h2 id="podcasts-heading" class="section-title">Podcasts</h2>
-        <div id="podcasts-grid" class="grid"></div>
+
+      <section
+        class="section podcasts"
+        aria-labelledby="podcasts-heading"
+      >
+
+        <h2
+          id="podcasts-heading"
+          class="section-title"
+        >
+          Podcasts
+        </h2>
+
+        <div
+          id="podcasts-grid"
+          class="grid"
+        ></div>
+
       </section>
+
 
       <!-- STATIONS -->
-      <section class="section stations" aria-labelledby="stations-heading">
-        <h2 id="stations-heading" class="section-title">Stations</h2>
-        <div id="stations-grid" class="grid"></div>
+
+      <section
+        class="section stations"
+        aria-labelledby="stations-heading"
+      >
+
+        <h2
+          id="stations-heading"
+          class="section-title"
+        >
+          Stations
+        </h2>
+
+        <div
+          id="stations-grid"
+          class="grid"
+        ></div>
+
       </section>
 
+
       <!-- RADIO STATIONS -->
-      <section class="section radio" aria-labelledby="radio-heading">
-        <h2 id="radio-heading" class="section-title">Radio Stations</h2>
-        <div id="radio-grid" class="grid"></div>
+
+      <section
+        class="section radio"
+        aria-labelledby="radio-heading"
+      >
+
+        <h2
+          id="radio-heading"
+          class="section-title"
+        >
+          Radio Stations
+        </h2>
+
+        <div
+          id="radio-grid"
+          class="grid"
+        ></div>
+
       </section>
 
     </div>
+
   </main>
 
+
   <script>
+
+    /*
+    =========================================================
+    RADIO GRID DATA
+    =========================================================
+
+    An item can contain:
+
+    shortcut:
+      Runs an iOS Shortcut.
+
+    url:
+      Opens the destination directly without opening Shortcuts.
+
+    noReturn:
+      Runs the Shortcut without returning to Radio Grid.
+    */
+
+
     const groups = [
+
+      /*
+      =======================================================
+      PODCASTS
+      =======================================================
+      */
+
       {
-        target: "stations-grid",
+        target: "podcasts-grid",
+
         items: [
-          { name: "80’s", shortcut: "80’s" },
-          { name: "Americana", shortcut: "Americana" },
-          { name: "The Beatles", shortcut: "The Beatles" },
-          { name: "Christian", shortcut: "Christian" },
-          { name: "Classic Rock", shortcut: "Classic Rock" },
-          { name: "Coffee House", shortcut: "Coffee House" },
-          { name: "Country", shortcut: "Country" },
-          { name: "Dance", shortcut: "Dance" },
-          { name: "Focus", shortcut: "Focus" },
-          { name: "Family", shortcut: "Family" },
-          { name: "Oldies", shortcut: "Oldies" },
-          { name: "Worship", shortcut: "Worship" }
+
+          {
+            name: "KSR",
+            shortcut: "KSR"
+          },
+
+          {
+            name: "Bible Recap Scripture",
+            shortcut: "Bible Recap Scripture",
+            noReturn: true
+          },
+
+          {
+            name: "Bible Recap Podcast",
+            shortcut: "Bible Recap Podcast"
+          }
+
         ]
       },
 
+
+      /*
+      =======================================================
+      STATIONS
+      =======================================================
+      */
+
+      {
+        target: "stations-grid",
+
+        items: [
+
+          {
+            name: "80’s",
+            shortcut: "80’s"
+          },
+
+          /*
+          Americana now bypasses Shortcuts completely.
+          */
+
+          {
+            name: "Americana",
+            url: "https://music.apple.com/us/station/americana-station/ra.985487581"
+          },
+
+          {
+            name: "The Beatles",
+            shortcut: "The Beatles"
+          },
+
+          {
+            name: "Christian",
+            shortcut: "Christian"
+          },
+
+          {
+            name: "Classic Rock",
+            shortcut: "Classic Rock"
+          },
+
+          {
+            name: "Coffee House",
+            shortcut: "Coffee House"
+          },
+
+          {
+            name: "Country",
+            shortcut: "Country"
+          },
+
+          {
+            name: "Dance",
+            shortcut: "Dance"
+          },
+
+          {
+            name: "Focus",
+            shortcut: "Focus"
+          },
+
+          {
+            name: "Family",
+            shortcut: "Family"
+          },
+
+          {
+            name: "Oldies",
+            shortcut: "Oldies"
+          },
+
+          {
+            name: "Worship",
+            shortcut: "Worship"
+          }
+
+        ]
+      },
+
+
+      /*
+      =======================================================
+      RADIO STATIONS
+      =======================================================
+      */
+
       {
         target: "radio-grid",
+
         items: [
+
           {
             name: "1300 ESPN",
             frequency: "1300",
             stationName: "ESPN",
             shortcut: "1300 ESPN"
           },
+
           {
             name: "630 WLAP",
             frequency: "630",
             stationName: "WLAP",
             shortcut: "630 WLAP"
           },
+
           {
             name: "95.3 air1",
             frequency: "95.3",
             stationName: "air1",
             shortcut: "95.3 air1"
           },
+
           {
             name: "96.3 K-Love",
             frequency: "96.3",
             stationName: "K-Love",
             shortcut: "96.3 K-Love"
           },
+
           {
             name: "98.1 The Bull",
             frequency: "98.1",
             stationName: "The Bull",
             shortcut: "98.1 The Bull"
           },
+
           {
             name: "91.3 WUKY",
             frequency: "91.3",
             stationName: "WUKY",
             shortcut: "91.3 WUKY"
           }
-        ]
-      },
 
-      {
-        target: "podcasts-grid",
-        items: [
-          {
-            name: "KSR",
-            shortcut: "KSR"
-          },
-          {
-            name: "Bible Recap Scripture",
-            shortcut: "Bible Recap Scripture",
-            noReturn: true
-          },
-          {
-            name: "Bible Recap Podcast",
-            shortcut: "Bible Recap Podcast"
-          }
         ]
       }
+
     ];
 
-    function runShortcut(shortcutName, noReturn) {
-      if (noReturn) {
-        window.location.href =
-          "shortcuts://run-shortcut?name=" +
-          encodeURIComponent(shortcutName);
+
+
+    /*
+    =========================================================
+    RUN AN ITEM
+    =========================================================
+    */
+
+    function runItem(item) {
+
+      /*
+      -------------------------------------------------------
+      DIRECT LINK
+      -------------------------------------------------------
+
+      This completely bypasses the Shortcuts app.
+      */
+
+      if (item.url) {
+
+        window.location.href = item.url;
+
         return;
       }
 
-      const dashboardShortcutName = "Radio Grid";
+
+      /*
+      -------------------------------------------------------
+      SHORTCUT WITH NO RETURN
+      -------------------------------------------------------
+      */
+
+      if (item.noReturn) {
+
+        const shortcutURL =
+          "shortcuts://run-shortcut?name=" +
+          encodeURIComponent(item.shortcut);
+
+        window.location.href = shortcutURL;
+
+        return;
+      }
+
+
+      /*
+      -------------------------------------------------------
+      NORMAL SHORTCUT
+      -------------------------------------------------------
+
+      Run shortcut, then return to Radio Grid.
+      */
+
+      const dashboardShortcutName =
+        "Radio Grid";
+
 
       const returnToGrid =
         "shortcuts://run-shortcut?name=" +
-        encodeURIComponent(dashboardShortcutName);
+        encodeURIComponent(
+          dashboardShortcutName
+        );
 
-      const url =
+
+      const shortcutURL =
         "shortcuts://x-callback-url/run-shortcut" +
-        "?name=" + encodeURIComponent(shortcutName) +
-        "&x-success=" + encodeURIComponent(returnToGrid) +
-        "&x-cancel=" + encodeURIComponent(returnToGrid) +
-        "&x-error=" + encodeURIComponent(returnToGrid);
 
-      window.location.href = url;
+        "?name=" +
+        encodeURIComponent(
+          item.shortcut
+        ) +
+
+        "&x-success=" +
+        encodeURIComponent(
+          returnToGrid
+        ) +
+
+        "&x-cancel=" +
+        encodeURIComponent(
+          returnToGrid
+        ) +
+
+        "&x-error=" +
+        encodeURIComponent(
+          returnToGrid
+        );
+
+
+      window.location.href =
+        shortcutURL;
     }
 
+
+
+    /*
+    =========================================================
+    CREATE TILE
+    =========================================================
+    */
+
     function makeTile(item) {
-      const tile = document.createElement("button");
 
-      tile.type = "button";
-      tile.className = "tile";
-      tile.setAttribute("aria-label", "Run " + item.shortcut);
+      const tile =
+        document.createElement("button");
 
-      if (item.frequency && item.stationName) {
+
+      tile.type =
+        "button";
+
+
+      tile.className =
+        "tile";
+
+
+      tile.setAttribute(
+        "aria-label",
+        "Play " + item.name
+      );
+
+
+      /*
+      -------------------------------------------------------
+      RADIO STATION TILE
+      -------------------------------------------------------
+      */
+
+      if (
+        item.frequency &&
+        item.stationName
+      ) {
+
         tile.innerHTML = `
+
           <div class="name">
-            <span class="frequency">${item.frequency}</span>
-            <span class="station-name">${item.stationName}</span>
+
+            <span class="frequency">
+              ${item.frequency}
+            </span>
+
+            <span class="station-name">
+              ${item.stationName}
+            </span>
+
           </div>
+
         `;
-      } else {
-        tile.innerHTML = `
-          <div class="name">${item.name}</div>
-        `;
+
       }
 
-      tile.addEventListener("click", () => {
-        tile.classList.add("pressed");
 
-        setTimeout(() => {
-          runShortcut(item.shortcut, item.noReturn);
-        }, 300);
-      });
+      /*
+      -------------------------------------------------------
+      NORMAL TILE
+      -------------------------------------------------------
+      */
+
+      else {
+
+        tile.innerHTML = `
+
+          <div class="name">
+            ${item.name}
+          </div>
+
+        `;
+
+      }
+
+
+
+      /*
+      -------------------------------------------------------
+      TAP ACTION
+      -------------------------------------------------------
+      */
+
+      tile.addEventListener(
+        "click",
+        () => {
+
+          tile.classList.add(
+            "pressed"
+          );
+
+
+          /*
+          Small press animation before launching.
+          */
+
+          setTimeout(
+            () => {
+
+              runItem(item);
+
+            },
+            300
+          );
+
+        }
+      );
+
 
       return tile;
     }
 
-    groups.forEach(group => {
-      const grid = document.getElementById(group.target);
 
-      group.items.forEach(item => {
-        grid.appendChild(makeTile(item));
-      });
-    });
+
+    /*
+    =========================================================
+    BUILD ALL GRIDS
+    =========================================================
+    */
+
+    groups.forEach(
+      group => {
+
+        const grid =
+          document.getElementById(
+            group.target
+          );
+
+
+        group.items.forEach(
+          item => {
+
+            grid.appendChild(
+              makeTile(item)
+            );
+
+          }
+        );
+
+      }
+    );
+
   </script>
+
 </body>
 </html>

@@ -1,907 +1,724 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Radio Grid" />
-  <meta name="theme-color" content="#0f1115" />
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Radio Grid">
+  <meta name="theme-color" content="#0f1115">
   <title>Radio Grid</title>
-
   <style>
     :root {
       color-scheme: dark;
-
-      --bg: #0f1115;
-      --tile: #1c2027;
-      --tile-2: #232832;
-
-      --text: #f5f7fa;
-      --muted: #9ca3af;
-
-      --red: #d2453f;
-      --blue: #2f8fb8;
-      --purple: #7c55aa;
-
-      --shadow: 0 10px 22px rgba(0,0,0,.34);
-
-      --radius: 14px;
-      --gap: 7px;
-      --section-gap: 42px;
-      --tile-h: 58px;
+      --bg: #0f1115; --tile: #1c2027; --tile-2: #232832;
+      --text: #f5f7fa; --muted: #a6adb9; --line: rgba(255,255,255,.11);
+      --shadow: 0 9px 22px rgba(0,0,0,.28);
+      --radius: 14px; --gap: 7px; --section-gap: 42px; --tile-h: 58px;
+      --sheet: #1c1c1e; --group: #2c2c2e; --blue: #0a84ff;
+      -webkit-font-smoothing: antialiased;
     }
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { min-height: 100%; background: var(--bg); }
     body {
-      margin: 0;
-      min-height: 100%;
-      overflow: hidden;
-      background: var(--bg);
-    }
-
-    body {
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "Segoe UI",
-        sans-serif;
-
+      margin: 0; min-height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       color: var(--text);
-
-      padding:
-        max(11px, env(safe-area-inset-top))
-        10px
-        max(9px, env(safe-area-inset-bottom));
-
-      background:
-        radial-gradient(
-          circle at 18% -10%,
-          rgba(210,69,63,.20),
-          transparent 34%
-        ),
-        radial-gradient(
-          circle at 92% 0%,
-          rgba(47,143,184,.13),
-          transparent 34%
-        ),
-        linear-gradient(
-          180deg,
-          #171a20 0%,
-          #0f1115 42%,
-          #0b0d10 100%
-        );
+      background: radial-gradient(circle at 18% -10%,rgba(210,69,63,.20),transparent 34%),
+                  radial-gradient(circle at 92% 0%,rgba(47,143,184,.13),transparent 34%),
+                  linear-gradient(180deg,#171a20 0%,#0f1115 42%,#0b0d10 100%);
     }
-
+    button, input, select { font: inherit; }
+    button { cursor: pointer; -webkit-appearance: none; appearance: none; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
     .wrap {
-      width: min(100%, 760px);
-
-      height: calc(
-        100dvh
-        - max(11px, env(safe-area-inset-top))
-        - max(9px, env(safe-area-inset-bottom))
-        - 2px
-      );
-
-      margin: 0 auto;
-
-      display: flex;
-      flex-direction: column;
-
-      min-height: 0;
+      width: min(100%, 760px); margin: 0 auto;
+      padding: max(11px,env(safe-area-inset-top)) 10px max(18px,env(safe-area-inset-bottom));
     }
-
-    header {
-      text-align: center;
-      padding: 15px 0 11px;
-      flex: 0 0 auto;
+    .topbar {
+      position: relative; display: flex; justify-content: center; align-items: center;
+      min-height: 61px; margin-bottom: 7px;
     }
-
-    h1 {
-      margin: 0;
-
-      font-size: clamp(27px, 7vw, 38px);
-      letter-spacing: -.05em;
-      line-height: 1;
-
-      font-weight: 900;
-
-      color: var(--text);
-
-      text-shadow:
-        0 2px 10px rgba(0,0,0,.28);
+    h1 { margin: 0; font-size: clamp(27px,7vw,38px); letter-spacing: -.05em; line-height: 1; font-weight: 900;
+         text-shadow: 0 2px 10px rgba(0,0,0,.28); }
+    .menu-button {
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+      height: 44px; width: 44px; border: 1px solid var(--line); border-radius: 13px;
+      background: rgba(255,255,255,.075); color: white; display: grid; place-items: center;
     }
-
-    .sections {
-      display: flex;
-      flex-direction: column;
-
-      gap: var(--section-gap);
-
-      flex: 1 1 auto;
-
-      min-height: 0;
-    }
-
-    .section {
-      min-height: 0;
-    }
-
+    .menu-button:active { background: rgba(255,255,255,.16); }
+    .menu-button svg { width: 23px; height: 23px; }
+    .sections { display: flex; flex-direction: column; gap: var(--section-gap); }
     .section-title {
-      display: flex;
-      align-items: center;
-
-      gap: 8px;
-
-      margin: 0 0 6px;
-
-      color: var(--muted);
-
-      font-size: clamp(12px, 3.15vw, 15px);
-
-      font-weight: 950;
-
-      letter-spacing: .095em;
-
-      text-transform: uppercase;
-
-      line-height: 1;
+      display: flex; align-items: center; gap: 8px; margin: 0 0 6px;
+      color: var(--muted); font-size: clamp(12px,3.15vw,15px);
+      font-weight: 850; letter-spacing: .095em; text-transform: uppercase; line-height: 1.15;
     }
-
-    .section-title::after {
-      content: "";
-
-      height: 1px;
-      flex: 1;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--accent),
-          transparent
-        );
-
-      opacity: .55;
-    }
-
-    .grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-      gap: var(--gap);
-    }
-
+    .section-title::after { content: ""; height: 1px; flex: 1;
+      background: linear-gradient(90deg,var(--accent),transparent); opacity: .55; }
+    .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--gap); }
     .tile {
-      position: relative;
-
-      display: grid;
-      place-items: center;
-
-      min-width: 0;
-
-      height: var(--tile-h);
-
-      border:
-        1px solid rgba(255,255,255,.08);
-
-      border-top-color:
-        rgba(255,255,255,.22);
-
-      border-radius: var(--radius);
-
-      padding: 7px;
-
-      color: var(--text);
-
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255,255,255,.055),
-          rgba(255,255,255,.015)
-        ),
-        linear-gradient(
-          145deg,
-          var(--tile-2),
-          var(--tile)
-        );
-
-      box-shadow: var(--shadow);
-
-      overflow: hidden;
-
-      font: inherit;
-
-      cursor: pointer;
-
-      transform: translateZ(0);
+      position: relative; display: grid; place-items: center; min-width: 0; min-height: var(--tile-h);
+      border: 1px solid rgba(255,255,255,.08); border-top-color: rgba(255,255,255,.22);
+      border-radius: var(--radius); padding: 7px 5px; color: var(--text);
+      background: linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015)),
+                  linear-gradient(145deg,var(--tile-2),var(--tile));
+      box-shadow: var(--shadow); overflow: hidden; cursor: pointer;
+      touch-action: manipulation; transition: transform .12s ease,filter .12s ease,border-color .12s ease;
     }
+    .tile::before { content: ""; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(90deg,var(--accent),transparent 42%),
+                  radial-gradient(circle at 12% 0%,var(--accent),transparent 42%);
+      opacity: .18; pointer-events: none; }
+    .tile::after { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px;
+      width: 3px; border-radius: 0 6px 6px 0; background: var(--accent); opacity: .9; }
+    .tile:active { transform: scale(.967); filter: brightness(1.15); border-color: rgba(255,255,255,.24); }
+    .tile-label { position: relative; z-index: 1; min-width: 0; max-width: 100%; text-align: center;
+      font-size: clamp(13px,3.35vw,17px); line-height: 1.1; font-weight: 850;
+      letter-spacing: -.025em; overflow-wrap: anywhere; text-shadow: 0 1px 8px rgba(0,0,0,.38); }
+    .tile-label span { display: block; }
+    .tile-label .prefix { font-size: .9em; color: rgba(245,247,250,.88); }
+    .tile-label .suffix { margin-top: 1px; color: white; }
+    .empty { padding: 12px 0; color: var(--muted); font-size: 13px; }
 
-    .tile::before {
-      content: "";
-
-      position: absolute;
-      inset: 0;
-
-      border-radius: inherit;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--accent),
-          transparent 42%
-        ),
-        radial-gradient(
-          circle at 12% 0%,
-          var(--accent),
-          transparent 42%
-        );
-
-      opacity: .18;
-
-      pointer-events: none;
+    /* iOS-style settings sheet */
+    .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.62); z-index: 10; opacity: 0;
+      pointer-events: none; transition: opacity .2s ease; }
+    .scrim.open { opacity: 1; pointer-events: auto; }
+    .sheet {
+      position: fixed; z-index: 11; left: 50%; bottom: 0; width: min(100%,650px);
+      max-height: min(90dvh,900px); display: flex; flex-direction: column; overflow: hidden;
+      background: var(--sheet); border: 1px solid rgba(255,255,255,.12); border-bottom: 0;
+      border-radius: 26px 26px 0 0; box-shadow: 0 -15px 45px rgba(0,0,0,.55);
+      transform: translate(-50%,110%); transition: transform .26s cubic-bezier(.2,.8,.2,1);
+      padding-bottom: env(safe-area-inset-bottom); visibility: hidden;
     }
-
-    .tile::after {
-      content: "";
-
-      position: absolute;
-
-      left: 0;
-      top: 12px;
-      bottom: 12px;
-
-      width: 3px;
-
-      border-radius:
-        0 6px 6px 0;
-
-      background:
-        var(--accent);
-
-      opacity: .9;
+    .sheet.open { transform: translate(-50%,0); visibility: visible; }
+    .grabber { width: 36px; height: 5px; border-radius: 3px; background: #666669; margin: 9px auto 0; flex: none; }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px 13px;
+      border-bottom: 1px solid rgba(255,255,255,.07); min-height: 62px; flex: none; }
+    .sheet-head h2 { font-size: 18px; font-weight: 750; margin: 0; text-align: center; }
+    .bar-action { min-width: 65px; padding: 8px 4px; border: 0; color: var(--blue); background: none; font-size: 16px; }
+    .bar-action:last-child { text-align: right; font-weight: 650; }
+    .bar-action:first-child { text-align: left; }
+    .bar-action:disabled { opacity: .3; }
+    .sheet-body { padding: 19px 14px 24px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+    .group-label { font-size: 12px; text-transform: uppercase; letter-spacing: .055em; color: #a2a2a8;
+      margin: 20px 8px 8px; font-weight: 600; }
+    .group-label:first-child { margin-top: 0; }
+    .manage-section { background: var(--group); border-radius: 13px; overflow: hidden; margin: 0 0 13px; }
+    .manage-section-head, .manage-item { display: flex; align-items: center; min-height: 51px; padding: 5px 7px 5px 11px; gap: 7px; }
+    .manage-section-head { background: rgba(255,255,255,.035); }
+    .manage-item { margin-left: 11px; border-top: 1px solid rgba(255,255,255,.095); }
+    .manage-section-head + .manage-items .manage-item:first-child { border-top: 1px solid rgba(255,255,255,.095); }
+    .manage-items { min-height: 12px; }
+    .manage-name { flex: 1; min-width: 0; color: #fff; font-size: 15px; overflow-wrap: anywhere; }
+    .manage-section-head .manage-name { font-weight: 720; }
+    .manage-subtitle { display: block; font-size: 11px; font-weight: 400; color: #a7a7ad; margin-top: 3px; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+    .icon-btn { width: 38px; height: 44px; display: grid; place-items: center; flex: none;
+      border: 0; border-radius: 9px; color: #b5b5bd; background: none; }
+    .icon-btn:active { background: rgba(255,255,255,.12); }
+    .icon-btn.danger { color: #ff6961; }
+    .icon-btn svg { width: 18px; height: 18px; stroke-width: 2.1; }
+    .icon-btn:disabled { opacity: .22; }
+    .grip { width: 30px; touch-action: none; color: #85858e; cursor: grab; }
+    .grip:active { cursor: grabbing; }
+    .dragging { background: rgba(10,132,255,.19) !important; outline: 1px solid rgba(10,132,255,.6); border-radius: 8px; }
+    .add-row, .normal-row { display: flex; align-items: center; gap: 10px; min-height: 49px;
+      width: 100%; padding: 8px 13px; border: 0; color: var(--blue); background: var(--group);
+      text-align: left; font-size: 15px; }
+    .add-row:active, .normal-row:active { filter: brightness(1.17); }
+    .manage-section .add-row { background: transparent; border-top: 1px solid rgba(255,255,255,.10); }
+    .add-row .plus { font-weight: 800; font-size: 22px; line-height: 1; }
+    .standalone { border-radius: 13px; margin: 8px 0 14px; overflow: hidden; }
+    .normal-row { color: white; border-bottom: 1px solid rgba(255,255,255,.095); }
+    .normal-row:last-child { border: 0; }
+    .normal-row.destructive { color: #ff6961; }
+    .note { color: #a7a7ad; font-size: 12px; line-height: 1.5; padding: 1px 8px 12px; }
+    .field-group { background: var(--group); border-radius: 13px; overflow: hidden; }
+    .field { display: flex; gap: 10px; align-items: center; min-height: 51px; padding: 9px 13px;
+      border-bottom: 1px solid rgba(255,255,255,.1); font-size: 14px; }
+    .field:last-child { border: none; }
+    .field label { width: 112px; flex: none; color: #f5f5f7; }
+    .field input[type=text], .field input[type=url], .field select {
+      width: 100%; min-width: 0; flex: 1; background: transparent; border: 0; outline: 0;
+      color: white; font-size: 15px; padding: 5px 0; border-radius: 0;
     }
-
-    .tile:active,
-    .tile.pressed {
-      transform: scale(.972);
-      filter: brightness(1.16);
-    }
-
-    .tile.pressed {
-      border-color:
-        rgba(255,255,255,.24);
-    }
-
-    .name {
-      position: relative;
-      z-index: 1;
-
-      justify-self: center;
-      align-self: center;
-
-      max-width: 100%;
-
-      text-align: center;
-
-      font-size:
-        clamp(13px, 3.35vw, 17px);
-
-      line-height: 1.04;
-
-      font-weight: 900;
-
-      letter-spacing: -.025em;
-
-      overflow: hidden;
-
-      text-shadow:
-        0 1px 8px rgba(0,0,0,.38);
-    }
-
-    .frequency,
-    .station-name {
-      display: block;
-    }
-
-    .frequency {
-      font-size: .9em;
-
-      color:
-        rgba(245,247,250,.88);
-    }
-
-    .station-name {
-      margin-top: 1px;
-      color: #fff;
-    }
-
-    .stations {
-      --accent: var(--red);
-    }
-
-    .radio {
-      --accent: var(--blue);
-    }
-
-    .podcasts {
-      --accent: var(--purple);
-    }
-
+    .field input::placeholder { color: #82828a; }
+    .field select { color: #9bcaff; appearance: auto; }
+    .field option { color: #000; }
+    .field.check label { flex: 1; width: auto; }
+    .field input[type=checkbox] { height: 22px; width: 22px; accent-color: var(--blue); }
+    .palette { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 10px; }
+    .swatch { height: 34px; width: 34px; border: 3px solid transparent; border-radius: 50%; padding: 0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+    .swatch.selected { outline: 2px solid white; outline-offset: 3px; }
+    .custom-color { height: 36px; width: 44px; border: 0; background: transparent; padding: 0; }
+    .color-row { display: flex; align-items: center; gap: 8px; padding: 9px 0 0 4px; color: #c1c1c7; font-size: 13px; }
+    .hint { padding: 7px 8px 0; color: #a7a7ad; font-size: 12px; line-height: 1.4; }
+    .error { color: #ff8b83; font-size: 13px; padding: 8px 5px; min-height: 23px; }
+    .save-button { width: 100%; min-height: 50px; background: var(--blue); color: white;
+      border: none; border-radius: 13px; font-size: 17px; font-weight: 700; margin-top: 9px; }
+    .save-button:active { filter: brightness(.86); }
+    .toast { position: fixed; left: 50%; bottom: max(27px,env(safe-area-inset-bottom));
+      transform: translate(-50%,12px); border-radius: 20px; padding: 10px 16px;
+      background: rgba(57,57,60,.96); color: white; font-size: 13px; font-weight: 600;
+      z-index: 20; opacity: 0; pointer-events: none; transition: opacity .2s,transform .2s; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
     @media (max-height: 760px) {
-
-      :root {
-        --tile-h: 52px;
-        --gap: 6px;
-        --section-gap: 30px;
-        --radius: 13px;
-      }
-
-      header {
-        padding: 11px 0 8px;
-      }
-
-      h1 {
-        font-size:
-          clamp(24px, 6.5vw, 34px);
-      }
-
-      .section-title {
-        margin-bottom: 5px;
-        font-size: 12px;
-      }
-
-      .name {
-        font-size:
-          clamp(12px, 3vw, 15px);
-      }
+      :root { --tile-h: 52px; --gap: 6px; --section-gap: 30px; --radius: 13px; }
+      .topbar { min-height: 50px; }
+      h1 { font-size: clamp(24px,6.5vw,34px); }
+      .section-title { margin-bottom: 5px; font-size: 12px; }
+      .tile-label { font-size: clamp(12px,3vw,15px); }
     }
-
     @media (max-height: 700px) {
-
-      :root {
-        --tile-h: 47px;
-        --gap: 5px;
-        --section-gap: 24px;
-        --radius: 12px;
-      }
-
-      header {
-        padding: 7px 0 6px;
-      }
-
-      h1 {
-        font-size: 23px;
-      }
-
-      .section-title {
-        margin-bottom: 4px;
-        font-size: 11px;
-      }
-
-      .name {
-        font-size:
-          clamp(10.5px, 2.7vw, 13px);
-      }
+      :root { --tile-h: 47px; --gap: 5px; --section-gap: 24px; --radius: 12px; }
+      .topbar { min-height: 46px; }
+      h1 { font-size: 23px; }
+      .section-title { margin-bottom: 4px; font-size: 11px; }
+      .tile-label { font-size: clamp(10.5px,2.7vw,13px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
   </style>
 </head>
-
 <body>
-
   <main class="wrap">
-
-    <header>
+    <header class="topbar">
       <h1>Radio Grid</h1>
+      <button type="button" class="menu-button" id="openSettings" aria-label="Open settings" title="Edit Radio Grid">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
     </header>
-
-
-    <div class="sections" aria-label="Audio groups">
-
-
-      <!-- PODCASTS -->
-
-      <section
-        class="section podcasts"
-        aria-labelledby="podcasts-heading"
-      >
-
-        <h2
-          id="podcasts-heading"
-          class="section-title"
-        >
-          Podcasts
-        </h2>
-
-        <div
-          id="podcasts-grid"
-          class="grid"
-        ></div>
-
-      </section>
-
-
-      <!-- STATIONS -->
-
-      <section
-        class="section stations"
-        aria-labelledby="stations-heading"
-      >
-
-        <h2
-          id="stations-heading"
-          class="section-title"
-        >
-          Stations
-        </h2>
-
-        <div
-          id="stations-grid"
-          class="grid"
-        ></div>
-
-      </section>
-
-
-      <!-- RADIO STATIONS -->
-
-      <section
-        class="section radio"
-        aria-labelledby="radio-heading"
-      >
-
-        <h2
-          id="radio-heading"
-          class="section-title"
-        >
-          Radio Stations
-        </h2>
-
-        <div
-          id="radio-grid"
-          class="grid"
-        ></div>
-
-      </section>
-
-    </div>
-
+    <div id="sections" class="sections" aria-label="Audio groups"></div>
   </main>
 
+  <div id="scrim" class="scrim" aria-hidden="true"></div>
+  <section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
+    <div class="grabber" aria-hidden="true"></div>
+    <header class="sheet-head">
+      <button type="button" id="sheetBack" class="bar-action">Cancel</button>
+      <h2 id="sheetTitle">Settings</h2>
+      <button type="button" id="sheetDone" class="bar-action">Done</button>
+    </header>
+    <div id="sheetBody" class="sheet-body"></div>
+  </section>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <input id="importPicker" type="file" accept="application/json,.json" class="sr-only">
 
   <script>
+    "use strict";
 
-    /*
-    =========================================================
-    RADIO GRID DATA
-    =========================================================
-
-    An item can contain:
-
-    shortcut:
-      Runs an iOS Shortcut.
-
-    url:
-      Opens the destination directly without opening Shortcuts.
-
-    noReturn:
-      Runs the Shortcut without returning to Radio Grid.
-    */
-
-
-    const groups = [
-
-      /*
-      =======================================================
-      PODCASTS
-      =======================================================
-      */
-
-      {
-        target: "podcasts-grid",
-
-        items: [
-
-          {
-            name: "KSR",
-            shortcut: "KSR"
-          },
-
-          {
-            name: "Bible Recap Scripture",
-            shortcut: "Bible Recap Scripture",
-            noReturn: true
-          },
-
-          {
-            name: "Bible Recap Podcast",
-            shortcut: "Bible Recap Podcast"
-          }
-
-        ]
-      },
-
-
-      /*
-      =======================================================
-      STATIONS
-      =======================================================
-      */
-
-      {
-        target: "stations-grid",
-
-        items: [
-
-          {
-            name: "80’s",
-            shortcut: "80’s"
-          },
-
-          /*
-          Americana now bypasses Shortcuts completely.
-          */
-
-          {
-            name: "Americana",
-            url: "https://music.apple.com/us/station/americana-station/ra.985487581"
-          },
-
-          {
-            name: "The Beatles",
-            shortcut: "The Beatles"
-          },
-
-          {
-            name: "Christian",
-            shortcut: "Christian"
-          },
-
-          {
-            name: "Classic Rock",
-            shortcut: "Classic Rock"
-          },
-
-          {
-            name: "Coffee House",
-            shortcut: "Coffee House"
-          },
-
-          {
-            name: "Country",
-            shortcut: "Country"
-          },
-
-          {
-            name: "Dance",
-            shortcut: "Dance"
-          },
-
-          {
-            name: "Focus",
-            shortcut: "Focus"
-          },
-
-          {
-            name: "Family",
-            shortcut: "Family"
-          },
-
-          {
-            name: "Oldies",
-            shortcut: "Oldies"
-          },
-
-          {
-            name: "Worship",
-            shortcut: "Worship"
-          }
-
-        ]
-      },
-
-
-      /*
-      =======================================================
-      RADIO STATIONS
-      =======================================================
-      */
-
-      {
-        target: "radio-grid",
-
-        items: [
-
-          {
-            name: "1300 ESPN",
-            frequency: "1300",
-            stationName: "ESPN",
-            shortcut: "1300 ESPN"
-          },
-
-          {
-            name: "630 WLAP",
-            frequency: "630",
-            stationName: "WLAP",
-            shortcut: "630 WLAP"
-          },
-
-          {
-            name: "95.3 air1",
-            frequency: "95.3",
-            stationName: "air1",
-            shortcut: "95.3 air1"
-          },
-
-          {
-            name: "96.3 K-Love",
-            frequency: "96.3",
-            stationName: "K-Love",
-            shortcut: "96.3 K-Love"
-          },
-
-          {
-            name: "98.1 The Bull",
-            frequency: "98.1",
-            stationName: "The Bull",
-            shortcut: "98.1 The Bull"
-          },
-
-          {
-            name: "91.3 WUKY",
-            frequency: "91.3",
-            stationName: "WUKY",
-            shortcut: "91.3 WUKY"
-          }
-
-        ]
-      }
-
+    // No external JavaScript or dependencies are required.
+    // "Americana" is restored to its ORIGINAL shortcut (not a direct URL).
+    const STORAGE_KEY = "radio-grid-settings-v1";
+    const DASHBOARD_SHORTCUT = "Radio Grid";
+    const PALETTE = ["#d2453f", "#2f8fb8", "#7c55aa", "#30a46c", "#e49b38", "#00a6a6", "#ff6482", "#8e8e93"];
+    const DEFAULTS = [
+      { id: "podcasts", name: "Podcasts", color: "#7c55aa", items: [
+        { id: "ksr", name: "KSR", action: "shortcut", target: "KSR" },
+        { id: "scripture", name: "Bible Recap Scripture", action: "shortcut", target: "Bible Recap Scripture", noReturn: true },
+        { id: "recap", name: "Bible Recap Podcast", action: "shortcut", target: "Bible Recap Podcast" }
+      ] },
+      { id: "stations", name: "Stations", color: "#d2453f", items: [
+        { id: "80s", name: "80’s", action: "shortcut", target: "80’s" },
+        { id: "americana", name: "Americana", action: "shortcut", target: "Americana" },
+        { id: "beatles", name: "The Beatles", action: "shortcut", target: "The Beatles" },
+        { id: "christian", name: "Christian", action: "shortcut", target: "Christian" },
+        { id: "classic", name: "Classic Rock", action: "shortcut", target: "Classic Rock" },
+        { id: "coffee", name: "Coffee House", action: "shortcut", target: "Coffee House" },
+        { id: "country", name: "Country", action: "shortcut", target: "Country" },
+        { id: "dance", name: "Dance", action: "shortcut", target: "Dance" },
+        { id: "focus", name: "Focus", action: "shortcut", target: "Focus" },
+        { id: "family", name: "Family", action: "shortcut", target: "Family" },
+        { id: "oldies", name: "Oldies", action: "shortcut", target: "Oldies" },
+        { id: "worship", name: "Worship", action: "shortcut", target: "Worship" }
+      ] },
+      { id: "radio", name: "Radio Stations", color: "#2f8fb8", items: [
+        { id: "espn", name: "1300 ESPN", action: "shortcut", target: "1300 ESPN", splitLabel: true },
+        { id: "wlap", name: "630 WLAP", action: "shortcut", target: "630 WLAP", splitLabel: true },
+        { id: "air1", name: "95.3 air1", action: "shortcut", target: "95.3 air1", splitLabel: true },
+        { id: "klove", name: "96.3 K-Love", action: "shortcut", target: "96.3 K-Love", splitLabel: true },
+        { id: "bull", name: "98.1 The Bull", action: "shortcut", target: "98.1 The Bull", splitLabel: true },
+        { id: "wuky", name: "91.3 WUKY", action: "shortcut", target: "91.3 WUKY", splitLabel: true }
+      ] }
     ];
+    const $ = id => document.getElementById(id);
+    const clone = obj => JSON.parse(JSON.stringify(obj));
+    const hex = value => /^#[0-9a-f]{6}$/i.test(value || "") ? value : null;
+    const newId = () => "id_" + Date.now().toString(36) + "_" + (++idCounter).toString(36);
+    let idCounter = 0;
+    let sections = clone(DEFAULTS);
+    let storageWorks = false;
+    let page = "manage";
+    let toastTimer;
+    let lastFocus = null;
 
+    function normalize(data) {
+      if (!Array.isArray(data) || data.length > 60) throw Error("Invalid sections");
+      const ids = new Set();
+      return data.map(s => {
+        if (!s || typeof s.name !== "string" || !Array.isArray(s.items) || s.items.length > 200) throw Error("Invalid section");
+        const sid = String(s.id || newId());
+        if (ids.has(sid)) throw Error("Repeated section id");
+        ids.add(sid);
+        return {
+          id: sid, name: s.name.trim().slice(0,80) || "Untitled",
+          color: hex(s.color) || "#7c55aa",
+          items: s.items.map(item => {
+            if (!item || typeof item.name !== "string") throw Error("Invalid button");
+            const id = String(item.id || newId());
+            if (ids.has(id)) throw Error("Repeated button id");
+            ids.add(id);
+            const action = item.action === "url" ? "url" : "shortcut";
+            return {
+              id, name: item.name.trim().slice(0,100) || "Untitled",
+              action, target: String(item.target || "").slice(0,2000),
+              noReturn: !!item.noReturn, splitLabel: !!item.splitLabel,
+              color: hex(item.color) || ""
+            };
+          })
+        };
+      });
+    }
+    try {
+      // localStorage availability in a Quick Look preview varies by host and iOS version.
+      const probe = STORAGE_KEY + "-probe";
+      localStorage.setItem(probe, "1");
+      localStorage.removeItem(probe);
+      storageWorks = true;
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) sections = normalize(JSON.parse(saved));
+    } catch (e) { storageWorks = false; sections = clone(DEFAULTS); }
 
-
-    /*
-    =========================================================
-    RUN AN ITEM
-    =========================================================
-    */
-
+    function persist() {
+      if (!storageWorks) return;
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sections)); }
+      catch { storageWorks = false; }
+    }
+    function changed(message = "Saved") {
+      persist(); renderGrid();
+      if (page === "manage" && $("sheet").classList.contains("open")) renderManager();
+      notify(storageWorks ? message : "Change made — export a backup");
+    }
+    function notify(message) {
+      clearTimeout(toastTimer);
+      $("toast").textContent = message;
+      $("toast").classList.add("show");
+      toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
+    }
+    function el(tag, className = "", content) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (content !== undefined) node.textContent = content;
+      return node;
+    }
+    const svgPaths = {
+      pencil: '<path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/>',
+      trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7m4-7v7"/>',
+      grip: '<circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/>',
+      up: '<path d="m6 14 6-6 6 6"/>', down: '<path d="m6 10 6 6 6-6"/>'
+    };
+    function iconButton(icon, label, callback, extra = "") {
+      const b = el("button", "icon-btn " + extra);
+      b.type = "button"; b.setAttribute("aria-label", label); b.title = label;
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor"); svg.setAttribute("stroke-linecap", "round");
+      svg.setAttribute("stroke-linejoin", "round");
+      svg.innerHTML = svgPaths[icon]; // Only constant, application-owned SVG paths.
+      b.append(svg);
+      if (callback) b.addEventListener("click", callback);
+      return b;
+    }
+    function renderGrid() {
+      const holder = $("sections"); holder.replaceChildren();
+      sections.forEach(section => {
+        const block = el("section", "section"); block.style.setProperty("--accent", section.color);
+        const title = el("h2", "section-title", section.name);
+        const grid = el("div", "grid");
+        if (!section.items.length) grid.append(el("div", "empty", "No buttons yet"));
+        section.items.forEach(item => {
+          const tile = el("button", "tile"); tile.type = "button";
+          tile.style.setProperty("--accent", item.color || section.color);
+          tile.setAttribute("aria-label", "Play " + item.name);
+          const label = el("span", "tile-label");
+          const gap = item.name.indexOf(" ");
+          if (item.splitLabel && gap > 0) {
+            label.append(el("span", "prefix", item.name.slice(0,gap)));
+            label.append(el("span", "suffix", item.name.slice(gap+1)));
+          } else label.textContent = item.name;
+          tile.append(label);
+          // IMPORTANT: call navigation synchronously within tap. No 300 ms timer.
+          tile.addEventListener("click", () => runItem(item));
+          grid.append(tile);
+        });
+        block.append(title, grid); holder.append(block);
+      });
+    }
     function runItem(item) {
-
-      /*
-      -------------------------------------------------------
-      DIRECT LINK
-      -------------------------------------------------------
-
-      This completely bypasses the Shortcuts app.
-      */
-
-      if (item.url) {
-
-        window.location.href = item.url;
-
-        return;
-      }
-
-
-      /*
-      -------------------------------------------------------
-      SHORTCUT WITH NO RETURN
-      -------------------------------------------------------
-      */
-
-      if (item.noReturn) {
-
-        const shortcutURL =
-          "shortcuts://run-shortcut?name=" +
-          encodeURIComponent(item.shortcut);
-
-        window.location.href = shortcutURL;
-
-        return;
-      }
-
-
-      /*
-      -------------------------------------------------------
-      NORMAL SHORTCUT
-      -------------------------------------------------------
-
-      Run shortcut, then return to Radio Grid.
-      */
-
-      const dashboardShortcutName =
-        "Radio Grid";
-
-
-      const returnToGrid =
-        "shortcuts://run-shortcut?name=" +
-        encodeURIComponent(
-          dashboardShortcutName
-        );
-
-
-      const shortcutURL =
-        "shortcuts://x-callback-url/run-shortcut" +
-
-        "?name=" +
-        encodeURIComponent(
-          item.shortcut
-        ) +
-
-        "&x-success=" +
-        encodeURIComponent(
-          returnToGrid
-        ) +
-
-        "&x-cancel=" +
-        encodeURIComponent(
-          returnToGrid
-        ) +
-
-        "&x-error=" +
-        encodeURIComponent(
-          returnToGrid
-        );
-
-
-      window.location.href =
-        shortcutURL;
-    }
-
-
-
-    /*
-    =========================================================
-    CREATE TILE
-    =========================================================
-    */
-
-    function makeTile(item) {
-
-      const tile =
-        document.createElement("button");
-
-
-      tile.type =
-        "button";
-
-
-      tile.className =
-        "tile";
-
-
-      tile.setAttribute(
-        "aria-label",
-        "Play " + item.name
-      );
-
-
-      /*
-      -------------------------------------------------------
-      RADIO STATION TILE
-      -------------------------------------------------------
-      */
-
-      if (
-        item.frequency &&
-        item.stationName
-      ) {
-
-        tile.innerHTML = `
-
-          <div class="name">
-
-            <span class="frequency">
-              ${item.frequency}
-            </span>
-
-            <span class="station-name">
-              ${item.stationName}
-            </span>
-
-          </div>
-
-        `;
-
-      }
-
-
-      /*
-      -------------------------------------------------------
-      NORMAL TILE
-      -------------------------------------------------------
-      */
-
-      else {
-
-        tile.innerHTML = `
-
-          <div class="name">
-            ${item.name}
-          </div>
-
-        `;
-
-      }
-
-
-
-      /*
-      -------------------------------------------------------
-      TAP ACTION
-      -------------------------------------------------------
-      */
-
-      tile.addEventListener(
-        "click",
-        () => {
-
-          tile.classList.add(
-            "pressed"
-          );
-
-
-          /*
-          Small press animation before launching.
-          */
-
-          setTimeout(
-            () => {
-
-              runItem(item);
-
-            },
-            300
-          );
-
+      if (item.action === "url") {
+        // Block javascript:/data: links; allow standard web and common audio-app schemes.
+        if (!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(item.target)) {
+          notify("Edit the button to enter a valid link"); return;
         }
-      );
-
-
-      return tile;
+        window.location.href = item.target; return;
+      }
+      if (!item.target.trim()) { notify("This button has no shortcut name"); return; }
+      const runner = "shortcuts://run-shortcut?name=" + encodeURIComponent(item.target);
+      if (item.noReturn) { window.location.href = runner; return; }
+      const back = "shortcuts://run-shortcut?name=" + encodeURIComponent(DASHBOARD_SHORTCUT);
+      const url = "shortcuts://x-callback-url/run-shortcut?name=" + encodeURIComponent(item.target)
+        + "&x-success=" + encodeURIComponent(back)
+        + "&x-cancel=" + encodeURIComponent(back)
+        + "&x-error=" + encodeURIComponent(back);
+      window.location.href = url;
     }
 
-
-
-    /*
-    =========================================================
-    BUILD ALL GRIDS
-    =========================================================
-    */
-
-    groups.forEach(
-      group => {
-
-        const grid =
-          document.getElementById(
-            group.target
-          );
-
-
-        group.items.forEach(
-          item => {
-
-            grid.appendChild(
-              makeTile(item)
-            );
-
-          }
-        );
-
+    function openSettings() {
+      lastFocus = document.activeElement;
+      $("scrim").classList.add("open"); $("sheet").classList.add("open");
+      $("sheet").setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      renderManager(); $("sheetDone").focus();
+    }
+    function closeSettings() {
+      $("scrim").classList.remove("open"); $("sheet").classList.remove("open");
+      $("sheet").setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      page = "manage";
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    function setSheet(title, back, done, backFn, doneFn) {
+      $("sheetTitle").textContent = title;
+      $("sheetBack").textContent = back;
+      $("sheetDone").textContent = done;
+      $("sheetBack").onclick = backFn;
+      $("sheetDone").onclick = doneFn;
+      $("sheetBody").replaceChildren();
+      $("sheetBody").scrollTop = 0;
+    }
+    function makeTextRow(title, action, className = "") {
+      const b = el("button", "normal-row " + className, title);
+      b.type = "button"; b.onclick = action; return b;
+    }
+    function addRow(title, action) {
+      const b = el("button", "add-row"); b.type = "button";
+      b.append(el("span", "plus", "+"), el("span", "", title)); b.onclick = action;
+      return b;
+    }
+    function findSection(id) { return sections.find(s => s.id === id); }
+    function findButton(id) {
+      for (const section of sections) {
+        const item = section.items.find(i => i.id === id);
+        if (item) return { section, item };
       }
-    );
+      return null;
+    }
+    function swap(list, index, direction) {
+      const other = index + direction;
+      if (other < 0 || other >= list.length) return;
+      [list[index],list[other]] = [list[other],list[index]];
+      changed("Order updated");
+    }
+    function renderManager() {
+      page = "manage";
+      const scroll = $("sheetBody").scrollTop;
+      setSheet("Edit Radio Grid", "Close", "Done", closeSettings, closeSettings);
+      const body = $("sheetBody");
+      body.append(el("p", "note", "Drag the dotted handles to reorder buttons or sections. You can also use the arrow buttons."));
+      const sectionList = el("div", "manage-sections"); sectionList.id = "manageSections";
+      sections.forEach((section, sectionIndex) => {
+        const block = el("div", "manage-section"); block.dataset.sectionId = section.id;
+        const head = el("div", "manage-section-head");
+        const grip = iconButton("grip", "Drag section " + section.name, null, "grip");
+        const dot = el("span", "dot"); dot.style.background = section.color;
+        head.append(grip, dot, el("span", "manage-name", section.name));
+        const up = iconButton("up", "Move " + section.name + " up", () => swap(sections,sectionIndex,-1));
+        up.disabled = sectionIndex === 0;
+        const down = iconButton("down", "Move " + section.name + " down", () => swap(sections,sectionIndex,1));
+        down.disabled = sectionIndex === sections.length-1;
+        head.append(up,down);
+        head.append(iconButton("pencil", "Edit section " + section.name, () => editSection(section.id)));
+        head.append(iconButton("trash", "Delete section " + section.name, () => removeSection(section.id), "danger"));
+        block.append(head);
+        const list = el("div", "manage-items"); list.dataset.sectionId = section.id;
+        section.items.forEach((item, index) => {
+          const row = el("div", "manage-item"); row.dataset.itemId = item.id;
+          const rg = iconButton("grip", "Drag " + item.name, null, "grip");
+          const name = el("span", "manage-name", item.name);
+          const subtitle = el("span", "manage-subtitle", item.action === "url" ? "Direct link" : "Shortcut");
+          name.append(subtitle); row.append(rg,name);
+          const moveUp = iconButton("up", "Move " + item.name + " up", () => swap(section.items,index,-1));
+          moveUp.disabled = index === 0;
+          const moveDown = iconButton("down", "Move " + item.name + " down", () => swap(section.items,index,1));
+          moveDown.disabled = index === section.items.length-1;
+          row.append(moveUp,moveDown);
+          row.append(iconButton("pencil", "Edit " + item.name, () => editButton(item.id)));
+          row.append(iconButton("trash", "Remove " + item.name, () => removeButton(item.id), "danger"));
+          list.append(row);
+          connectDrag(rg,row,"item");
+        });
+        block.append(list,addRow("Add Button", () => editButton(null,section.id)));
+        sectionList.append(block);
+        connectDrag(grip,block,"section");
+      });
+      body.append(sectionList);
+      const addBlock = el("div", "standalone");
+      addBlock.append(addRow("Add Section", () => editSection(null)));
+      body.append(addBlock);
+      body.append(el("div", "group-label", "Backup & restore"));
+      const utilities = el("div", "standalone");
+      utilities.append(makeTextRow("Export settings as JSON", exportSettings));
+      utilities.append(makeTextRow("Import settings from JSON", () => $("importPicker").click()));
+      utilities.append(makeTextRow("Restore original Radio Grid", resetDefaults, "destructive"));
+      body.append(utilities);
+      body.append(el("p", "note", "Edits are stored locally in this browser, not in iCloud. Shortcuts Quick Look and file previews may not keep browser storage between openings. For reliable saving, open a hosted copy in Safari; export a JSON backup before switching devices."));
+      body.scrollTop = scroll;
+    }
 
+    // Drag to reorder (touch, mouse or Apple Pencil). Also works across sections.
+    // Small arrow controls provide an alternative for VoiceOver/keyboard users.
+    function connectDrag(handle, row, kind) {
+      let pointerId = null;
+      handle.addEventListener("pointerdown", event => {
+        if (event.button !== 0 && event.pointerType === "mouse") return;
+        pointerId = event.pointerId;
+        handle.setPointerCapture(pointerId);
+        row.classList.add("dragging"); event.preventDefault();
+      });
+      handle.addEventListener("pointermove", event => {
+        if (pointerId !== event.pointerId) return;
+        const target = document.elementFromPoint(event.clientX,event.clientY);
+        if (!target) return;
+        if (kind === "section") {
+          const other = target.closest(".manage-section");
+          if (!other || other === row) return;
+          const list = $("manageSections");
+          const middle = other.getBoundingClientRect().top + other.getBoundingClientRect().height/2;
+          list.insertBefore(row, event.clientY < middle ? other : other.nextSibling);
+        } else {
+          const other = target.closest(".manage-item");
+          if (other && other !== row) {
+            const list = other.closest(".manage-items");
+            const middle = other.getBoundingClientRect().top + other.getBoundingClientRect().height/2;
+            list.insertBefore(row, event.clientY < middle ? other : other.nextSibling);
+          } else {
+            const list = target.closest(".manage-items") || target.closest(".manage-section")?.querySelector(".manage-items");
+            if (list && !other && list !== row.parentElement) list.append(row);
+          }
+        }
+      });
+      const finish = event => {
+        if (pointerId !== event.pointerId) return;
+        pointerId = null; row.classList.remove("dragging");
+        syncDomOrder();
+      };
+      handle.addEventListener("pointerup",finish);
+      handle.addEventListener("pointercancel",finish);
+    }
+    function syncDomOrder() {
+      const root = $("manageSections"); if (!root) return;
+      const old = new Map(sections.map(s => [s.id,s]));
+      const items = new Map(sections.flatMap(s => s.items.map(i => [i.id,i])));
+      const next = [];
+      root.querySelectorAll(":scope > .manage-section").forEach(sectionNode => {
+        const section = old.get(sectionNode.dataset.sectionId);
+        if (!section) return;
+        section.items = [...sectionNode.querySelectorAll(":scope > .manage-items > .manage-item")]
+          .map(node => items.get(node.dataset.itemId)).filter(Boolean);
+        next.push(section);
+      });
+      sections = next;
+      changed("Order updated");
+    }
+    function removeSection(id) {
+      const section = findSection(id); if (!section) return;
+      const question = section.items.length
+        ? `Delete “${section.name}” and its ${section.items.length} button(s)?`
+        : `Delete the “${section.name}” section?`;
+      if (!confirm(question)) return;
+      sections = sections.filter(s => s.id !== id); changed("Section removed");
+    }
+    function removeButton(id) {
+      const found = findButton(id); if (!found) return;
+      if (!confirm(`Remove “${found.item.name}”?`)) return;
+      found.section.items = found.section.items.filter(i => i.id !== id);
+      changed("Button removed");
+    }
+    function fieldRow(labelText, control) {
+      const row = el("div", "field"); const label = el("label", "", labelText);
+      if (!control.id) control.id = newId(); label.htmlFor = control.id;
+      row.append(label,control); return row;
+    }
+    function textField(value, placeholder = "") {
+      const input = el("input"); input.type = "text";
+      input.autocomplete = "off"; input.value = value || ""; input.placeholder = placeholder;
+      return input;
+    }
+    function selectField(options, value) {
+      const select = el("select");
+      options.forEach(([id,name]) => {
+        const opt = el("option", "", name); opt.value = id; select.append(opt);
+      });
+      select.value = value; return select;
+    }
+    function checkRow(labelText, checked) {
+      const row = el("div", "field check"); const label = el("label", "", labelText);
+      const input = el("input"); input.type = "checkbox"; input.checked = checked;
+      input.id = newId(); label.htmlFor = input.id; row.append(label,input);
+      return { row, input };
+    }
+    function colorPicker(initial, onChange, inherit = false) {
+      const wrapper = el("div");
+      const palette = el("div", "palette");
+      const selected = { color: initial || "" };
+      const swatches = [];
+      function draw() { swatches.forEach(([b,c]) => b.classList.toggle("selected",selected.color.toLowerCase() === c.toLowerCase())); }
+      if (inherit) {
+        const b = el("button", "swatch", "↻"); b.type = "button";
+        b.title = "Use section color"; b.setAttribute("aria-label", "Use section color");
+        b.style.background = "#48484a"; b.style.color = "white";
+        b.onclick = () => { selected.color = ""; draw(); b.classList.add("selected"); onChange(""); };
+        palette.append(b); swatches.push([b,""]);
+      }
+      PALETTE.forEach(color => {
+        const b = el("button", "swatch"); b.type = "button";
+        b.style.background = color; b.setAttribute("aria-label", "Choose " + color);
+        b.onclick = () => { selected.color = color; draw(); onChange(color); };
+        swatches.push([b,color]); palette.append(b);
+      });
+      draw(); wrapper.append(palette);
+      const line = el("div", "color-row", "Custom color");
+      const custom = el("input", "custom-color"); custom.type = "color";
+      custom.setAttribute("aria-label", "Choose custom color");
+      custom.value = initial || PALETTE[0];
+      custom.oninput = () => { selected.color = custom.value; draw(); onChange(custom.value); };
+      line.append(custom); wrapper.append(line);
+      return wrapper;
+    }
+    function editSection(id) {
+      page = "editSection";
+      const original = id ? findSection(id) : null;
+      if (id && !original) return renderManager();
+      setSheet(original ? "Edit Section" : "New Section", "Back", "Save", renderManager, () => saveForm.click());
+      const body = $("sheetBody");
+      const group = el("div", "field-group");
+      const name = textField(original?.name || "", "Section name");
+      group.append(fieldRow("Name",name));
+      body.append(el("div", "group-label", "Section"),group);
+      body.append(el("div", "group-label", "Color"));
+      let color = original?.color || "#7c55aa";
+      body.append(colorPicker(color, value => { color = value; }));
+      const error = el("div", "error"); body.append(error);
+      const saveForm = el("button", "save-button", "Save Section");
+      saveForm.type = "button";
+      saveForm.onclick = () => {
+        if (!name.value.trim()) { error.textContent = "Enter a section name."; name.focus(); return; }
+        if (original) { original.name = name.value.trim(); original.color = color; }
+        else sections.push({id:newId(),name:name.value.trim(),color,items:[]});
+        persist(); renderGrid(); renderManager(); notify("Section saved");
+      };
+      body.append(saveForm); name.focus();
+    }
+    function editButton(id, sectionId) {
+      page = "editButton";
+      const found = id ? findButton(id) : null;
+      if (id && !found) return renderManager();
+      const original = found?.item || null;
+      setSheet(original ? "Edit Button" : "New Button", "Back", "Save", renderManager, () => saveForm.click());
+      const body = $("sheetBody");
+      const fields = el("div", "field-group");
+      const name = textField(original?.name || "", "Button label");
+      fields.append(fieldRow("Name",name));
+      const section = selectField(sections.map(s => [s.id,s.name]),found?.section.id || sectionId || sections[0]?.id);
+      fields.append(fieldRow("Section",section));
+      const action = selectField([["shortcut","Run Shortcut"],["url","Open URL"]],original?.action || "shortcut");
+      fields.append(fieldRow("Action",action));
+      const target = textField(original?.target || "", "Exact Shortcut name");
+      const targetRow = fieldRow("Shortcut",target); fields.append(targetRow);
+      body.append(el("div", "group-label", "Button details"),fields);
+      const options = el("div", "field-group");
+      const returns = checkRow("Return to Radio Grid when finished",!original?.noReturn);
+      options.append(returns.row);
+      const split = checkRow("Split label after first word",!!original?.splitLabel);
+      options.append(split.row); body.append(el("div", "group-label", "Display & behavior"),options);
+      function actionChanged() {
+        const url = action.value === "url";
+        targetRow.querySelector("label").textContent = url ? "Link" : "Shortcut";
+        target.placeholder = url ? "https://music.apple.com/…" : "Exact Shortcut name";
+        returns.row.hidden = url;
+        if (url) target.type = "url"; else target.type = "text";
+      }
+      action.onchange = () => {
+        target.value = "";
+        actionChanged();
+      };
+      actionChanged();
+      body.append(el("div", "group-label", "Button color"));
+      let color = original?.color || "";
+      body.append(colorPicker(color,value => { color = value; },true));
+      body.append(el("p", "hint", "The ↻ color uses the section’s color. Direct links may open another app, but do not guarantee playback."));
+      const error = el("div", "error"); body.append(error);
+      const saveForm = el("button", "save-button", "Save Button");
+      saveForm.type = "button";
+      saveForm.onclick = () => {
+        const n = name.value.trim(), t = target.value.trim();
+        if (!n) { error.textContent = "Enter a button name."; name.focus(); return; }
+        if (!t) { error.textContent = "Enter a Shortcut name or URL."; target.focus(); return; }
+        if (action.value === "url" && !/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(t)) {
+          error.textContent = "Use an http(s) link or supported audio app link."; target.focus(); return;
+        }
+        const dest = findSection(section.value);
+        if (!dest) { error.textContent = "Add a section first."; return; }
+        const next = { id:original?.id || newId(), name:n, action:action.value, target:t,
+                       noReturn:action.value === "shortcut" && !returns.input.checked,
+                       splitLabel:split.input.checked, color };
+        // Retain a button's current position when its details change.
+        if (found) {
+          const oldIndex = found.section.items.findIndex(i => i.id === id);
+          found.section.items.splice(oldIndex,1);
+          if (dest === found.section) dest.items.splice(oldIndex,0,next);
+          else dest.items.push(next);
+        } else dest.items.push(next);
+        persist(); renderGrid(); renderManager(); notify("Button saved");
+      };
+      body.append(saveForm); name.focus();
+    }
+    function exportSettings() {
+      const blob = new Blob([JSON.stringify(sections,null,2)],{type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const link = el("a"); link.href = url; link.download = "Radio-Grid-Settings.json";
+      document.body.append(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      notify("Settings export requested");
+    }
+    $("importPicker").addEventListener("change", async event => {
+      const file = event.target.files?.[0]; if (!file) return;
+      try {
+        const restored = normalize(JSON.parse(await file.text()));
+        if (!confirm("Replace your current Radio Grid settings with this backup?")) return;
+        sections = restored; changed("Settings imported");
+      } catch (e) { alert("Could not import this file. Select a Radio Grid JSON backup."); }
+      finally { event.target.value = ""; }
+    });
+    function resetDefaults() {
+      if (!confirm("Restore all original sections, buttons and colors? This cannot be undone without a backup.")) return;
+      sections = clone(DEFAULTS); changed("Original layout restored");
+    }
+    $("openSettings").addEventListener("click",openSettings);
+    $("scrim").addEventListener("click",closeSettings);
+    document.addEventListener("keydown",event => {
+      if (event.key === "Escape" && $("sheet").classList.contains("open")) {
+        if (page === "manage") closeSettings(); else renderManager();
+      }
+    });
+    renderGrid();
   </script>
-
 </body>
 </html>

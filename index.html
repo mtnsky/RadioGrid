@@ -12,7 +12,7 @@
     color-scheme:dark;
     --bg:#0b0d10; --surface:#22252a; --surface2:#1b1e23;
     --text:#f6f6f7; --muted:#a3a7af; --accent:#e77d20;
-    --line:rgba(255,255,255,.13); --sheet:#1b1d22;
+    --line:rgba(255,255,255,.13); --sheet:#1b1d22; --card:#373a41;
     --danger:#ff6961; --tab-r:24px; --card-r:24px;
   }
   *,*::before,*::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -36,23 +36,23 @@
   .menu svg { width:27px; height:27px; }
   .tabs { display:flex; gap:3px; border-bottom:1px solid rgba(255,255,255,.11); margin:6px -14px 20px; padding:0 14px; overflow-x:auto; scrollbar-width:none; }
   .tabs::-webkit-scrollbar { display:none; }
-  .tab { flex:1 0 auto; position:relative; min-width:92px; display:flex; flex-direction:column; align-items:center; gap:7px; padding:10px 8px 17px; color:#a5aab2; background:transparent; font-size:15px; font-weight:660; }
-  .tab svg { width:31px; height:31px; }
+  .tab { flex:1 0 auto; position:relative; min-width:92px; display:flex; flex-direction:column; align-items:center; gap:7px; padding:20px 8px 20px; color:#a5aab2; background:transparent; font-size:15px; font-weight:660; }
+  .tab svg { display:none; }
   .tab.active { color:var(--accent); }
   .tab.active::after { content:""; position:absolute; bottom:0; left:5%; right:5%; height:4px; border-radius:6px 6px 0 0; background:var(--accent); }
   .tab:active { background:rgba(255,255,255,.035); }
   .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:11px; }
-  .card { min-width:0; height:clamp(128px,31vw,172px); position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px;
-    text-align:center; padding:13px 6px; border-radius:var(--card-r);
-    border:1px solid rgba(255,255,255,.15); border-top-color:rgba(255,255,255,.21);
-    background:linear-gradient(148deg,rgba(255,255,255,.07),rgba(255,255,255,.015) 68%),linear-gradient(170deg,var(--surface),var(--surface2));
-    box-shadow:0 11px 24px rgba(0,0,0,.28); touch-action:manipulation; transition:transform .08s, filter .08s; }
-  .card:active { transform:scale(.96); filter:brightness(1.2); }
-  .card-icon { display:grid; place-items:center; width:clamp(42px,12vw,59px); height:clamp(42px,12vw,59px); color:var(--icon-color,var(--accent)); }
-  .card-icon svg { width:100%; height:100%; stroke-width:1.85; }
-  .card-label { font-size:clamp(12px,3.4vw,18px); font-weight:690; line-height:1.12; letter-spacing:-.035em; overflow-wrap:anywhere; }
-  .card.add { border:1.5px dashed rgba(231,125,32,.40); box-shadow:none; background:rgba(231,125,32,.045); color:var(--muted); }
-  .card.add .card-icon { color:var(--accent); }
+  /* Uniform graphite text-only tiles, no illustrated icons */
+  .card { min-width:0; height:clamp(96px,25vw,134px); position:relative;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    padding:12px 9px; border-radius:22px;
+    background:var(--card);
+    border:1px solid rgba(255,255,255,.24);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.24);
+    touch-action:manipulation; transition:transform .08s,filter .08s; }
+  .card:active { transform:scale(.963); filter:brightness(1.18); }
+  .card-label { font-size:clamp(14px,3.5vw,18px); font-weight:710;
+    line-height:1.16; letter-spacing:-.025em; color:#f3f4f5; overflow-wrap:anywhere; }
   .grid-empty { color:var(--muted); padding:18px 4px; grid-column:1/-1; text-align:center; }
   .section-note { margin:15px 4px; color:#888e99; text-align:center; font-size:12px; }
   /* iOS-inspired editor */
@@ -136,6 +136,20 @@
     .icon-btn { width:27px; }
   }
   @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
+  /* Compact inline editing in the single Settings sheet */
+  .inline-form { margin:8px 7px 15px; padding:14px 12px; border-radius:16px;
+    border:1px solid rgba(231,125,32,.36); background:#22252b; }
+  .inline-heading { font-size:16px; font-weight:750; margin:0 0 12px; }
+  .inline-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:5px; }
+  .inline-actions button { min-height:44px; min-width:78px; padding:8px 15px; border-radius:12px; font-weight:700; }
+  .inline-cancel { background:#34383f; color:#f2f2f2; }
+  .inline-save { background:var(--accent); color:#121416; }
+  .editor-host:empty { display:none; }
+  .manage-section > .edit-row { background:rgba(255,255,255,.045); }
+  .manage-section { margin-bottom:13px; }
+  .manage-item .edit-row-name { font-weight:500; }
+  .sheet-body > .plain-add { border-radius:15px; background:#292d33; margin-bottom:8px; }
+  @media(max-width:420px) { .field label { flex-basis:78px; } .edit-row { gap:3px; padding-left:5px; padding-right:4px; } .icon-btn { width:28px; } }
 </style>
 </head>
 <body>
@@ -149,7 +163,6 @@
   </header>
   <nav class="tabs" id="tabs" aria-label="Media sections"></nav>
   <div class="grid" id="grid" aria-label="Media shortcuts"></div>
-  <div class="section-note">Tap a tile to launch its audio source</div>
 </main>
 <div id="scrim" class="scrim" aria-hidden="true"></div>
 <section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
@@ -168,7 +181,7 @@
 const KEY="media-jt-sport-v2";
 const LEGACY=["trail-media-path-2-v1","radio-grid-settings-v1"];
 const PALETTE=["#e77d20","#d97a1d","#cf6726","#f3a144","#e9e9ea","#8f959e","#2f8fb8","#a775bd","#cb4540"];
-const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23"};
+const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23",card:"#373a41"};
 const raw=(id,name,icon,extra={})=>({id,name,icon,action:"shortcut",target:name,...extra});
 const DEFAULT_SECTIONS=[
  {id:"podcasts",name:"Podcasts",icon:"podcast",items:[
@@ -243,7 +256,7 @@ function normalise(data){
  const sections=normalizeSections(data.sections);
  const theme=data.theme||{};
  const active=sections.some(s=>s.id===data.active)?data.active:sections[0]?.id||"";
- return {sections,active,theme:{accent:safeColor(theme.accent)||DEFAULT_THEME.accent,background:safeColor(theme.background)||safeColor(theme.bg)||DEFAULT_THEME.background,surface:safeColor(theme.surface)||safeColor(theme.panel)||DEFAULT_THEME.surface,surface2:safeColor(theme.surface2)||safeColor(theme.panel2)||DEFAULT_THEME.surface2},returnMethod:data.returnMethod==="webapp"?"webapp":data.returnMethod==="shortcut"?"shortcut":"website"};
+ return {sections,active,theme:{accent:safeColor(theme.accent)||DEFAULT_THEME.accent,background:safeColor(theme.background)||safeColor(theme.bg)||DEFAULT_THEME.background,surface:safeColor(theme.surface)||safeColor(theme.panel)||DEFAULT_THEME.surface,surface2:safeColor(theme.surface2)||safeColor(theme.panel2)||DEFAULT_THEME.surface2,card:safeColor(theme.card)||DEFAULT_THEME.card},returnMethod:data.returnMethod==="webapp"?"webapp":data.returnMethod==="shortcut"?"shortcut":"website"};
 }
 let state=defaults(),storageWorks=false,shown="home",lastFocus=null,toastTimer=null;
 try{
@@ -257,24 +270,22 @@ try{
  }
 }catch(e){storageWorks=false;state=defaults();}
 function save(){if(!storageWorks)return;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){storageWorks=false;}}
-function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);document.querySelector('meta[name="theme-color"]').content=state.theme.background;}
+function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);document.querySelector('meta[name="theme-color"]').content=state.theme.background;}
 function notify(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800);}
-function changed(message="Saved"){save();theme();render();if(shown==="manage"&&$("sheet").classList.contains("open"))manager();if(message)notify(storageWorks?message:"Change made — export a backup");}
+function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))settingsHome(true);if(message)notify(storageWorks?message:"Change made — export a backup");}
 function activeSection(){return state.sections.find(s=>s.id===state.active)||state.sections[0]||null;}
 function iconFor(name,cl){const x=el("span",cl);x.append(svg(name));return x;}
 function render(){
  const tabs=$("tabs"),grid=$("grid");tabs.replaceChildren();grid.replaceChildren();
  for(const section of state.sections){
-   const b=el("button","tab"+(activeSection()?.id===section.id?" active":""));b.type="button";b.setAttribute("aria-current",activeSection()?.id===section.id?"page":"false");b.append(svg(section.icon),el("span","",section.name));
+   const b=el("button","tab"+(activeSection()?.id===section.id?" active":""));b.type="button";b.setAttribute("aria-current",activeSection()?.id===section.id?"page":"false");b.append(el("span","",section.name));
    b.onclick=()=>{state.active=section.id;save();render();};tabs.append(b);
  }
  const section=activeSection();if(!section){grid.append(el("p","grid-empty","Add a section using Settings."));return;}
- for(const [index,item] of section.items.entries()){
+ for(const item of section.items){
    const card=el("button","card");card.type="button";card.setAttribute("aria-label","Play "+item.name);
-   card.style.setProperty("--icon-color",item.color||(index%3===1?"#b8bec8":state.theme.accent));
-   card.append(iconFor(item.icon,"card-icon"),el("span","card-label",item.name));card.onclick=()=>run(item);grid.append(card);
+   card.append(el("span","card-label",item.name));card.onclick=()=>run(item);grid.append(card);
  }
- const add=el("button","card add");add.type="button";add.setAttribute("aria-label","Add button to "+section.name);add.append(iconFor("plus","card-icon"),el("span","card-label","Add Button"));add.onclick=()=>{openSheet();editButton(null,section.id);};grid.append(add);
 }
 function returnURL(){
  if(state.returnMethod==="shortcut"||!/^https?:$/.test(location.protocol))return "shortcuts://run-shortcut?name="+encodeURIComponent("Radio Grid");
@@ -298,44 +309,61 @@ function sheet(title,back,done,backAction,doneAction){$("sheetTitle").textConten
 function group(name){return el("div","group-label",name);}
 function settingsTile(icon,title,sub,action){const b=el("button","settings-tile");b.type="button";const txt=el("span","settings-text");txt.append(el("span","settings-title",title),el("span","settings-sub",sub));b.append(iconFor(icon,"settings-icon"),txt,iconFor("chevron","chevron"));b.onclick=action;return b;}
 function normalRow(text,fn,danger=false){const b=el("button","normal-row"+(danger?" danger":""),text);b.type="button";b.onclick=fn;return b;}
-function settingsHome(){shown="home";const body=sheet("Home Screen Settings","Close","Done",closeSheet,closeSheet);
- body.append(settingsTile("sections","Edit Sections","Add, remove, rename, and reorder your tabs",manager),
-   settingsTile("move","Reorder Buttons","Drag or use arrows to rearrange your audio sources",manager),
-   settingsTile("palette","Change Colors","Orange accents and graphite surfaces",editTheme),
-   settingsTile("plus","Add Button","Create a new station, podcast, or shortcut",()=>editButton(null,activeSection()?.id)));
- body.append(group("Shortcut return"));const methods=el("div","group-box");
- for(const [key,title] of [["website","Website link (recommended)"],["webapp","Home Screen link (experimental)"],["shortcut","Run Radio Grid Shortcut (slow)"]])methods.append(normalRow((state.returnMethod===key?"✓  ":"     ")+title,()=>{state.returnMethod=key;save();settingsHome();notify("Return method updated");}));
- body.append(methods,el("p","helper","A callback can reopen Radio Grid only after the selected Shortcut finishes. Website links may open Safari. The Home Screen link is unofficial and may not work on your iOS version."));
- body.append(group("Backup and restore"));const backup=el("div","group-box");backup.append(normalRow("Export settings as JSON",exportSettings),normalRow("Import settings from JSON",()=>$("importPicker").click()),normalRow("Restore original layout",resetDefaults,true));body.append(backup);
- body.append(el("p","helper",storageWorks?"Your changes are saved on this device and website origin. Export a backup before reinstalling or changing the web app address.":"Persistent browser storage is unavailable here. Export your configuration before closing."));
+// Everything is editable from this single, scrollable Settings sheet.
+function settingsHome(preserveScroll=false){
+ const bodyEl=$("sheetBody");
+ const scroll=preserveScroll?bodyEl.scrollTop:0;
+ shown="home";
+ const body=sheet("Settings","","Done",closeSheet,closeSheet);
+ $("sheetBack").style.visibility="hidden";
+ body.append(group("Sections & Buttons"),el("p","helper","Drag handles or use arrows to reorder. Tap a pencil to edit a name, target, or section in place."));
+ const root=el("div","");root.id="manageRoot";
+ state.sections.forEach((section,sindex)=>{
+   const block=el("div","group-box manage-section");block.dataset.sectionId=section.id;
+   const head=el("div","edit-row");const grip=miniButton("grip","Drag section "+section.name,null,"handle");
+   const dot=el("span","mini-dot");const title=el("div","edit-row-name",section.name);
+   const up=miniButton("up","Move section up",()=>swap(state.sections,sindex,-1));up.disabled=sindex===0;
+   const down=miniButton("down","Move section down",()=>swap(state.sections,sindex,1));down.disabled=sindex===state.sections.length-1;
+   head.append(grip,dot,title,up,down,miniButton("pencil","Edit section "+section.name,()=>showSectionEditor(section.id,block)),miniButton("trash","Delete section "+section.name,()=>deleteSection(section.id),"danger"));
+   block.append(head);
+   const items=el("div","manage-items");items.dataset.sectionId=section.id;
+   section.items.forEach((item,i)=>{
+     const row=el("div","edit-row manage-item");row.dataset.itemId=item.id;
+     const drag=miniButton("grip","Drag "+item.name,null,"handle");
+     const label=el("div","edit-row-name",item.name);label.append(el("span","edit-row-sub",item.action==="url"?"Direct link":"Shortcut"));
+     const u=miniButton("up","Move "+item.name+" up",()=>swap(section.items,i,-1));u.disabled=i===0;
+     const d=miniButton("down","Move "+item.name+" down",()=>swap(section.items,i,1));d.disabled=i===section.items.length-1;
+     row.append(drag,label,u,d,miniButton("pencil","Edit "+item.name,()=>showButtonEditor(item.id,section.id,row)),miniButton("trash","Delete "+item.name,()=>deleteButton(item.id),"danger"));
+     items.append(row);connectDrag(drag,row,"item");
+   });
+   const addHost=el("div","editor-host");
+   block.append(items,addRow("Add Button",()=>showButtonEditor(null,section.id,addHost)),addHost);
+   root.append(block);connectDrag(grip,block,"section");
+ });
+ body.append(root);
+ const newHost=el("div","editor-host");
+ body.append(addRow("Add Section",()=>showSectionEditor(null,newHost)),newHost);
+ body.append(group("Appearance"));
+ const colors=el("div","field-set");
+ for(const [key,label] of [["accent","Accent orange"],["card","Button gray"],["background","Background"]]){
+   const input=el("input");input.type="color";input.value=state.theme[key]||DEFAULT_THEME[key];
+   input.oninput=()=>{state.theme[key]=input.value;save();theme();render();};
+   colors.append(field(label,input));
+ }
+ body.append(colors,normalRow("Restore original colors",()=>{state.theme=clone(DEFAULT_THEME);changed("Colors restored");}));
+ body.append(group("Return after playing"));
+ const method=selectInput([["website","Website link"],["webapp","Home Screen app (experimental)"],["shortcut","Launch Radio Grid Shortcut"]],state.returnMethod);
+ method.onchange=()=>{state.returnMethod=method.value;save();notify("Return method saved");};
+ const ret=el("div","field-set");ret.append(field("Method",method));body.append(ret);
+ body.append(el("p","helper","The callback runs after the selected Shortcut finishes. A website link may open in Safari; the Home Screen option is unofficial."));
+ body.append(group("Backup & Restore"));
+ const backups=el("div","group-box");backups.append(normalRow("Export settings as JSON",exportSettings),normalRow("Import settings from JSON",()=>$('importPicker').click()),normalRow("Restore original layout",resetDefaults,true));body.append(backups);
+ body.append(el("p","helper",storageWorks?"Changes are saved locally for this web app. Export a backup before changing the website address or reinstalling.":"Browser storage is unavailable; export a backup before leaving."));
+ body.scrollTop=scroll;
 }
 function miniButton(icon,description,fn,extra=""){const b=el("button","icon-btn "+extra);b.type="button";b.setAttribute("aria-label",description);b.title=description;b.append(svg(icon));if(fn)b.onclick=fn;return b;}
 function addRow(label,fn){const b=el("button","plain-add");b.type="button";b.append(svg("plus"),el("span","",label));b.onclick=fn;return b;}
 function swap(list,index,dir){const j=index+dir;if(j<0||j>=list.length)return;[list[index],list[j]]=[list[j],list[index]];changed("Order updated");}
-function manager(){const previousScroll=$("sheetBody").scrollTop;shown="manage";const body=sheet("Edit Media","Back","Done",settingsHome,settingsHome);body.append(el("p","helper","Drag the dotted handles to reorder or move items between sections. Arrow controls also work."));
- const root=el("div","");root.id="manageRoot";
- state.sections.forEach((section,sindex)=>{
-   const box=el("div","group-box manage-section");box.dataset.sectionId=section.id;
-   const head=el("div","edit-row");const grip=miniButton("grip","Drag section",null,"handle");
-   head.append(grip,iconFor(section.icon,"mini-icon"),el("div","edit-row-name",section.name));
-   const up=miniButton("up","Move section up",()=>swap(state.sections,sindex,-1));up.disabled=!sindex;
-   const down=miniButton("down","Move section down",()=>swap(state.sections,sindex,1));down.disabled=sindex===state.sections.length-1;
-   head.append(up,down,miniButton("pencil","Edit section",()=>editSection(section.id)),miniButton("trash","Remove section",()=>deleteSection(section.id),"danger"));box.append(head);
-   const items=el("div","manage-items");items.dataset.sectionId=section.id;
-   section.items.forEach((item,i)=>{
-     const row=el("div","edit-row manage-item");row.dataset.itemId=item.id;
-     const handle=miniButton("grip","Drag "+item.name,null,"handle");const title=el("div","edit-row-name",item.name);
-     title.append(el("span","edit-row-sub",item.action==="url"?"Direct link":"Shortcut"));
-     row.append(handle,iconFor(item.icon,"mini-icon"),title);
-     const u=miniButton("up","Move "+item.name+" up",()=>swap(section.items,i,-1));u.disabled=i===0;
-     const d=miniButton("down","Move "+item.name+" down",()=>swap(section.items,i,1));d.disabled=i===section.items.length-1;
-     row.append(u,d,miniButton("pencil","Edit button",()=>editButton(item.id)),miniButton("trash","Delete button",()=>deleteButton(item.id),"danger"));
-     items.append(row);connectDrag(handle,row,"item");
-   });
-   box.append(items,addRow("Add Button",()=>editButton(null,section.id)));root.append(box);connectDrag(grip,box,"section");
- });
- body.append(root,addRow("Add Section",()=>editSection(null)));body.scrollTop=previousScroll;
-}
 function connectDrag(handle,row,kind){let pointer=null,changedOrder=false;
  handle.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"&&e.button!==0)return;pointer=e.pointerId;changedOrder=false;handle.setPointerCapture(pointer);row.classList.add("dragging");e.preventDefault();});
  handle.addEventListener("pointermove",e=>{
@@ -369,43 +397,69 @@ function colorSelector(initial,onChange,inherit=false){const area=el("div","");c
  function paint(){for(const [b,c] of buttons)b.classList.toggle("selected",selected.toLowerCase()===c.toLowerCase());}
  paint();area.append(palette);const inp=el("input");inp.type="color";inp.value=safeColor(initial)||DEFAULT_THEME.accent;inp.oninput=()=>{selected=inp.value;paint();onChange(inp.value);};area.append(field("Custom color",inp));return area;
 }
-function editSection(id){shown="section-form";const found=id?state.sections.find(s=>s.id===id):null;const body=sheet(found?"Edit Section":"New Section","Back","Save",manager,()=>saveForm.click());
- body.append(group("Section details"));const fields=el("div","field-set");const name=textInput(found?.name||"","Section name");const icon=selectInput(ICON_CHOICES,found?.icon||"broadcast");fields.append(field("Name",name),field("Icon",icon));body.append(fields);
- const error=el("div","error");body.append(error);const saveForm=el("button","save","Save Section");saveForm.type="button";saveForm.onclick=()=>{const val=name.value.trim();if(!val){error.textContent="Enter a section name.";name.focus();return;}
-  if(found){found.name=val;found.icon=icon.value;}else{const section={id:uid(),name:val,icon:icon.value,items:[]};state.sections.push(section);if(!state.active)state.active=section.id;}
-  changed("Section saved");manager();};body.append(saveForm);name.focus();
+// Inline editors remain within the same Settings page, not separate screens.
+function mountEditor(host, build){
+ $("sheetBody").querySelectorAll(".inline-form").forEach(n=>n.remove());
+ const panel=el("div","inline-form");host.after(panel);
+ build(panel);
+ panel.scrollIntoView({block:"nearest",behavior:"smooth"});
 }
-function editButton(id,sectionId){shown="button-form";const found=id?findItem(id):null;const current=found?.item||null;const body=sheet(current?"Edit Button":"New Button","Back","Save",manager,()=>saveForm.click());
- body.append(group("Button details"));const fields=el("div","field-set");const name=textInput(current?.name||"","Button label");const section=selectInput(state.sections.map(s=>[s.id,s.name]),found?.section.id||sectionId||state.sections[0]?.id);
- const action=selectInput([["shortcut","Run Shortcut"],["url","Open Link"]],current?.action||"shortcut");const target=textInput(current?.target||"","Exact Shortcut name");const icon=selectInput(ICON_CHOICES,current?.icon||"music");
- const targetRow=field("Shortcut",target);fields.append(field("Name",name),field("Section",section),field("Action",action),targetRow,field("Icon",icon));body.append(fields);
- body.append(group("Behavior"));const opt=el("div","field-set");const ret=checkRow("Return to Media when finished",!current?.noReturn);opt.append(ret.row);body.append(opt);
- const changeAction=()=>{const url=action.value==="url";targetRow.querySelector("label").textContent=url?"Link":"Shortcut";target.placeholder=url?"https://music.apple.com/…":"Exact Shortcut name";ret.row.hidden=url;};action.onchange=changeAction;changeAction();
- body.append(group("Button icon color"));let color=current?.color||"";body.append(colorSelector(color,v=>color=v,true));body.append(el("p","helper","↻ uses the default orange/gray icon coloring. A direct music link may open Apple Music without automatically playing."));
- const error=el("div","error");body.append(error);const saveForm=el("button","save","Save Button");saveForm.type="button";saveForm.onclick=()=>{
-   const n=name.value.trim(),t=target.value.trim(),dest=state.sections.find(s=>s.id===section.value);
-   if(!n){error.textContent="Enter a button name.";name.focus();return;}if(!t){error.textContent="Enter a Shortcut name or link.";target.focus();return;}
-   if(action.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(t)){error.textContent="Unsupported URL. Use an HTTPS or audio app link.";return;}
-   if(!dest){error.textContent="Add a section first.";return;}
-   const next={id:current?.id||uid(),name:n,icon:icon.value,action:action.value,target:t,noReturn:action.value==="shortcut"&&!ret.input.checked,color};
-   if(found){const pos=found.section.items.findIndex(i=>i.id===id);found.section.items.splice(pos,1);if(found.section===dest)dest.items.splice(pos,0,next);else dest.items.push(next);}else dest.items.push(next);
-   state.active=dest.id;changed("Button saved");manager();
- };body.append(saveForm);name.focus();
+function showSectionEditor(id,host){
+ const section=id?state.sections.find(s=>s.id===id):null;
+ mountEditor(host,panel=>{
+   panel.append(el("div","inline-heading",section?"Edit section":"New section"));
+   const name=textInput(section?.name||"","Section name");
+   const fields=el("div","field-set");fields.append(field("Name",name));panel.append(fields);
+   const err=el("div","error");panel.append(err);
+   const actions=el("div","inline-actions");
+   const cancel=el("button","inline-cancel","Cancel");cancel.type="button";cancel.onclick=()=>panel.remove();
+   const done=el("button","inline-save","Save");done.type="button";done.onclick=()=>{
+     const n=name.value.trim();if(!n){err.textContent="Enter a section name.";return;}
+     if(section)section.name=n;
+     else {const s={id:uid(),name:n,icon:"broadcast",items:[]};state.sections.push(s);if(!state.active)state.active=s.id;}
+     changed("Section saved");
+   };
+   actions.append(cancel,done);panel.append(actions);
+ });
 }
-function editTheme(){shown="theme";const body=sheet("Change Colors","Back","Done",settingsHome,settingsHome);body.append(group("Accent color"));body.append(colorSelector(state.theme.accent,v=>{state.theme.accent=v;save();theme();render();}));
- body.append(group("Card and background colors"));const groupBox=el("div","field-set");
- for(const [key,label] of [["background","Background"],["surface","Cards (top)"],["surface2","Cards (bottom)"]]){const inp=el("input");inp.type="color";inp.value=state.theme[key];inp.oninput=()=>{state.theme[key]=inp.value;save();theme();};groupBox.append(field(label,inp));}
- body.append(groupBox,el("p","helper","Color changes save automatically. Settings sheet colors remain intentionally graphite for readability."));
- const reset=el("button","save","Reset Theme");reset.type="button";reset.onclick=()=>{state.theme=clone(DEFAULT_THEME);changed("Theme restored");editTheme();};body.append(reset);
+function showButtonEditor(id,sectionId,host){
+ const found=id?findItem(id):null;const item=found?.item||null;
+ mountEditor(host,panel=>{
+   panel.append(el("div","inline-heading",item?"Edit button":"New button"));
+   const name=textInput(item?.name||"","Displayed button name");
+   const section=selectInput(state.sections.map(s=>[s.id,s.name]),found?.section.id||sectionId||state.sections[0]?.id);
+   const action=selectInput([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
+   const target=textInput(item?.target||"","Exact Shortcut name");
+   const ret=checkRow("Return to Media",!item?.noReturn);
+   const fields=el("div","field-set");const targetRow=field("Shortcut",target);
+   fields.append(field("Name",name),field("Section",section),field("Action",action),targetRow,ret.row);
+   panel.append(fields);
+   function syncAction(){const isURL=action.value==="url";targetRow.querySelector("label").textContent=isURL?"Link":"Shortcut";target.placeholder=isURL?"https://music.apple.com/...":"Exact Shortcut name";ret.row.hidden=isURL;}
+   action.onchange=syncAction;syncAction();
+   const err=el("div","error");panel.append(err);
+   const actions=el("div","inline-actions");
+   const cancel=el("button","inline-cancel","Cancel");cancel.type="button";cancel.onclick=()=>panel.remove();
+   const done=el("button","inline-save","Save");done.type="button";done.onclick=()=>{
+     const n=name.value.trim(),t=target.value.trim(),dest=state.sections.find(s=>s.id===section.value);
+     if(!n||!t){err.textContent="Enter a button name and destination.";return;}
+     if(action.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(t)){err.textContent="Use a valid HTTPS or supported app link.";return;}
+     if(!dest){err.textContent="Select an existing section.";return;}
+     const next={id:item?.id||uid(),name:n,icon:item?.icon||"music",action:action.value,target:t,noReturn:action.value==="shortcut"&&!ret.input.checked,color:item?.color||""};
+     if(found){const at=found.section.items.findIndex(i=>i.id===id);found.section.items.splice(at,1);if(dest===found.section)dest.items.splice(at,0,next);else dest.items.push(next);}
+     else dest.items.push(next);
+     changed("Button saved");
+   };
+   actions.append(cancel,done);panel.append(actions);
+ });
 }
 function exportSettings(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=el("a");a.href=url;a.download="Media-JT-Sport-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Download requested");}
-$("importPicker").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=normalise(JSON.parse(await file.text()));if(confirm("Replace current Media configuration with this backup?")){state=data;changed("Settings imported");settingsHome();}}catch(_){alert("Import failed. Choose a valid Media settings JSON file.");}finally{e.target.value="";}};
-function resetDefaults(){if(!confirm("Restore all original sections, buttons, and colors? Export a backup first if needed."))return;state=defaults();changed("Defaults restored");settingsHome();}
+$("importPicker").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=normalise(JSON.parse(await file.text()));if(confirm("Replace current Media configuration with this backup?")){state=data;changed("Settings imported");settingsHome(true);}}catch(_){alert("Import failed. Choose a valid Media settings JSON file.");}finally{e.target.value="";}};
+function resetDefaults(){if(!confirm("Restore all original sections, buttons, and colors? Export a backup first if needed."))return;state=defaults();changed("Defaults restored");}
 // iOS Safari pinch-to-zoom prevention, while preserving one-finger scrolling.
 ["gesturestart","gesturechange","gestureend"].forEach(type=>document.addEventListener(type,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
 $("openSettings").onclick=openSheet;$("scrim").onclick=closeSheet;
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){if(shown==="home")closeSheet();else settingsHome();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){closeSheet();}});
 theme();render();
 </script>
 </body>

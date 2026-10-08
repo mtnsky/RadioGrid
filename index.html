@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Radio Grid">
   <meta name="theme-color" content="#0f1115">
@@ -18,7 +18,7 @@
       -webkit-font-smoothing: antialiased;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html { min-height: 100%; background: var(--bg); }
+    html { min-height: 100%; background: var(--bg); touch-action: pan-x pan-y; }
     body {
       margin: 0; min-height: 100dvh; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       color: var(--text);
@@ -711,6 +711,13 @@
       if (!confirm("Restore all original sections, buttons and colors? This cannot be undone without a backup.")) return;
       sections = clone(DEFAULTS); changed("Original layout restored");
     }
+    // Prevent Safari pinch gestures without affecting normal single-finger scrolling.
+    ["gesturestart", "gesturechange", "gestureend"].forEach(type => {
+      document.addEventListener(type, event => event.preventDefault(), { passive: false });
+    });
+    document.addEventListener("touchmove", event => {
+      if (event.touches.length > 1) event.preventDefault();
+    }, { passive: false });
     $("openSettings").addEventListener("click",openSettings);
     $("scrim").addEventListener("click",closeSettings);
     document.addEventListener("keydown",event => {

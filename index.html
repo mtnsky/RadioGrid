@@ -36,7 +36,7 @@
   .menu svg { width:27px; height:27px; }
   .tabs { display:flex; gap:3px; border-bottom:1px solid rgba(255,255,255,.11); margin:6px -14px 20px; padding:0 14px; overflow-x:auto; scrollbar-width:none; }
   .tabs::-webkit-scrollbar { display:none; }
-  .tab { flex:1 0 auto; position:relative; min-width:92px; display:flex; flex-direction:column; align-items:center; gap:7px; padding:20px 8px 20px; color:#a5aab2; background:transparent; font-size:15px; font-weight:660; }
+  .tab { flex:1 0 auto; position:relative; min-width:92px; display:flex; flex-direction:column; align-items:center; gap:7px; padding:20px 8px 20px; color:#a5aab2; background:transparent; font-size:clamp(18px,4.8vw,22px); font-weight:700; }
   .tab svg { display:none; }
   .tab.active { color:var(--accent); }
   .tab.active::after { content:""; position:absolute; bottom:0; left:5%; right:5%; height:4px; border-radius:6px 6px 0 0; background:var(--accent); }
@@ -51,8 +51,22 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.24);
     touch-action:manipulation; transition:transform .08s,filter .08s; }
   .card:active { transform:scale(.963); filter:brightness(1.18); }
-  .card-label { font-size:clamp(14px,3.5vw,18px); font-weight:710;
+  .card-label { font-size:clamp(18px,4.95vw,23px); font-weight:740;
     line-height:1.16; letter-spacing:-.025em; color:#f3f4f5; overflow-wrap:anywhere; }
+  /* Keep long names inside the unchanged card dimensions. */
+  .card-label.long { font-size:clamp(16px,4.3vw,20px); }
+  .card-label.very-long { font-size:clamp(15px,3.9vw,18px); line-height:1.12; }
+  .page-viewport { min-height:max(260px,calc(100dvh - 250px)); touch-action:pan-y; }
+  .grid.swipe-next { animation:mediaSlideNext .19s ease-out both; }
+  .grid.swipe-prev { animation:mediaSlidePrev .19s ease-out both; }
+  @keyframes mediaSlideNext {
+    from { opacity:.65; transform:translate3d(30px,0,0); }
+    to { opacity:1; transform:translate3d(0,0,0); }
+  }
+  @keyframes mediaSlidePrev {
+    from { opacity:.65; transform:translate3d(-30px,0,0); }
+    to { opacity:1; transform:translate3d(0,0,0); }
+  }
   .grid-empty { color:var(--muted); padding:18px 4px; grid-column:1/-1; text-align:center; }
   .section-note { margin:15px 4px; color:#888e99; text-align:center; font-size:12px; }
   /* iOS-inspired editor */
@@ -131,8 +145,10 @@
     .tabs { margin-left:-8px; margin-right:-8px; padding:0 8px; }
     .grid { gap:7px; }
     .card { border-radius:18px; gap:10px; }
-    .tab { min-width:85px; font-size:13px; }
-    .card-label { font-size:12px; }
+    .tab { min-width:85px; font-size:17px; }
+    .card-label { font-size:17px; }
+    .card-label.long { font-size:16px; }
+    .card-label.very-long { font-size:15px; }
     .icon-btn { width:27px; }
   }
   @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
@@ -162,7 +178,9 @@
     </button>
   </header>
   <nav class="tabs" id="tabs" aria-label="Media sections"></nav>
-  <div class="grid" id="grid" aria-label="Media shortcuts"></div>
+  <section class="page-viewport" id="pageViewport" aria-label="Swipe left or right to change media category">
+    <div class="grid" id="grid" aria-label="Media shortcuts"></div>
+  </section>
 </main>
 <div id="scrim" class="scrim" aria-hidden="true"></div>
 <section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
@@ -275,7 +293,7 @@ function notify(message){clearTimeout(toastTimer);$("toast").textContent=message
 function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))settingsHome(true);if(message)notify(storageWorks?message:"Change made — export a backup");}
 function activeSection(){return state.sections.find(s=>s.id===state.active)||state.sections[0]||null;}
 function iconFor(name,cl){const x=el("span",cl);x.append(svg(name));return x;}
-function render(){
+function render(swipeDirection=0){
  const tabs=$("tabs"),grid=$("grid");tabs.replaceChildren();grid.replaceChildren();
  for(const section of state.sections){
    const b=el("button","tab"+(activeSection()?.id===section.id?" active":""));b.type="button";b.setAttribute("aria-current",activeSection()?.id===section.id?"page":"false");b.append(el("span","",section.name));
@@ -284,8 +302,62 @@ function render(){
  const section=activeSection();if(!section){grid.append(el("p","grid-empty","Add a section using Settings."));return;}
  for(const item of section.items){
    const card=el("button","card");card.type="button";card.setAttribute("aria-label","Play "+item.name);
-   card.append(el("span","card-label",item.name));card.onclick=()=>run(item);grid.append(card);
+   const label=el("span","card-label",item.name);
+   if(item.name.length>19)label.classList.add("very-long");
+   else if(item.name.length>13)label.classList.add("long");
+   card.append(label);
+   card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item);};
+   grid.append(card);
  }
+ if(swipeDirection)grid.classList.add(swipeDirection>0?"swipe-next":"swipe-prev");
+ // Ensure the currently selected tab remains visible if custom tabs overflow.
+ const activeTab=tabs.querySelector(".tab.active");
+ if(activeTab){
+   const left=activeTab.offsetLeft, right=left+activeTab.offsetWidth;
+   if(left<tabs.scrollLeft||right>tabs.scrollLeft+tabs.clientWidth){
+     tabs.scrollTo({left:left-(tabs.clientWidth-activeTab.offsetWidth)/2,behavior:"smooth"});
+   }
+ }
+}
+
+// Swipe horizontally between category pages without interrupting vertical scrolling.
+// A horizontal gesture on a button does not run that button's shortcut.
+let suppressCardClickUntil=0;
+let swipeStart=null;
+function installCategorySwipe(){
+ const viewport=$("pageViewport");
+ viewport.addEventListener("touchstart",e=>{
+   if(e.touches.length!==1||$("sheet").classList.contains("open")){swipeStart=null;return;}
+   const t=e.touches[0];
+   swipeStart={x:t.clientX,y:t.clientY,dx:0,dy:0,axis:null};
+ },{passive:true});
+ viewport.addEventListener("touchmove",e=>{
+   if(!swipeStart||e.touches.length!==1){swipeStart=null;return;}
+   const t=e.touches[0];
+   swipeStart.dx=t.clientX-swipeStart.x;
+   swipeStart.dy=t.clientY-swipeStart.y;
+   const ax=Math.abs(swipeStart.dx), ay=Math.abs(swipeStart.dy);
+   if(!swipeStart.axis&&(ax>12||ay>12))swipeStart.axis=ax>ay*1.25?"horizontal":"vertical";
+   if(swipeStart.axis==="horizontal"){
+     e.preventDefault();
+     suppressCardClickUntil=performance.now()+450;
+   }
+ },{passive:false});
+ viewport.addEventListener("touchend",e=>{
+   const s=swipeStart;swipeStart=null;
+   if(!s||s.axis!=="horizontal")return;
+   suppressCardClickUntil=performance.now()+450;
+   if(Math.abs(s.dx)<Math.max(55,Math.min(85,viewport.clientWidth*.16))||
+      Math.abs(s.dx)<Math.abs(s.dy)*1.25)return;
+   const index=state.sections.findIndex(section=>section.id===activeSection()?.id);
+   const direction=s.dx<0?1:-1;
+   const dest=state.sections[index+direction];
+   if(!dest)return;
+   state.active=dest.id;
+   save();
+   render(direction);
+ },{passive:true});
+ viewport.addEventListener("touchcancel",()=>{swipeStart=null;},{passive:true});
 }
 function returnURL(){
  if(state.returnMethod==="shortcut"||!/^https?:$/.test(location.protocol))return "shortcuts://run-shortcut?name="+encodeURIComponent("Radio Grid");
@@ -460,7 +532,7 @@ function resetDefaults(){if(!confirm("Restore all original sections, buttons, an
 document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
 $("openSettings").onclick=openSheet;$("scrim").onclick=closeSheet;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){closeSheet();}});
-theme();render();
+theme();render();installCategorySwipe();
 </script>
 </body>
 </html>

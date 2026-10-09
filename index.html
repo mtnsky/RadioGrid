@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
 <title>RadioGrid</title>
+<!-- V13: adds separately adjustable horizontal and vertical button spacing -->
 <style>
   :root {
     color-scheme:dark;
@@ -14,6 +15,8 @@
     --text:#f6f6f7; --muted:#a3a7af; --accent:#e77d20;
     --line:rgba(255,255,255,.13); --sheet:#1b1d22; --card:#373a41;
     --danger:#ff6961; --tab-r:16px; --card-r:13px;
+    --card-width:100%; --card-outline-color:#777b83; --card-outline-width:1px;
+    --card-gap-x:10px; --card-gap-y:10px;
     --app-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
     --title-font-size:32px; --title-font-weight:800; --title-font-style:normal;
     --button-font-size:20px; --button-font-weight:800; --button-font-style:normal;
@@ -61,19 +64,20 @@
   .page-slide { flex:0 0 100%; min-width:0; height:100%; overflow:hidden;
     touch-action:pan-y; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; }
   .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
-    grid-auto-rows:var(--card-height,96px); gap:10px; align-content:start; }
+    grid-auto-rows:var(--card-height,96px);
+    column-gap:var(--card-gap-x); row-gap:var(--card-gap-y); align-content:start; }
   /* Uniform graphite text-only tiles, no illustrated icons */
-  .card { min-width:0; height:100%; position:relative;
+  .card { min-width:0; width:var(--card-width); justify-self:center; height:100%; position:relative;
     display:flex; align-items:center; justify-content:center; text-align:center;
     padding:8px 8px; border-radius:var(--card-r);
     background:var(--card);
-    border:1px solid rgba(255,255,255,.24);
+    border:var(--card-outline-width) solid var(--card-outline-color);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.24);
     touch-action:pan-y; transition:transform .08s,filter .08s; }
   .card:active { transform:scale(.963); filter:brightness(1.18); }
   /* One shared font size for every button, including radio frequency and station name. */
-  .card-label { font-size:var(--button-font-size); font-weight:var(--button-font-weight); font-style:var(--button-font-style);
-    line-height:1.14; letter-spacing:-.022em; color:#f3f4f5; overflow-wrap:anywhere;
+  .card-label { min-width:0; max-height:100%; font-size:var(--button-font-size); font-weight:var(--button-font-weight); font-style:var(--button-font-style);
+    line-height:1.14; letter-spacing:-.022em; color:#f3f4f5; overflow-wrap:normal; word-break:normal;
     display:block; width:100%; }
   .card-label .frequency, .card-label .callsign { display:block; font:inherit; line-height:1.14; }
   .card-label .callsign { margin-top:3px; }
@@ -135,7 +139,10 @@
   .font-sample { margin:8px 0 18px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.045); border:1px solid var(--line); }
   .font-sample-title { font-size:18px; font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
   .font-sample-detail { font-size:13px; color:var(--muted); margin:10px 0 7px; }
-  .font-sample-button { display:inline-flex; align-items:center; justify-content:center; min-height:62px; min-width:155px; max-width:100%; padding:10px; border-radius:13px; background:var(--card); border:1px solid rgba(255,255,255,.2); text-align:center; line-height:1.1; overflow-wrap:anywhere; }
+  .button-preview-lane { display:flex; justify-content:center; width:min(100%,270px); margin-top:7px; }
+  .font-sample-button { display:inline-flex; align-items:center; justify-content:center; min-width:0; max-width:100%; padding:8px; border-radius:13px; background:var(--card); border:1px solid rgba(255,255,255,.2); text-align:center; line-height:1.1; overflow-wrap:anywhere; overflow:hidden; }
+  .spacing-preview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; }
+  .spacing-preview-tile { min-width:0; justify-self:center; display:flex; align-items:center; justify-content:center; text-align:center; width:100%; padding:5px; background:var(--card); color:#f3f4f5; overflow:hidden; line-height:1.15; }
   .type-slider-control { flex:1; min-width:0; display:flex; align-items:center; gap:10px; }
   .type-slider-control input[type=range] { flex:1; min-width:0; width:100%; accent-color:var(--accent); height:32px; touch-action:pan-x; }
   .type-size-output { font-size:13px; font-variant-numeric:tabular-nums; color:var(--muted); min-width:39px; text-align:right; }
@@ -165,8 +172,7 @@
   @media(max-width:365px) {
     .app { padding-left:8px; padding-right:8px; }
     .tabs { margin-left:-8px; margin-right:-8px; padding:0 8px; }
-    .grid { gap:7px; }
-    .card { border-radius:11px; gap:7px; }
+    .card { gap:7px; }
     .tab { font-size:14px; }
 
     .icon-btn { width:27px; }
@@ -238,6 +244,9 @@ const FONT_STACKS={
 const DEFAULT_APP_TITLE="RadioGrid";
 const DEFAULT_FONT_STYLE="system";
 const DEFAULT_TYPOGRAPHY={titleFontSize:32,buttonFontSize:20,titleBold:true,titleItalic:false,buttonBold:true,buttonItalic:false};
+// Width is a percentage of each grid cell. Height is a preferred pixel height;
+// it is reduced when needed to keep every row visible without scrolling.
+const DEFAULT_BUTTON_STYLE={width:100,height:96,outlineColor:"#777b83",outlineWidth:1,cornerRadius:13,gapX:10,gapY:10};
 const clampNumber=(v,min,max,defaultValue)=>typeof v==="number"&&Number.isFinite(v)?Math.round(Math.max(min,Math.min(max,v))):defaultValue;
 const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23",card:"#373a41"};
 const raw=(id,name,icon,extra={})=>({id,name,icon,action:"shortcut",target:name,...extra});
@@ -309,7 +318,7 @@ function normalizeSections(source){
 }
 function inferSectionIcon(id){return id==="podcasts"?"podcast":id==="radio"?"radio":"broadcast";}
 function inferItemIcon(name){const n=String(name).toLowerCase();if(n.includes("bible"))return "book";if(n.includes("ksr"))return "mic";if(n.includes("rock"))return "rock";if(n.includes("coffee"))return "coffee";if(n.includes("americana"))return "guitar";if(n.includes("wuky"))return "tower";return "music";}
-const defaults=()=>({sections:clone(DEFAULT_SECTIONS),active:"podcasts",theme:clone(DEFAULT_THEME),returnMethod:"website",appTitle:DEFAULT_APP_TITLE,fontStyle:DEFAULT_FONT_STYLE,...DEFAULT_TYPOGRAPHY});
+const defaults=()=>({sections:clone(DEFAULT_SECTIONS),active:"podcasts",theme:clone(DEFAULT_THEME),returnMethod:"website",appTitle:DEFAULT_APP_TITLE,fontStyle:DEFAULT_FONT_STYLE,...DEFAULT_TYPOGRAPHY,buttonStyle:clone(DEFAULT_BUTTON_STYLE)});
 function normalise(data){
  if(!data||typeof data!=="object")throw Error("Invalid backup");
  const sections=normalizeSections(data.sections);
@@ -323,7 +332,16 @@ function normalise(data){
    titleBold:typeof data.titleBold==="boolean"?data.titleBold:DEFAULT_TYPOGRAPHY.titleBold,
    titleItalic:typeof data.titleItalic==="boolean"?data.titleItalic:DEFAULT_TYPOGRAPHY.titleItalic,
    buttonBold:typeof data.buttonBold==="boolean"?data.buttonBold:DEFAULT_TYPOGRAPHY.buttonBold,
-   buttonItalic:typeof data.buttonItalic==="boolean"?data.buttonItalic:DEFAULT_TYPOGRAPHY.buttonItalic};
+   buttonItalic:typeof data.buttonItalic==="boolean"?data.buttonItalic:DEFAULT_TYPOGRAPHY.buttonItalic,
+   buttonStyle:{
+     width:clampNumber(data.buttonStyle?.width,75,100,DEFAULT_BUTTON_STYLE.width),
+     height:clampNumber(data.buttonStyle?.height,56,120,DEFAULT_BUTTON_STYLE.height),
+     outlineColor:safeColor(data.buttonStyle?.outlineColor)||DEFAULT_BUTTON_STYLE.outlineColor,
+     outlineWidth:clampNumber(data.buttonStyle?.outlineWidth,0,4,DEFAULT_BUTTON_STYLE.outlineWidth),
+     cornerRadius:clampNumber(data.buttonStyle?.cornerRadius,0,28,DEFAULT_BUTTON_STYLE.cornerRadius),
+     gapX:clampNumber(data.buttonStyle?.gapX,0,24,DEFAULT_BUTTON_STYLE.gapX),
+     gapY:clampNumber(data.buttonStyle?.gapY,0,24,DEFAULT_BUTTON_STYLE.gapY)
+   }};
 }
 let state=defaults(),storageWorks=false,shown="home",lastFocus=null,toastTimer=null;
 let migratedFromLegacy=false;
@@ -421,7 +439,17 @@ function applyIdentity(){
  root.setProperty("--button-font-style",state.buttonItalic?"italic":"normal");
  requestAnimationFrame(()=>{fitTitle();fitTabText();sizeGrid();});
 }
-function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);document.querySelector('meta[name="theme-color"]').content=state.theme.background;applyIdentity();}
+function applyButtonStyle(){
+ const root=document.documentElement.style;
+ const spec=state.buttonStyle||DEFAULT_BUTTON_STYLE;
+ root.setProperty("--card-width",spec.width+"%");
+ root.setProperty("--card-outline-color",spec.outlineColor);
+ root.setProperty("--card-outline-width",spec.outlineWidth+"px");
+ root.setProperty("--card-r",spec.cornerRadius+"px");
+ root.setProperty("--card-gap-x",spec.gapX+"px");
+ root.setProperty("--card-gap-y",spec.gapY+"px");
+}
+function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);document.querySelector('meta[name="theme-color"]').content=state.theme.background;applyButtonStyle();applyIdentity();}
 function notify(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800);}
 function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))settingsHome(true);if(message)notify(storageWorks?message:"Change made — export a backup");}
 function activeSection(){return state.sections.find(s=>s.id===state.active)||state.sections[0]||null;}
@@ -498,24 +526,44 @@ function render(){
  updateTabs();fitTabText();sizeGrid();placeTrack(false);
 }
 // Landscape-oriented cards; reduce height only when more rows won't fit.
+// Each button starts at the common requested text size. Shrink only when the
+// chosen rectangle would otherwise clip the text; no label overflows its tile.
+function fitButtonLabels(){
+ const size=state.buttonFontSize;
+ document.querySelectorAll(".card").forEach(card=>{
+   const label=card.querySelector(".card-label");
+   if(!label)return;
+   label.style.fontSize=size+"px";
+   const computed=getComputedStyle(card);
+   const verticalRoom=card.clientHeight-parseFloat(computed.paddingTop)-parseFloat(computed.paddingBottom);
+   let trial=size;
+   while(trial>10 && (label.scrollHeight>verticalRoom+1 || label.scrollWidth>label.clientWidth+1)){
+     trial--;
+     label.style.fontSize=trial+"px";
+   }
+ });
+}
 function sizeGrid(){
- const viewport=$("pageViewport");
- const available=viewport.clientHeight;
+ const available=$("pageViewport").clientHeight;
+ const spec=state.buttonStyle||DEFAULT_BUTTON_STYLE;
  $("pageTrack").querySelectorAll(".page-slide").forEach((slide,i)=>{
    const grid=slide.querySelector(".grid");
    const rows=Math.max(1,Math.ceil(state.sections[i].items.length/3));
    const gap=parseFloat(getComputedStyle(grid).rowGap)||0;
-   const ideal=Math.floor((available-gap*(rows-1))/rows);
-   // Width-driven cap keeps cards noticeably wider than they are tall.
-   // Give the longer podcast names a little more vertical room.
-   const columnWidth=(grid.clientWidth-gap*2)/3;
-   const maxHeight=Math.min(96,Math.floor(columnWidth*(state.sections[i].id==="podcasts"?.87:.77)));
-   const minimum=64;
-   const height=Math.max(minimum,Math.min(maxHeight,ideal));
-   grid.style.setProperty("--card-height",height+"px");
-   const isActive=i===pageIndex();
-   slide.style.overflowY=isActive && ideal<minimum?"auto":"hidden";
+   const fitHeight=Math.floor((available-gap*(rows-1))/rows);
+   // Width can be reduced inside each column, but never exceeds it.
+   // The aspect-ratio cap preserves the wide, rectangular appearance.
+   const columnWidth=Math.max(1,(grid.clientWidth-gap*2)/3);
+   const visibleWidth=columnWidth*spec.width/100;
+   const rectangularMax=Math.floor(visibleWidth*.98);
+   const requestedHeight=Math.min(spec.height,rectangularMax);
+   // Maintain at least 48px touch height. Scroll only if even that won't fit.
+   const rowHeight=Math.max(48,Math.min(requestedHeight,fitHeight));
+   grid.style.setProperty("--card-height",rowHeight+"px");
+   const requiresScroll=rows*rowHeight+gap*(rows-1)>available+1;
+   slide.style.overflowY=i===pageIndex() && requiresScroll?"auto":"hidden";
  });
+ fitButtonLabels();
 }
 function layoutResize(){fitTabText();sizeGrid();fitTitle();placeTrack(false);}
 window.addEventListener("resize",()=>requestAnimationFrame(layoutResize));
@@ -623,11 +671,40 @@ function settingsHome(preserveScroll=false){
  );
  body.append(group("Button Typography"),buttonText);
 
+ body.append(group("Button Shape & Outline"));
+ const shape=el("div","field-set");
+ const saveButtonAppearance=()=>{save();applyButtonStyle();sizeGrid();drawSamples();};
+ shape.append(
+   sizeField("Width",state.buttonStyle.width,75,100,v=>{state.buttonStyle.width=v;saveButtonAppearance();},"%"),
+   sizeField("Height",state.buttonStyle.height,56,120,v=>{state.buttonStyle.height=v;saveButtonAppearance();}),
+   sizeField("Outline",state.buttonStyle.outlineWidth,0,4,v=>{state.buttonStyle.outlineWidth=v;saveButtonAppearance();}),
+   sizeField("Corners",state.buttonStyle.cornerRadius,0,28,v=>{state.buttonStyle.cornerRadius=v;saveButtonAppearance();})
+ );
+ const outlineColor=el("input");outlineColor.type="color";outlineColor.value=state.buttonStyle.outlineColor;
+ outlineColor.oninput=()=>{state.buttonStyle.outlineColor=outlineColor.value;saveButtonAppearance();};
+ shape.append(field("Border color",outlineColor));
+ body.append(shape,el("p","helper","Width stays within its grid column. Height is a target: RadioGrid reduces it only when necessary to keep all rows on screen. Text shrinks automatically if it would spill outside a button."));
+ body.append(group("Button Spacing"));
+ const spacing=el("div","field-set");
+ spacing.append(
+   sizeField("Horizontal",state.buttonStyle.gapX,0,24,v=>{state.buttonStyle.gapX=v;saveButtonAppearance();}),
+   sizeField("Vertical",state.buttonStyle.gapY,0,24,v=>{state.buttonStyle.gapY=v;saveButtonAppearance();})
+ );
+ body.append(spacing,el("p","helper","Horizontal changes space between columns. Vertical changes space between rows. All buttons remain inside the screen where the available height permits."));
+
  const sample=el("div","font-sample");
  const sampleName=el("div","font-sample-title");
  const sampleDetail=el("div","font-sample-detail","BUTTON PREVIEW");
  const sampleButton=el("div","font-sample-button","Americana");
- sample.append(sampleName,sampleDetail,sampleButton);
+ const sampleLane=el("div","button-preview-lane");sampleLane.append(sampleButton);
+ sample.append(sampleName,sampleDetail,sampleLane);
+ const spacingDetail=el("div","font-sample-detail","SPACING PREVIEW");
+ const spacingGrid=el("div","spacing-preview-grid");
+ for (const label of ["80’s","Americana","Rock","Country","Oldies","Worship"]) {
+   const tile=el("div","spacing-preview-tile",label);
+   spacingGrid.append(tile);
+ }
+ sample.append(spacingDetail,spacingGrid);
  body.append(sample);
  function drawSamples(){
    sampleName.textContent=state.appTitle||DEFAULT_APP_TITLE;
@@ -637,6 +714,19 @@ function settingsHome(preserveScroll=false){
    sampleButton.style.fontSize=state.buttonFontSize+"px";
    sampleButton.style.fontWeight=state.buttonBold?"800":"450";
    sampleButton.style.fontStyle=state.buttonItalic?"italic":"normal";
+   sampleButton.style.width=state.buttonStyle.width+"%";
+   sampleButton.style.height=Math.min(state.buttonStyle.height,110)+"px";
+   sampleButton.style.border=state.buttonStyle.outlineWidth+"px solid "+state.buttonStyle.outlineColor;
+   sampleButton.style.borderRadius=state.buttonStyle.cornerRadius+"px";
+   spacingGrid.style.columnGap=state.buttonStyle.gapX+"px";
+   spacingGrid.style.rowGap=state.buttonStyle.gapY+"px";
+   spacingGrid.querySelectorAll(".spacing-preview-tile").forEach(tile=>{
+     tile.style.width=state.buttonStyle.width+"%";
+     tile.style.height=Math.min(state.buttonStyle.height,56)+"px";
+     tile.style.border=state.buttonStyle.outlineWidth+"px solid "+state.buttonStyle.outlineColor;
+     tile.style.borderRadius=state.buttonStyle.cornerRadius+"px";
+     tile.style.fontSize="12px";
+   });
  }
  drawSamples();
  titleInput.oninput=()=>{
@@ -653,7 +743,7 @@ function settingsHome(preserveScroll=false){
    saveTypography();
    notify("Font family saved");
  };
- body.append(el("p","helper","Title and button sizes, bold, and italics save automatically. Font size is shared by every audio button, including radio frequencies. Longer titles may shrink to fit the header. The Home Screen icon label may require reinstalling the icon to update."));
+ body.append(el("p","helper","Typography and button appearance save automatically. Labels use the shared font size when possible and shrink only if needed to stay inside a card. The Home Screen icon label may require reinstalling the icon to update."));
  body.append(group("Sections & Buttons"),el("p","helper","Drag handles or use arrows to reorder. Tap a pencil to edit a name, target, or section in place."));
  const root=el("div","");root.id="manageRoot";
  state.sections.forEach((section,sindex)=>{
@@ -729,12 +819,12 @@ function field(labelText,control){const row=el("div","field");const lab=el("labe
 function textInput(value,placeholder=""){const n=el("input");n.type="text";n.value=value||"";n.placeholder=placeholder;n.autocomplete="off";return n;}
 function selectInput(options,value){const n=el("select");for(const [id,title] of options){const opt=el("option","",title);opt.value=id;n.append(opt);}n.value=value;return n;}
 function checkRow(label,checked){const input=el("input");input.type="checkbox";input.checked=checked;const row=field(label,input);row.classList.add("check");return {row,input};}
-function sizeField(label,value,min,max,onUpdate){
+function sizeField(label,value,min,max,onUpdate,unit="px"){
  const slider=el("input");slider.type="range";slider.min=min;slider.max=max;slider.step=1;slider.value=value;
- slider.setAttribute("aria-label",label+" in pixels");
- const output=el("output","type-size-output",value+" px");
+ slider.setAttribute("aria-label",label+(unit==="%"?" in percent":" in pixels"));
+ const output=el("output","type-size-output",value+(unit==="%"?"%":" px"));
  const controls=el("div","type-slider-control");controls.append(slider,output);
- slider.addEventListener("input",()=>{const v=Number(slider.value);output.textContent=v+" px";onUpdate(v);});
+ slider.addEventListener("input",()=>{const v=Number(slider.value);output.textContent=v+(unit==="%"?"%":" px");onUpdate(v);});
  const row=el("div","field typography-field");
  slider.id=uid();const text=el("label","",label);text.htmlFor=slider.id;
  row.append(text,controls);return row;

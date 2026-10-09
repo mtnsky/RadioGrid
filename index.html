@@ -27,7 +27,7 @@
   button,input,select { font:inherit; }
   button { cursor:pointer; color:inherit; border:0; -webkit-appearance:none; appearance:none; }
   button:focus-visible,input:focus-visible,select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  .app { margin:auto; width:min(100%,760px); padding:max(10px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom)); }
+  .app { margin:auto; min-height:100dvh; width:min(100%,760px); padding:max(10px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom)); }
   .header { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:106px; padding:5px 60px 14px; }
   .app-title { font-size:clamp(32px,8vw,42px); font-weight:790; line-height:1; letter-spacing:-.055em; margin:0; }
   .subtitle { color:var(--muted); margin-top:8px; font-size:clamp(13px,3.4vw,18px); font-weight:480; letter-spacing:-.012em; white-space:nowrap; }
@@ -49,7 +49,7 @@
     background:var(--card);
     border:1px solid rgba(255,255,255,.24);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.24);
-    touch-action:manipulation; transition:transform .08s,filter .08s; }
+    touch-action:pan-y; transition:transform .08s,filter .08s; }
   .card:active { transform:scale(.963); filter:brightness(1.18); }
   .card-label { font-size:clamp(18px,4.95vw,23px); font-weight:740;
     line-height:1.16; letter-spacing:-.025em; color:#f3f4f5; overflow-wrap:anywhere; }
@@ -320,44 +320,64 @@ function render(swipeDirection=0){
  }
 }
 
-// Swipe horizontally between category pages without interrupting vertical scrolling.
-// A horizontal gesture on a button does not run that button's shortcut.
+// Whole-page gestures: swiping on a media card, the empty page, or the
+// surrounding layout changes category. A normal tap still plays the item.
+// Vertical scroll gestures and the settings sheet remain unaffected.
 let suppressCardClickUntil=0;
-let swipeStart=null;
+let pageTouch=null;
 function installCategorySwipe(){
- const viewport=$("pageViewport");
- viewport.addEventListener("touchstart",e=>{
-   if(e.touches.length!==1||$("sheet").classList.contains("open")){swipeStart=null;return;}
-   const t=e.touches[0];
-   swipeStart={x:t.clientX,y:t.clientY,dx:0,dy:0,axis:null};
- },{passive:true});
- viewport.addEventListener("touchmove",e=>{
-   if(!swipeStart||e.touches.length!==1){swipeStart=null;return;}
-   const t=e.touches[0];
-   swipeStart.dx=t.clientX-swipeStart.x;
-   swipeStart.dy=t.clientY-swipeStart.y;
-   const ax=Math.abs(swipeStart.dx), ay=Math.abs(swipeStart.dy);
-   if(!swipeStart.axis&&(ax>12||ay>12))swipeStart.axis=ax>ay*1.25?"horizontal":"vertical";
-   if(swipeStart.axis==="horizontal"){
-     e.preventDefault();
-     suppressCardClickUntil=performance.now()+450;
-   }
- },{passive:false});
- viewport.addEventListener("touchend",e=>{
-   const s=swipeStart;swipeStart=null;
-   if(!s||s.axis!=="horizontal")return;
-   suppressCardClickUntil=performance.now()+450;
-   if(Math.abs(s.dx)<Math.max(55,Math.min(85,viewport.clientWidth*.16))||
-      Math.abs(s.dx)<Math.abs(s.dy)*1.25)return;
-   const index=state.sections.findIndex(section=>section.id===activeSection()?.id);
-   const direction=s.dx<0?1:-1;
-   const dest=state.sections[index+direction];
-   if(!dest)return;
-   state.active=dest.id;
-   save();
-   render(direction);
- },{passive:true});
- viewport.addEventListener("touchcancel",()=>{swipeStart=null;},{passive:true});
+  const page=$('pageViewport');
+  const app=document.querySelector('.app');
+  // Capture on the document so nested buttons do not swallow the gesture.
+  // Do not attach only to the grid: swipes in blank page space work too.
+  document.addEventListener('touchstart',event=>{
+    pageTouch=null;
+    if(event.touches.length!==1 || $('sheet').classList.contains('open'))return;
+    const target=event.target instanceof Element ? event.target : event.target?.parentElement;
+    if(!target?.closest('.app') || target.closest('#openSettings'))return;
+    const finger=event.touches[0];
+    pageTouch={id:finger.identifier,x:finger.clientX,y:finger.clientY,dx:0,dy:0,axis:null};
+  },{capture:true,passive:true});
+  document.addEventListener('touchmove',event=>{
+    const gesture=pageTouch;
+    if(!gesture)return;
+    if(event.touches.length!==1){pageTouch=null;return;}
+    const finger=Array.from(event.touches).find(t=>t.identifier===gesture.id);
+    if(!finger){pageTouch=null;return;}
+    gesture.dx=finger.clientX-gesture.x;
+    gesture.dy=finger.clientY-gesture.y;
+    const ax=Math.abs(gesture.dx),ay=Math.abs(gesture.dy);
+    if(!gesture.axis && (ax>13 || ay>13)){
+      gesture.axis=ax>ay*1.22 ? 'horizontal' : (ay>ax*1.12 ? 'vertical' : null);
+    }
+    if(gesture.axis==='horizontal'){
+      // Touch action on cards is pan-y to keep horizontal moves in the page.
+      if(event.cancelable)event.preventDefault();
+      suppressCardClickUntil=performance.now()+500;
+    }
+  },{capture:true,passive:false});
+  document.addEventListener('touchend',event=>{
+    const gesture=pageTouch;
+    if(!gesture)return;
+    const finger=Array.from(event.changedTouches).find(t=>t.identifier===gesture.id);
+    if(!finger)return;
+    pageTouch=null;
+    // Capture the final finger position even for very quick flicks.
+    gesture.dx=finger.clientX-gesture.x;
+    gesture.dy=finger.clientY-gesture.y;
+    const ax=Math.abs(gesture.dx),ay=Math.abs(gesture.dy);
+    if((gesture.axis!=='horizontal' && !(ax>25 && ax>ay*1.22)) ||
+       ax<Math.max(48,Math.min(75,app.clientWidth*.13)) || ax<ay*1.22)return;
+    suppressCardClickUntil=performance.now()+500;
+    const index=state.sections.findIndex(section=>section.id===activeSection()?.id);
+    const direction=gesture.dx<0?1:-1;
+    const destination=state.sections[index+direction];
+    if(!destination)return;
+    state.active=destination.id;
+    save();
+    render(direction);
+  },{capture:true,passive:true});
+  document.addEventListener('touchcancel',()=>{pageTouch=null;},{capture:true,passive:true});
 }
 function returnURL(){
  if(state.returnMethod==="shortcut"||!/^https?:$/.test(location.protocol))return "shortcuts://run-shortcut?name="+encodeURIComponent("Radio Grid");

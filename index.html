@@ -85,248 +85,129 @@
     touch-action:pan-y; overscroll-behavior:contain; }
   .grid-empty { color:var(--muted); padding:18px 4px; grid-column:1/-1; text-align:center; }
   .section-note { margin:15px 4px; color:#888e99; text-align:center; font-size:12px; }
-  /* iOS-inspired editor */
-  .scrim { position:fixed; inset:0; background:rgba(0,0,0,.60); z-index:8; opacity:0; pointer-events:none; transition:opacity .22s; }
-  .scrim.open { opacity:1; pointer-events:auto; }
-  .sheet { position:fixed; left:50%; bottom:0; z-index:9; width:min(100%,690px); max-height:min(91dvh,900px);
-    display:flex; flex-direction:column; background:var(--sheet); border-radius:30px 30px 0 0;
-    border:1px solid rgba(255,255,255,.14); border-bottom:0; box-shadow:0 -17px 55px rgba(0,0,0,.5);
-    padding-bottom:env(safe-area-inset-bottom); transform:translate(-50%,105%); visibility:hidden;
-    transition:transform .26s cubic-bezier(.2,.8,.2,1),visibility .26s; }
-  .sheet.open { transform:translate(-50%,0); visibility:visible; }
-  .grabber { width:39px; height:5px; background:#60636b; border-radius:999px; margin:9px auto 0; flex:none; }
-  .sheet-head { flex:none; display:grid; grid-template-columns:68px 1fr 68px; align-items:center; min-height:68px; padding:8px 14px 10px; border-bottom:1px solid rgba(255,255,255,.07); }
-  .sheet-head h2 { margin:0; text-align:center; font-size:19px; font-weight:760; letter-spacing:-.035em; }
-  .sheet-action { color:var(--accent); font-size:16px; padding:10px 0; background:transparent; text-align:left; }
-  .sheet-action:last-child { text-align:right; font-weight:700; }
-  .sheet-body { overflow-y:auto; padding:17px 14px 28px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
-  .settings-tile { display:flex; align-items:center; gap:14px; width:100%; text-align:left; min-height:81px; border-radius:20px; padding:13px 14px;
-    background:linear-gradient(165deg,#292c32,#22252b); border:1px solid rgba(255,255,255,.07); margin-bottom:11px; }
-  .settings-tile:active { filter:brightness(1.16); }
-  .settings-icon { flex:none; display:grid; place-items:center; width:43px; height:43px; color:var(--accent); }
-  .settings-icon svg { width:35px; height:35px; }
-  .settings-text { min-width:0; flex:1; }
-  .settings-title { display:block; color:#fff; font-size:17px; font-weight:710; }
-  .settings-sub { display:block; color:var(--muted); margin-top:4px; font-size:12px; line-height:1.3; }
-  .chevron { color:#8b9099; }
-  .chevron svg { width:21px; height:21px; }
-  .group-label { text-transform:uppercase; letter-spacing:.08em; color:#969ca6; font-size:11px; font-weight:720; margin:22px 9px 9px; }
-  .group-label:first-child { margin-top:5px; }
-  .group-box { border-radius:17px; background:#2a2d33; overflow:hidden; margin-bottom:12px; }
-  .edit-row { display:flex; align-items:center; gap:8px; padding:5px 7px 5px 10px; min-height:59px; border-bottom:1px solid rgba(255,255,255,.075); }
-  .edit-row:last-child { border-bottom:0; }
-  .edit-row.dragging { background:rgba(231,125,32,.20); }
-  .edit-row-name { min-width:0; flex:1; overflow-wrap:anywhere; font-size:14px; font-weight:600; }
-  .edit-row-sub { display:block; font-size:11px; color:var(--muted); margin-top:3px; font-weight:450; }
-  .mini-dot { width:11px; height:11px; flex:none; border-radius:50%; background:var(--accent); }
-  .mini-icon { display:grid; place-items:center; width:26px; height:26px; flex:none; color:var(--accent); }
-  .mini-icon svg { width:23px; height:23px; }
-  .icon-btn { flex:none; width:31px; height:40px; padding:5px; display:grid; place-items:center; color:#b1b5be; background:transparent; border-radius:10px; }
-  .icon-btn svg { width:19px; height:19px; }
-  .icon-btn:active { background:rgba(255,255,255,.1); }
-  .icon-btn:disabled { opacity:.2; }
-  .icon-btn.danger { color:var(--danger); }
-  .icon-btn.handle { touch-action:none; cursor:grab; color:#9297a2; }
-  .plain-add { display:flex; width:100%; align-items:center; gap:9px; text-align:left; color:var(--accent); min-height:53px; padding:10px 14px; background:transparent; font-weight:640; }
-  .plain-add svg { width:20px; height:20px; }
-  .plain-add:active { background:rgba(255,255,255,.055); }
-  .field-set { border-radius:16px; background:#2a2d33; overflow:hidden; }
-  .field { display:flex; min-height:54px; gap:12px; align-items:center; padding:9px 14px; border-bottom:1px solid rgba(255,255,255,.09); }
-  .field:last-child { border:0; }
-  .field label { flex:0 0 94px; font-size:14px; }
-  .field input[type="text"],.field input[type="url"],.field select { flex:1; min-width:0; padding:8px 0; border:0; outline:0; background:transparent; color:#fff; font-size:16px; border-radius:0; }
-  .field select { color:var(--accent); }
-  .font-sample { margin:8px 0 18px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.045); border:1px solid var(--line); }
-  .font-sample-title { font-size:18px; font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
-  .font-sample-detail { font-size:13px; color:var(--muted); margin:10px 0 7px; }
-  .button-preview-lane { display:flex; justify-content:center; width:min(100%,270px); margin-top:7px; }
-  .font-sample-button { display:inline-flex; align-items:center; justify-content:center; min-width:0; max-width:100%; padding:8px; border-radius:13px; background:var(--card); border:1px solid rgba(255,255,255,.2); text-align:center; line-height:1.1; overflow-wrap:anywhere; overflow:hidden; }
-  .spacing-preview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; }
-  .spacing-preview-tile { min-width:0; justify-self:center; display:flex; align-items:center; justify-content:center; text-align:center; width:100%; padding:5px; background:var(--card); color:#f3f4f5; overflow:hidden; line-height:1.15; }
-  .type-slider-control { flex:1; min-width:0; display:flex; align-items:center; gap:10px; }
-  .type-slider-control input[type=range] { flex:1; min-width:0; width:100%; accent-color:var(--accent); height:32px; touch-action:pan-x; }
-  .type-size-output { font-size:13px; font-variant-numeric:tabular-nums; color:var(--muted); min-width:39px; text-align:right; }
-  .field.typography-field label { flex-basis:94px; }
-  .field.check label { flex:1; width:auto; }
-  .field input[type=checkbox] { appearance:auto; -webkit-appearance:checkbox; accent-color:var(--accent); width:23px; height:23px; flex:none; }
-  .field option { color:#000; }
-  .field input::placeholder { color:#868b94; }
-  .field.check label { flex:1; }
-  .field input[type="checkbox"] { width:23px; height:23px; accent-color:var(--accent); }
-  .field input[type="color"] { border:0; background:transparent; width:45px; height:36px; padding:0; }
-  .palette { display:flex; flex-wrap:wrap; gap:11px; padding:11px 5px; }
-  .swatch { border-radius:50%; width:37px; height:37px; border:2px solid rgba(255,255,255,.15); background:var(--swatch); }
-  .swatch.selected { outline:2px solid white; outline-offset:2px; }
-  .helper { color:var(--muted); font-size:12px; padding:0 8px 12px; line-height:1.45; }
-  .error { color:#ff8e86; font-size:13px; min-height:20px; padding:8px; }
-  .save { width:100%; min-height:49px; border-radius:14px; background:var(--accent); color:#101215; font-weight:800; font-size:17px; margin:7px 0 16px; }
-  .save:active { filter:brightness(1.2); }
-  .normal-row { display:block; width:100%; padding:15px 13px; min-height:48px; text-align:left; background:transparent; border-bottom:1px solid rgba(255,255,255,.1); font-size:14px; }
-  .normal-row:last-child { border:0; }
-  .normal-row:active { background:rgba(255,255,255,.08); }
-  .normal-row.danger { color:var(--danger); }
-  .toast { position:fixed; z-index:30; left:50%; bottom:max(24px,env(safe-area-inset-bottom)); transform:translate(-50%,14px); opacity:0; pointer-events:none; background:#393b40;
-    padding:11px 15px; border-radius:16px; color:white; font-size:13px; font-weight:650; white-space:nowrap; transition:transform .2s,opacity .2s; }
-  .toast.show { opacity:1; transform:translate(-50%,0); }
-  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-  @media(max-width:365px) {
-    .app { padding-left:8px; padding-right:8px; }
-    .tabs { margin-left:-8px; margin-right:-8px; padding:0 8px; }
-    .card { gap:7px; }
-    .tab { font-size:14px; }
 
-    .icon-btn { width:27px; }
-  }
-  @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
-  /* Compact inline editing in the single Settings sheet */
-  .inline-form { margin:8px 7px 15px; padding:14px 12px; border-radius:16px;
-    border:1px solid rgba(231,125,32,.36); background:#22252b; }
-  .inline-heading { font-size:16px; font-weight:750; margin:0 0 12px; }
-  .inline-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:5px; }
-  .inline-actions button { min-height:44px; min-width:78px; padding:8px 15px; border-radius:12px; font-weight:700; }
-  .inline-cancel { background:#34383f; color:#f2f2f2; }
-  .inline-save { background:var(--accent); color:#121416; }
-  .editor-host:empty { display:none; }
-  .manage-section > .edit-row { background:rgba(255,255,255,.045); }
-  .manage-section { margin-bottom:13px; }
-  .manage-item .edit-row-name { font-weight:500; }
-  .sheet-body > .plain-add { border-radius:15px; background:#292d33; margin-bottom:8px; }
-  @media(max-width:420px) { .field label { flex-basis:78px; } .edit-row { gap:3px; padding-left:5px; padding-right:4px; } .icon-btn { width:28px; } }
-
-/* V14 redesigned settings: preview stays visible while controls scroll. */
-.sheet { height:min(96dvh,920px); max-height:96dvh; }
-.sheet-body { flex:1 1 auto; min-height:0; overflow-y:auto; padding:15px 16px max(28px,env(safe-area-inset-bottom)); }
-.sheet-head { min-height:57px; padding:5px 14px 7px; grid-template-columns:72px 1fr 72px; }
-.sheet-head h2 { font-size:18px; }
-.settings-preview { flex:none; padding:11px 15px 13px; background:linear-gradient(#24272c,#1c1e23); border-bottom:1px solid rgba(255,255,255,.13); }
-.preview-kicker { display:flex; align-items:center; justify-content:space-between; color:#bec3cb; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.08em; margin:0 2px 7px; }
-.preview-kicker .live-dot { width:7px; height:7px; display:inline-block; border-radius:50%; background:#4bd28e; margin-right:5px; }
-.preview-stage { background:var(--preview-bg,#0b0d10); border:1px solid rgba(255,255,255,.11); border-radius:16px; padding:9px 11px 12px; overflow:hidden; }
-.preview-title { font-family:var(--app-font); text-align:center; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.08; padding-bottom:7px; }
-.preview-tabs { display:grid; grid-auto-columns:minmax(0,1fr); grid-auto-flow:column; gap:0; border-bottom:1px solid rgba(255,255,255,.14); margin-bottom:9px; }
-.preview-tab { background:transparent; border:0; min-width:0; padding:4px 1px 7px; text-align:center; font-family:var(--app-font); color:#a9aeb7; overflow:hidden; text-overflow:clip; white-space:nowrap; font-size:clamp(8px,2.4vw,11px); font-weight:700; border-bottom:3px solid transparent; }
-.preview-tab.selected { color:var(--accent); border-bottom-color:var(--accent); }
-.preview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); justify-items:stretch; align-items:stretch; }
-.preview-card { box-sizing:border-box; min-width:0; max-width:100%; justify-self:center; display:flex; justify-content:center; align-items:center; padding:5px 3px; text-align:center; background:var(--card); font-family:var(--app-font); overflow:hidden; color:#f5f6f7; }
-.preview-card span { display:block; min-width:0; max-width:100%; line-height:1.08; overflow-wrap:anywhere; }
-.preview-card .preview-frequency,.preview-card .preview-callsign { display:block; }
-.preview-empty { font-size:12px; padding:5px; text-align:center; color:#aeb3be; grid-column:span 3; }
-.editor-nav { display:grid; gap:8px; }
-.editor-nav button { width:100%; display:flex; gap:12px; align-items:center; text-align:left; padding:14px 13px; border-radius:15px; background:#2b2e34; border:1px solid rgba(255,255,255,.09); }
-.editor-nav button:active { background:#383b43; }
-.editor-nav .nav-icon { width:34px; height:34px; flex:none; display:grid; place-items:center; color:var(--accent); border-radius:10px; background:rgba(255,255,255,.06); }
-.editor-nav .nav-icon svg { height:20px; width:20px; }
-.editor-nav .nav-copy { flex:1; min-width:0; }
-.editor-nav .nav-name { display:block; font-size:16px; font-weight:700; }
-.editor-nav .nav-description { display:block; font-size:12px; color:#afb4bd; margin-top:3px; line-height:1.3; }
-.editor-nav .nav-arrow { color:#a0a4ad; font-size:20px; }
-.editor-section-title { font-size:12px; font-weight:750; letter-spacing:.07em; color:#abb0b9; margin:17px 5px 7px; text-transform:uppercase; }
-.editor-section-title:first-child { margin-top:5px; }
-.editor-note { font-size:12px; color:#b5bac3; line-height:1.4; margin:7px 5px 15px; }
-.editor-form { display:grid; gap:10px; }
-.editor-form .field-set { margin-bottom:5px; }
-.editor-form .field { min-height:54px; }
-.editor-action { background:var(--accent); color:#141618; text-align:center; border-radius:13px; width:100%; padding:14px; font-weight:750; margin:10px 0; }
-.editor-danger { color:#ff8982!important; }
-.editor-smallrow { display:flex; align-items:center; justify-content:space-between; padding:9px 0; gap:10px; }
-.editor-row-title { font-weight:700; font-size:15px; }
-.editor-list { display:grid; gap:7px; }
-.editor-list .edit-row { background:#2c2f35; border-radius:12px; border:1px solid rgba(255,255,255,.075); min-height:51px; }
-.editor-list .group-box { margin:0; background:none; }
-.editor-list .plain-add { background:#292c32; border-radius:12px; min-height:46px; margin-bottom:10px; }
-.editor-switch { display:flex; align-items:center; justify-content:space-between; background:#2a2d33; padding:12px 14px; border-radius:13px; margin:6px 0; }
-.editor-switch input { width:24px; height:24px; accent-color:var(--accent); }
-.editor-actions-row { display:flex; gap:10px; }
-.editor-actions-row button { flex:1; min-height:45px; border-radius:12px; background:#34383f; font-weight:700; }
-.editor-actions-row .primary { color:#121416; background:var(--accent); }
-.editor-warning { color:#ff9c95; font-size:13px; margin-top:7px; }
-@media(max-height:720px) {
-  .settings-preview { padding:6px 12px 8px; }
-  .preview-stage { padding:5px 10px 7px; }
-  .preview-title { padding-bottom:3px; }
-  .preview-tabs { margin-bottom:5px; }
-  .preview-kicker { margin-bottom:3px; }
-}
-
-
-/* V15: native-style grouped settings and a genuinely scaled RadioGrid screen */
-.sheet { background:#1b1c20; height:min(94dvh,900px); max-height:94dvh; border-radius:25px 25px 0 0; }
-.sheet-head { min-height:55px; padding:5px 16px 6px; background:#1b1c20; }
-.sheet-head h2 { font-size:17px; font-weight:750; }
-.sheet-action { font-size:16px; font-weight:500; }
-.sheet-body { background:#1b1c20; padding:14px 18px max(28px,env(safe-area-inset-bottom)); }
-.settings-preview { padding:9px 14px 12px; background:#212228; border-bottom:1px solid rgba(255,255,255,.085); }
-.preview-kicker { font-size:10px; letter-spacing:.04em; text-transform:none; margin:0 2px 7px; font-weight:700; }
-.preview-scale-label { color:#8f959e; font-weight:500; }
-.preview-frame { display:flex; align-items:center; justify-content:center; border-radius:14px; background:#151619; border:1px solid rgba(255,255,255,.085); padding:9px 6px; overflow:hidden; }
-.preview-mini-shell { position:relative; flex:none; overflow:hidden; border-radius:5px; }
-.preview-mini-scene { position:absolute; top:0; left:0; transform-origin:top left; background:var(--bg); font-family:var(--app-font); padding:0 14px 0; }
-.preview-mini-scene .header { flex:none; height:76px; }
-.preview-mini-scene .header .menu { pointer-events:none; }
-.preview-mini-scene .tabs { margin:0 -14px 12px; padding:0 14px; }
-.preview-mini-scene .grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
-.preview-mini-scene .card { pointer-events:none; }
-.preview-mini-scene .card-label { color:var(--card-text); }
-.preview-mini-scene .tab { min-width:0; }
-.editor-nav { display:block; overflow:hidden; border-radius:15px; background:#292b31; }
-.editor-nav button { background:transparent; border:0; border-bottom:1px solid rgba(255,255,255,.075); border-radius:0; padding:13px 14px; min-height:59px; }
-.editor-nav button:last-child { border-bottom:0; }
-.editor-nav button:active { background:#373941; }
-.editor-nav .nav-icon { width:33px; height:33px; border-radius:8px; background:#34363e; }
-.editor-nav .nav-name { font-size:16px; font-weight:610; letter-spacing:-.01em; }
-.editor-nav .nav-description { font-size:12px; margin-top:2px; }
-.editor-nav .nav-arrow { color:#757983; font-size:24px; font-weight:300; }
-.editor-section-title { margin:16px 6px 7px; letter-spacing:.035em; color:#989ca5; font-size:12px; font-weight:650; }
-.editor-note { font-size:12px; line-height:1.45; color:#9297a1; margin:9px 8px 15px; }
-.editor-form .field-set,.field-set { background:#292b31; border-radius:13px; }
-.field { min-height:49px; padding:8px 14px; border-bottom:1px solid rgba(255,255,255,.075); }
-.field label { color:#f0f0f2; font-weight:480; flex:0 0 92px; }
-.field select { color:var(--accent); }
-.field.typography-field { min-height:52px; }
-.type-slider-control input[type=range] { accent-color:var(--accent); }
-.style-row { justify-content:space-between; }
-.style-label { color:#f0f0f2; font-size:14px; }
-.style-segments { display:inline-flex; align-items:center; border-radius:9px; padding:3px; background:#191b1f; gap:3px; }
-.style-segment { min-width:52px; min-height:34px; border-radius:7px; background:transparent; font-size:17px; color:#c2c5cb; }
-.style-segment.selected { color:#fff; background:#50535c; box-shadow:0 1px 4px rgba(0,0,0,.3); }
-.style-segment:active { filter:brightness(1.25); }
-.color-field { justify-content:space-between; min-height:57px; }
-.color-title { flex:1; font-size:15px; }
-.color-code { font-size:12px; color:#9fa4ad; font-variant-numeric:tabular-nums; }
-.color-well { flex:none; width:46px!important; height:37px!important; border-radius:8px; cursor:pointer; }
-.reset-row { display:block; padding:13px 12px; width:100%; text-align:center; color:var(--accent); font-weight:600; font-size:14px; background:#292b31; border-radius:13px; margin-top:13px; }
-.editor-list { gap:6px; }
-.editor-list .edit-row { border-radius:12px; }
-.editor-action,.save { box-shadow:none; }
-@media(max-height:710px) { .settings-preview { padding:5px 10px 7px; } .preview-frame { padding:5px 4px; } .preview-kicker { margin-bottom:4px; } }
+/* V16 – native grouped-list presentation */
+.card-label{font-family:var(--button-font,var(--app-font));}
+:root { --title-color:#f6f6f7; --pattern-image:none; --pattern-size:auto; --pattern-opacity:0; }
+body { background:var(--bg); }
+.app { position:relative; isolation:isolate; }
+.app::before { content:""; position:absolute; inset:0; background-image:var(--pattern-image);background-size:var(--pattern-size);opacity:var(--pattern-opacity);pointer-events:none;z-index:0; }
+.app > * { position:relative;z-index:1; }
+.app-title { color:var(--title-color); }
+.header { padding-left:66px; padding-right:66px; }
+.header-action { position:absolute;top:50%;transform:translateY(-50%);height:46px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:14px;background:#22252a;color:var(--accent); }
+.edit-home { left:0;min-width:61px;padding:0 12px;font-weight:700;font-size:16px; }
+.menu {right:0;width:46px;height:46px;}
+.menu svg{width:23px;height:23px;}
+.header-action:active { filter:brightness(1.25); }
+@media(max-width:370px){.app{padding-left:8px;padding-right:8px}.header{padding-left:62px;padding-right:55px}}
+/* Modal structure behaves like iOS Settings navigation inside a web app. */
+.scrim{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.57);opacity:0;pointer-events:none;transition:opacity .23s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;z-index:21;left:50%;bottom:0;transform:translate(-50%,105%);visibility:hidden;display:flex;flex-direction:column;width:min(100%,660px);height:min(94dvh,920px);max-height:94dvh;border-radius:24px 24px 0 0;background:#1b1c20;border:1px solid rgba(255,255,255,.10);border-bottom:0;box-shadow:0 -18px 60px #0009;transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility .28s;padding-bottom:env(safe-area-inset-bottom)}
+.sheet.open{transform:translate(-50%,0);visibility:visible}
+.grabber{flex:none;background:#696a72;width:37px;height:5px;border-radius:5px;margin:8px auto 0}
+.sheet-head{display:grid;grid-template-columns:78px minmax(0,1fr) 78px;min-height:52px;align-items:center;padding:3px 15px 7px;border-bottom:1px solid #ffffff0c;flex:none}
+.sheet-head h2{font-size:17px;font-weight:700;text-align:center;margin:0;letter-spacing:-.025em}
+.sheet-action{font-size:16px;color:var(--accent);background:none;padding:9px 0;text-align:left}
+.sheet-action:last-child{text-align:right;font-weight:650}
+.sheet-body{min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;flex:1;padding:18px 15px max(30px,env(safe-area-inset-bottom));background:#1b1c20}
+.sheet-body:focus{outline:none}
+.settings-preview{flex:none;padding:8px 12px 10px;border-bottom:1px solid #ffffff10;background:#202127}
+.settings-preview[hidden]{display:none!important}
+.preview-caption{display:flex;align-items:center;justify-content:space-between;color:#9498a1;letter-spacing:.06em;font-size:10px;font-weight:650;padding:0 5px 5px;text-transform:uppercase}
+.preview-stage{border:1px solid #ffffff15;border-radius:12px;background:#090a0b;display:flex;justify-content:center;overflow:hidden;padding:7px 0}
+.preview-mini{position:relative;isolation:isolate;transform-origin:top left;flex:none;padding:9px 14px 6px;overflow:hidden;background:var(--bg)}
+.preview-mini::before{content:"";position:absolute;inset:0;background-image:var(--pattern-image);background-size:var(--pattern-size);opacity:var(--pattern-opacity);z-index:0;pointer-events:none}
+.preview-mini>*{position:relative;z-index:1}
+.preview-mini .header{height:68px;padding:4px 65px 7px}
+.preview-mini .edit-home,.preview-mini .menu{pointer-events:none}
+.preview-mini .tabs{flex:none;margin:0 -14px 10px;padding:0 14px;}
+.preview-mini .tab{min-height:46px}
+.preview-mini .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.preview-mini .card{pointer-events:none}
+/* Grouped Settings list system */
+.ios-group-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.045em;color:#9799a2;margin:22px 10px 7px}
+.ios-group-title:first-child{margin-top:2px}
+.ios-group{border-radius:13px;background:#2c2c2e;overflow:hidden}
+.ios-row{position:relative;display:flex;align-items:center;gap:10px;min-height:51px;padding:9px 14px;border-bottom:1px solid #ffffff14}
+.ios-row:last-child{border-bottom:0}
+.ios-row-label{font-size:15px;font-weight:500;color:#f4f4f6;flex:0 0 112px}
+.ios-row-value{min-width:0;flex:1;display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.ios-row-value>input[type=text],.ios-row-value>select{width:100%;min-width:0;text-align:right;background:transparent;border:0;padding:7px 0;color:#e9e9ed;outline:none;font-size:16px}
+.ios-row-value>select{color:var(--accent);appearance:auto}
+.ios-row-value>input[type=color]{border:1px solid #ffffff40;background:transparent;border-radius:10px;padding:0;width:44px;height:34px;flex:none}
+.ios-row-value input[type=range]{flex:1;min-width:35px;accent-color:var(--accent);height:29px;touch-action:pan-x}
+.ios-value{min-width:39px;color:#aaaeb7;font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.ios-help{margin:8px 10px 14px;color:#9a9da7;font-size:12px;line-height:1.45}
+.ios-row-nav{width:100%;border:0;background:none;text-align:left;cursor:pointer;min-height:62px}
+.ios-row-nav .ios-row-label{flex:1;font-size:16px}
+.ios-nav-meta{color:#999ca6;font-size:14px}
+.ios-chevron{color:#84858b;font-size:22px;line-height:1}
+.ios-row-nav:active{background:#424245}
+.ios-segments{display:inline-flex;align-items:center;gap:3px;background:#1b1b1e;padding:3px;border-radius:9px}
+.ios-segments button{min-width:42px;min-height:34px;border-radius:7px;color:#d2d2d6;font-size:16px}
+.ios-segments button.selected{background:#505059;color:white;box-shadow:0 1px 3px #0008}
+.ios-button{width:100%;min-height:46px;background:var(--accent);color:#1b1c20;border-radius:12px;font-weight:700;margin:12px 0}
+.ios-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:2px 0 5px}
+.ios-pattern{display:flex;flex-direction:column;gap:6px;align-items:center;padding:9px 5px 8px;border:1px solid #ffffff20;border-radius:12px;background:#2c2c2e;color:#d5d6da;font-size:11px}
+.ios-pattern.selected{border:2px solid var(--accent);padding:8px 4px 7px;color:#fff}
+.pattern-sample{width:100%;height:35px;border-radius:7px;border:1px solid #ffffff24;background-color:var(--bg);background-image:var(--chip-image);background-size:var(--chip-size);opacity:.95}
+@media(max-width:365px){.ios-row-label{flex-basis:90px}.ios-row{padding:9px 10px}.ios-row-value{gap:6px}.ios-value{min-width:31px;font-size:11px}.organize-count{display:none}.org-btn{width:25px;min-width:25px}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* Organize screen */
+.organize-intro{color:#a5a8b1;font-size:12px;line-height:1.45;padding:0 5px 12px}
+.organize-section{border:1px solid #ffffff14;border-radius:14px;background:#25272d;overflow:hidden;margin-bottom:12px}
+.organize-section>.organize-header{background:#37393e}
+.organize-header{display:flex;align-items:center;gap:6px;padding:7px 9px;min-height:52px}
+.organize-marker{width:4px;background:var(--accent);align-self:stretch;border-radius:3px;flex:none}
+.organize-name{font-weight:750;font-size:15px;min-width:0;flex:1;overflow-wrap:anywhere}
+.organize-count{font-size:12px;color:#a8aab1}
+.organize-items{margin:0 0 0 22px;border-left:2px solid #72757c44}
+.organize-item{display:flex;align-items:center;gap:6px;margin:0 0 0 10px;padding:3px 7px 3px 0;min-height:47px;border-bottom:1px solid #ffffff10}
+.organize-item:last-child{border-bottom:0}
+.organize-item-name{flex:1;min-width:0;font-size:14px;overflow-wrap:anywhere;color:#ededf0}
+.organize-item-name small{display:block;color:#969ba5;font-size:10px;margin-top:2px}
+.org-btn{width:30px;min-width:30px;height:36px;border-radius:8px;display:grid;place-items:center;color:#bfc3c9;background:transparent}
+.org-btn svg{width:17px;height:17px}
+.org-btn:disabled{opacity:.2}
+.org-btn:active{background:#ffffff15}
+.org-btn.danger{color:#ff6d65}
+.org-btn.handle{touch-action:none;cursor:grab;color:#81848d}
+.organize-item.dragging,.organize-section.dragging{background:#bf6d2330}
+.org-add{display:block;width:100%;background:#2b2d33;text-align:left;min-height:43px;color:var(--accent);padding:10px 15px;font-size:14px;font-weight:640;border-top:1px solid #ffffff12}
+.org-add:active{background:#ffffff10}
+.org-add-section{background:#2c2c2e;border-radius:13px;border:0;margin:10px 0}
+.editor-footer{font-size:12px;color:#8c909a;padding:4px 8px 20px}
+.error-line{color:#ff8b83;font-size:13px;margin-top:8px}
+.edit-actions{display:flex;gap:9px;margin-top:12px}
+.edit-actions button{min-height:45px;flex:1;background:#45464a;border-radius:10px;font-weight:700}
+.edit-actions button.primary{background:var(--accent);color:#161616}
+@media(max-height:700px){.settings-preview{padding:5px 8px 6px}.preview-stage{padding:3px 0}.sheet-body{padding-top:12px}}
+@media(prefers-reduced-motion:reduce){.sheet,.scrim{transition-duration:.01ms!important}}
 
 </style>
 </head>
 <body>
 <main class="app">
-  <header class="header">
-    <h1 class="app-title">RadioGrid</h1>
-    <button class="menu" type="button" id="openSettings" aria-label="Open settings" title="Settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-    </button>
-  </header>
-  <nav class="tabs" id="tabs" aria-label="RadioGrid categories"></nav>
-  <section class="page-viewport" id="pageViewport" aria-label="Swipe left or right here to change category">
-    <div class="page-track" id="pageTrack" aria-label="Audio shortcut pages"></div>
-  </section>
+ <header class="header">
+  <button type="button" id="openEdit" class="header-action edit-home" aria-label="Edit categories and buttons">Edit</button>
+  <h1 class="app-title">RadioGrid</h1>
+  <button type="button" class="menu header-action" id="openSettings" aria-label="Settings" title="Settings">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a2 2 0 0 0 .4 2.2l.1.1-2.3 2.3-.2-.1a2 2 0 0 0-2.2-.4 2 2 0 0 0-1.2 1.8V21h-3.2v-.2a2 2 0 0 0-1.2-1.8 2 2 0 0 0-2.2.4l-.2.1-2.3-2.3.1-.1A2 2 0 0 0 5.4 15a2 2 0 0 0-1.8-1.2H3.4v-3.2h.2A2 2 0 0 0 5.4 9.4a2 2 0 0 0-.4-2.2l-.1-.1 2.3-2.3.2.1a2 2 0 0 0 2.2.4 2 2 0 0 0 1.2-1.8V3h3.2v.2A2 2 0 0 0 15.2 5a2 2 0 0 0 2.2-.4l.2-.1 2.3 2.3-.1.1a2 2 0 0 0-.4 2.2 2 2 0 0 0 1.8 1.2h.2v3.2h-.2A2 2 0 0 0 19.4 15Z"/></svg>
+  </button>
+ </header>
+ <nav class="tabs" id="tabs" aria-label="RadioGrid categories"></nav>
+ <section class="page-viewport" id="pageViewport" aria-label="Swipe here to change category"><div class="page-track" id="pageTrack"></div></section>
 </main>
 <div id="scrim" class="scrim" aria-hidden="true"></div>
 <section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
-  <div class="grabber" aria-hidden="true"></div>
-  <header class="sheet-head">
-    <button type="button" class="sheet-action" id="sheetBack">Close</button>
-    <h2 id="sheetTitle">Settings</h2>
-    <button type="button" class="sheet-action" id="sheetDone">Done</button>
-  </header>
-  <div class="settings-preview" id="settingsPreview" aria-label="Live appearance preview"></div>
-  <div class="sheet-body" id="sheetBody"></div>
+ <div class="grabber"></div>
+ <header class="sheet-head"><button id="sheetBack" class="sheet-action" type="button">Close</button><h2 id="sheetTitle">Settings</h2><button id="sheetDone" class="sheet-action" type="button">Done</button></header>
+ <div class="settings-preview" id="settingsPreview" aria-label="Live miniature RadioGrid preview"></div>
+ <div class="sheet-body" id="sheetBody"></div>
 </section>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <input id="importPicker" class="sr-only" type="file" accept="application/json,.json">
 <script>
 "use strict";
@@ -357,7 +238,7 @@ const DEFAULT_TYPOGRAPHY={titleFontSize:32,buttonFontSize:20,titleBold:true,titl
 // it is reduced when needed to keep every row visible without scrolling.
 const DEFAULT_BUTTON_STYLE={width:100,height:96,outlineColor:"#777b83",outlineWidth:1,cornerRadius:13,gapX:10,gapY:10};
 const clampNumber=(v,min,max,defaultValue)=>typeof v==="number"&&Number.isFinite(v)?Math.round(Math.max(min,Math.min(max,v))):defaultValue;
-const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23",card:"#373a41",buttonText:"#f3f4f5"};
+const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23",card:"#373a41",buttonText:"#f3f4f5",titleColor:"#f6f6f7",pattern:"none"};
 const raw=(id,name,icon,extra={})=>({id,name,icon,action:"shortcut",target:name,...extra});
 const DEFAULT_SECTIONS=[
  {id:"podcasts",name:"Podcasts",icon:"podcast",items:[
@@ -427,7 +308,7 @@ function normalizeSections(source){
 }
 function inferSectionIcon(id){return id==="podcasts"?"podcast":id==="radio"?"radio":"broadcast";}
 function inferItemIcon(name){const n=String(name).toLowerCase();if(n.includes("bible"))return "book";if(n.includes("ksr"))return "mic";if(n.includes("rock"))return "rock";if(n.includes("coffee"))return "coffee";if(n.includes("americana"))return "guitar";if(n.includes("wuky"))return "tower";return "music";}
-const defaults=()=>({sections:clone(DEFAULT_SECTIONS),active:"podcasts",theme:clone(DEFAULT_THEME),returnMethod:"website",appTitle:DEFAULT_APP_TITLE,fontStyle:DEFAULT_FONT_STYLE,...DEFAULT_TYPOGRAPHY,buttonStyle:clone(DEFAULT_BUTTON_STYLE)});
+const defaults=()=>({sections:clone(DEFAULT_SECTIONS),active:"podcasts",theme:clone(DEFAULT_THEME),returnMethod:"website",appTitle:DEFAULT_APP_TITLE,fontStyle:DEFAULT_FONT_STYLE,buttonFontStyle:DEFAULT_FONT_STYLE,...DEFAULT_TYPOGRAPHY,buttonStyle:clone(DEFAULT_BUTTON_STYLE)});
 function normalise(data){
  if(!data||typeof data!=="object")throw Error("Invalid backup");
  const sections=normalizeSections(data.sections);
@@ -435,7 +316,7 @@ function normalise(data){
  const active=sections.some(s=>s.id===data.active)?data.active:sections[0]?.id||"";
  const customTitle=typeof data.appTitle==="string"?data.appTitle.trim().slice(0,32):DEFAULT_APP_TITLE;
  const fontStyle=Object.hasOwn(FONT_STACKS,data.fontStyle)?data.fontStyle:DEFAULT_FONT_STYLE;
- return {sections,active,theme:{accent:safeColor(theme.accent)||DEFAULT_THEME.accent,background:safeColor(theme.background)||safeColor(theme.bg)||DEFAULT_THEME.background,surface:safeColor(theme.surface)||safeColor(theme.panel)||DEFAULT_THEME.surface,surface2:safeColor(theme.surface2)||safeColor(theme.panel2)||DEFAULT_THEME.surface2,card:safeColor(theme.card)||DEFAULT_THEME.card,buttonText:safeColor(theme.buttonText)||DEFAULT_THEME.buttonText},returnMethod:data.returnMethod==="webapp"?"webapp":data.returnMethod==="shortcut"?"shortcut":"website",appTitle:customTitle||DEFAULT_APP_TITLE,fontStyle,
+ return {sections,active,theme:{accent:safeColor(theme.accent)||DEFAULT_THEME.accent,background:safeColor(theme.background)||safeColor(theme.bg)||DEFAULT_THEME.background,surface:safeColor(theme.surface)||safeColor(theme.panel)||DEFAULT_THEME.surface,surface2:safeColor(theme.surface2)||safeColor(theme.panel2)||DEFAULT_THEME.surface2,card:safeColor(theme.card)||DEFAULT_THEME.card,buttonText:safeColor(theme.buttonText)||DEFAULT_THEME.buttonText,titleColor:safeColor(theme.titleColor)||DEFAULT_THEME.titleColor,pattern:["none","terrain","carbon","grid","brushed","glow"].includes(theme.pattern)?theme.pattern:"none"},returnMethod:data.returnMethod==="webapp"?"webapp":data.returnMethod==="shortcut"?"shortcut":"website",appTitle:customTitle||DEFAULT_APP_TITLE,fontStyle,buttonFontStyle:Object.hasOwn(FONT_STACKS,data.buttonFontStyle)?data.buttonFontStyle:fontStyle,
    titleFontSize:clampNumber(data.titleFontSize,22,48,DEFAULT_TYPOGRAPHY.titleFontSize),
    buttonFontSize:clampNumber(data.buttonFontSize,15,25,DEFAULT_TYPOGRAPHY.buttonFontSize),
    titleBold:typeof data.titleBold==="boolean"?data.titleBold:DEFAULT_TYPOGRAPHY.titleBold,
@@ -558,9 +439,25 @@ function applyButtonStyle(){
  root.setProperty("--card-gap-x",spec.gapX+"px");
  root.setProperty("--card-gap-y",spec.gapY+"px");
 }
-function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);root.style.setProperty("--card-text",state.theme.buttonText||DEFAULT_THEME.buttonText);document.querySelector('meta[name="theme-color"]').content=state.theme.background;applyButtonStyle();applyIdentity();}
+
+const terrainSVG='<svg xmlns="http://www.w3.org/2000/svg" width="240" height="190" viewBox="0 0 240 190"><g fill="none" stroke="#b0a8a0" stroke-width="1.1" opacity=".5"><path d="M0 35L33 28 46 9 67 15 82 0M33 28L29 56 47 82 36 103 0 116M47 82L88 75 103 54 82 0M88 75L117 89 141 69 154 27 135 0M117 89L99 128 118 151 108 190M141 69L174 82 197 62 193 20 240 5M174 82L160 119 179 150 167 190M197 62L219 95 240 92M219 95L211 130 240 149M179 150L211 130M29 56L0 60M36 103L57 141 45 190M57 141L99 128M118 151L145 164 167 190M160 119L145 164M154 27L193 20"/></g></svg>';
+function patternStyle(kind){
+ switch(kind){
+  case "terrain":return ['url("data:image/svg+xml,'+encodeURIComponent(terrainSVG)+'")',"240px 190px",".19"];
+  case "carbon":return ["repeating-linear-gradient(45deg,rgba(255,255,255,.07) 0 2px,transparent 2px 7px),repeating-linear-gradient(-45deg,rgba(0,0,0,.27) 0 2px,transparent 2px 7px)","16px 16px",".38"];
+  case "grid":return ["linear-gradient(rgba(255,255,255,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.14) 1px,transparent 1px)","26px 26px",".28"];
+  case "brushed":return ["repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 4px)","100% 7px",".45"];
+  case "glow":return ["radial-gradient(ellipse at 50% 0%,rgba(220,224,230,.27),transparent 70%)","100% 100%",".50"];
+  default:return ["none","auto","0"];
+ }
+}
+function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);root.style.setProperty("--card-text",state.theme.buttonText||DEFAULT_THEME.buttonText);document.querySelector('meta[name="theme-color"]').content=state.theme.background;
+ root.style.setProperty("--title-color",state.theme.titleColor||DEFAULT_THEME.titleColor);
+ const [image,size,opacity]=patternStyle(state.theme.pattern);
+ root.style.setProperty("--pattern-image",image);root.style.setProperty("--pattern-size",size);root.style.setProperty("--pattern-opacity",opacity);
+ applyButtonStyle();applyIdentity();}
 function notify(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800);}
-function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))navigateEditor(editorPage);if(message)notify(storageWorks?message:"Change made — export a backup");}
+function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))showCurrentPage();if(message)notify(storageWorks?message:"Change made — export a backup");}
 function activeSection(){return state.sections.find(s=>s.id===state.active)||state.sections[0]||null;}
 function iconFor(name,cl){const x=el("span",cl);x.append(svg(name));return x;}
 // Render every category once; keep adjacent pages present so swiping can
@@ -617,7 +514,7 @@ function render(){
    slide.dataset.sectionId=section.id;
    const grid=el("div","grid");
    grid.setAttribute("aria-label",section.name+" buttons");
-   if(!section.items.length)grid.append(el("p","grid-empty","Add a button in Settings."));
+   if(!section.items.length)grid.append(el("p","grid-empty","Tap Edit to add a button."));
    for(const item of section.items){
      const card=el("button","card");card.type="button";
      card.setAttribute("aria-label","Play "+item.name);
@@ -741,404 +638,272 @@ function run(item){
  const ret=returnURL();
  location.href="shortcuts://x-callback-url/run-shortcut?name="+encodeURIComponent(item.target)+"&x-success="+encodeURIComponent(ret)+"&x-cancel="+encodeURIComponent(ret)+"&x-error="+encodeURIComponent(ret);
 }
-function openSheet(){if(!previewSelection)previewSelection=state.sections.find(s=>s.items.length>=6)?.id||activeSection()?.id;lastFocus=document.activeElement;$("scrim").classList.add("open");$("sheet").classList.add("open");$("sheet").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";settingsHome();$("sheetDone").focus();}
-function closeSheet(){$("scrim").classList.remove("open");$("sheet").classList.remove("open");$("sheet").setAttribute("aria-hidden","true");document.body.style.overflow="";shown="home";lastFocus?.focus?.();}
-function sheet(title,back,done,backAction,doneAction){$("sheetTitle").textContent=title;$("sheetBack").textContent=back;$("sheetDone").textContent=done;$("sheetBack").onclick=backAction;$("sheetDone").onclick=doneAction;$("sheetBody").replaceChildren();$("sheetBody").scrollTop=0;return $("sheetBody");}
-function group(name){return el("div","group-label",name);}
-function settingsTile(icon,title,sub,action){const b=el("button","settings-tile");b.type="button";const txt=el("span","settings-text");txt.append(el("span","settings-title",title),el("span","settings-sub",sub));b.append(iconFor(icon,"settings-icon"),txt,iconFor("chevron","chevron"));b.onclick=action;return b;}
-function normalRow(text,fn,danger=false){const b=el("button","normal-row"+(danger?" danger":""),text);b.type="button";b.onclick=fn;return b;}
-// V14 settings are implemented as focused screens below.
-function miniButton(icon,description,fn,extra=""){const b=el("button","icon-btn "+extra);b.type="button";b.setAttribute("aria-label",description);b.title=description;b.append(svg(icon));if(fn)b.onclick=fn;return b;}
-function addRow(label,fn){const b=el("button","plain-add");b.type="button";b.append(svg("plus"),el("span","",label));b.onclick=fn;return b;}
-function swap(list,index,dir){const j=index+dir;if(j<0||j>=list.length)return;[list[index],list[j]]=[list[j],list[index]];changed("Order updated");}
-function connectDrag(handle,row,kind){let pointer=null,changedOrder=false;
- handle.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"&&e.button!==0)return;pointer=e.pointerId;changedOrder=false;handle.setPointerCapture(pointer);row.classList.add("dragging");e.preventDefault();});
- handle.addEventListener("pointermove",e=>{
-   if(pointer!==e.pointerId)return;
-   const hit=document.elementFromPoint(e.clientX,e.clientY);if(!hit)return;
-   if(kind==="section"){
-     const dest=hit.closest(".manage-section");if(!dest||dest===row)return;
-     const mid=dest.getBoundingClientRect();$("manageRoot").insertBefore(row,e.clientY<(mid.top+mid.height/2)?dest:dest.nextSibling);changedOrder=true;
-   }else{
-     const dest=hit.closest(".manage-item");
-     if(dest&&dest!==row){const mid=dest.getBoundingClientRect();dest.parentNode.insertBefore(row,e.clientY<mid.top+mid.height/2?dest:dest.nextSibling);changedOrder=true;}
-     else if(!dest){const parent=hit.closest(".manage-items")||hit.closest(".manage-section")?.querySelector(".manage-items");if(parent&&parent!==row.parentElement){parent.append(row);changedOrder=true;}}
-   }
- });
- const end=e=>{if(pointer!==e.pointerId)return;pointer=null;row.classList.remove("dragging");if(changedOrder)syncOrder();};handle.addEventListener("pointerup",end);handle.addEventListener("pointercancel",end);
+// RadioGrid V16: native-style appearance Settings and separate hierarchical editor.
+let editorPage="settings";
+let editorArgs={};
+let previewSection=state.sections.find(s=>s.items.length>=6)?.id||state.active;
+function liveUpdate(){save();theme();render();drawMini();}
+function structuralUpdate(message){save();theme();render();showCurrentPage();if(message)notify(storageWorks?message:"Changes made — export a backup");}
+function showModal(page="settings",args={}){
+ lastFocus=document.activeElement;
+ editorPage=page;editorArgs=args;
+ $("scrim").classList.add("open");$("sheet").classList.add("open");$("sheet").setAttribute("aria-hidden","false");
+ document.body.style.overflow="hidden";
+ showCurrentPage();
 }
-function syncOrder(){const root=$("manageRoot");if(!root)return;const sectionsById=new Map(state.sections.map(s=>[s.id,s]));const itemsById=new Map(state.sections.flatMap(s=>s.items.map(i=>[i.id,i])));
- const next=[];root.querySelectorAll(":scope > .manage-section").forEach(box=>{const section=sectionsById.get(box.dataset.sectionId);if(!section)return;section.items=[...box.querySelectorAll(":scope > .manage-items > .manage-item")].map(n=>itemsById.get(n.dataset.itemId)).filter(Boolean);next.push(section);});
- state.sections=next;changed("Reordered");
+function closeModal(){
+ $("scrim").classList.remove("open");$("sheet").classList.remove("open");$("sheet").setAttribute("aria-hidden","true");
+ $("settingsPreview").hidden=true;
+ document.body.style.overflow="";lastFocus?.focus?.();
 }
-function deleteSection(id){const s=state.sections.find(v=>v.id===id);if(!s||!confirm("Delete ‘"+s.name+"’ and its "+s.items.length+" button(s)?"))return;state.sections=state.sections.filter(v=>v.id!==id);if(!state.sections.some(v=>v.id===state.active))state.active=state.sections[0]?.id||"";changed("Section deleted");}
-function findItem(id){for(const s of state.sections){const i=s.items.find(v=>v.id===id);if(i)return {section:s,item:i};}return null;}
-function deleteButton(id){const f=findItem(id);if(!f||!confirm("Delete ‘"+f.item.name+"’?"))return;f.section.items=f.section.items.filter(v=>v.id!==id);changed("Button deleted");}
-function field(labelText,control){const row=el("div","field");const lab=el("label","",labelText);if(!control.id)control.id=uid();lab.htmlFor=control.id;row.append(lab,control);return row;}
-function textInput(value,placeholder=""){const n=el("input");n.type="text";n.value=value||"";n.placeholder=placeholder;n.autocomplete="off";return n;}
-function selectInput(options,value){const n=el("select");for(const [id,title] of options){const opt=el("option","",title);opt.value=id;n.append(opt);}n.value=value;return n;}
-function checkRow(label,checked){const input=el("input");input.type="checkbox";input.checked=checked;const row=field(label,input);row.classList.add("check");return {row,input};}
-function sizeField(label,value,min,max,onUpdate,unit="px"){
- const slider=el("input");slider.type="range";slider.min=min;slider.max=max;slider.step=1;slider.value=value;
- slider.setAttribute("aria-label",label+(unit==="%"?" in percent":" in pixels"));
- const output=el("output","type-size-output",value+(unit==="%"?"%":" px"));
- const controls=el("div","type-slider-control");controls.append(slider,output);
- slider.addEventListener("input",()=>{const v=Number(slider.value);output.textContent=v+(unit==="%"?"%":" px");onUpdate(v);});
- const row=el("div","field typography-field");
- slider.id=uid();const text=el("label","",label);text.htmlFor=slider.id;
- row.append(text,controls);return row;
+function navigate(page,args={}){editorPage=page;editorArgs=args;showCurrentPage();}
+function showCurrentPage(){
+ const pages={settings:["Settings",null],design:["Button Design","settings"],playback:["Playback & Backup","settings"],organize:["Edit Categories",null],section:[editorArgs.id?"Edit Category":"New Category","organize"],button:[editorArgs.id?"Edit Button":"New Button","organize"]};
+ const [title,parent]=pages[editorPage]||pages.settings;
+ $("sheetTitle").textContent=title;
+ $("sheetBack").textContent=parent?"‹ Back":"Close";
+ $("sheetBack").onclick=()=>parent?navigate(parent):closeModal();
+ $("sheetDone").textContent=editorPage==="section"||editorPage==="button"?"Save":"Done";
+ $("sheetDone").onclick=editorPage==="section"||editorPage==="button"?()=>$("editSave").click():closeModal;
+ $("settingsPreview").hidden=!(["settings","design"].includes(editorPage));
+ const body=$("sheetBody");body.replaceChildren();body.scrollTop=0;
+ if(editorPage==="settings")settingsPage(body);
+ if(editorPage==="design")designPage(body);
+ if(editorPage==="playback")playbackPage(body);
+ if(editorPage==="organize")organizePage(body);
+ if(editorPage==="section")editSectionPage(body,editorArgs.id);
+ if(editorPage==="button")editButtonPage(body,editorArgs.id,editorArgs.sectionId);
+ if(!$("settingsPreview").hidden)drawMini();
 }
-function toggleField(label,checked,onUpdate){
- const {row,input}=checkRow(label,checked);
- input.setAttribute("aria-label",label);
- input.onchange=()=>onUpdate(input.checked);
- return row;
+function sectionLabel(text){return el("div","ios-group-title",text)}
+function grouped(...rows){const g=el("div","ios-group");rows.forEach(r=>g.append(r));return g;}
+function settingRow(label,control){const r=el("div","ios-row");r.append(el("span","ios-row-label",label));const v=el("div","ios-row-value");v.append(control);r.append(v);return r;}
+function textControl(value,placeholder="") {const i=el("input");i.type="text";i.value=value||"";i.placeholder=placeholder;i.autocomplete="off";return i;}
+function choiceControl(values,current) {const s=el("select");for(const [key,name] of values){const o=el("option","",name);o.value=key;s.append(o)}s.value=current;return s;}
+function sliderRow(label,value,min,max,unit,callback){
+ const r=el("div","ios-row"),l=el("label","ios-row-label",label),v=el("div","ios-row-value");
+ const input=el("input");input.type="range";input.min=min;input.max=max;input.step="1";input.value=value;
+ input.id=uid();l.htmlFor=input.id;
+ const output=el("output","ios-value",value+unit);
+ input.oninput=()=>{output.textContent=input.value+unit;callback(Number(input.value));};
+ v.append(input,output);r.append(l,v);return r;
 }
-function colorSelector(initial,onChange,inherit=false){const area=el("div","");const palette=el("div","palette");const buttons=[];let selected=initial||"";
- if(inherit){const b=el("button","swatch","↻");b.type="button";b.style.setProperty("--swatch","#454950");b.title="Use default orange";b.style.color="#fff";b.onclick=()=>{selected="";paint();onChange("");};palette.append(b);buttons.push([b,""]);}
- for(const c of PALETTE){const b=el("button","swatch");b.type="button";b.style.setProperty("--swatch",c);b.setAttribute("aria-label","Select "+c);b.onclick=()=>{selected=c;paint();onChange(c);};palette.append(b);buttons.push([b,c]);}
- function paint(){for(const [b,c] of buttons)b.classList.toggle("selected",selected.toLowerCase()===c.toLowerCase());}
- paint();area.append(palette);const inp=el("input");inp.type="color";inp.value=safeColor(initial)||DEFAULT_THEME.accent;inp.oninput=()=>{selected=inp.value;paint();onChange(inp.value);};area.append(field("Custom color",inp));return area;
+function colorRow(label,value,callback){const picker=el("input");picker.type="color";picker.value=safeColor(value)||"#ffffff";picker.setAttribute("aria-label",label+" color");const text=el("span","ios-value",picker.value.toUpperCase());picker.oninput=()=>{text.textContent=picker.value.toUpperCase();callback(picker.value);};const v=el("div","ios-row-value");v.append(text,picker);const row=el("div","ios-row");row.append(el("span","ios-row-label",label),v);return row;}
+function styleRow(prefix){
+ const r=el("div","ios-row");r.append(el("span","ios-row-label","Style"));
+ const v=el("div","ios-row-value"),group=el("div","ios-segments");
+ for(const [key,label] of [["Bold","B"],["Italic","I"]]){
+  const stateKey=prefix+key,b=el("button",state[stateKey]?"selected":"",label);b.type="button";
+  b.style.fontWeight=key==="Bold"?"900":"500";b.style.fontStyle=key==="Italic"?"italic":"normal";
+  b.setAttribute("aria-label",key);b.setAttribute("aria-pressed",String(state[stateKey]));
+  b.onclick=()=>{state[stateKey]=!state[stateKey];b.classList.toggle("selected",state[stateKey]);b.setAttribute("aria-pressed",String(state[stateKey]));liveUpdate();};
+  group.append(b);
+ }
+ v.append(group);r.append(v);return r;
 }
-// Inline editors remain within the same Settings page, not separate screens.
-function mountEditor(host, build){
- $("sheetBody").querySelectorAll(".inline-form").forEach(n=>n.remove());
- const panel=el("div","inline-form");host.after(panel);
- build(panel);
- panel.scrollIntoView({block:"nearest",behavior:"smooth"});
+function navigationRow(label,subtitle,fn){
+ const b=el("button","ios-row ios-row-nav");b.type="button";
+ b.append(el("span","ios-row-label",label),el("span","ios-nav-meta",subtitle),el("span","ios-chevron","›"));b.onclick=fn;return b;
 }
-function showSectionEditor(id,host){
- const section=id?state.sections.find(s=>s.id===id):null;
- mountEditor(host,panel=>{
-   panel.append(el("div","inline-heading",section?"Edit section":"New section"));
-   const name=textInput(section?.name||"","Section name");
-   const fields=el("div","field-set");fields.append(field("Name",name));panel.append(fields);
-   const err=el("div","error");panel.append(err);
-   const actions=el("div","inline-actions");
-   const cancel=el("button","inline-cancel","Cancel");cancel.type="button";cancel.onclick=()=>panel.remove();
-   const done=el("button","inline-save","Save");done.type="button";done.onclick=()=>{
-     const n=name.value.trim();if(!n){err.textContent="Enter a section name.";return;}
-     if(section)section.name=n;
-     else {const s={id:uid(),name:n,icon:"broadcast",items:[]};state.sections.push(s);if(!state.active)state.active=s.id;}
-     changed("Section saved");
-   };
-   actions.append(cancel,done);panel.append(actions);
- });
+function settingsPage(body){
+ body.append(sectionLabel("Title"));
+ const name=textControl(state.appTitle,"RadioGrid");name.maxLength=32;
+ name.oninput=()=>{state.appTitle=name.value||DEFAULT_APP_TITLE;liveUpdate();};
+ name.onblur=()=>{if(!name.value.trim()){name.value=DEFAULT_APP_TITLE;state.appTitle=DEFAULT_APP_TITLE;liveUpdate();}};
+ const font=choiceControl(FONT_OPTIONS,state.fontStyle);font.onchange=()=>{state.fontStyle=font.value;liveUpdate();};
+ body.append(grouped(settingRow("Name",name),settingRow("Font",font),sliderRow("Size",state.titleFontSize,22,48," px",v=>{state.titleFontSize=v;liveUpdate();}),styleRow("title"),colorRow("Text Color",state.theme.titleColor,v=>{state.theme.titleColor=v;liveUpdate();})));
+ body.append(sectionLabel("Background"));
+ const accent=colorRow("Accent",state.theme.accent,v=>{state.theme.accent=v;liveUpdate();});
+ body.append(grouped(colorRow("Color",state.theme.background,v=>{state.theme.background=v;liveUpdate();}),accent));
+ body.append(sectionLabel("Pattern"));
+ const patterns=[["none","Plain"],["terrain","Terrain"],["carbon","Carbon"],["grid","Grid"],["brushed","Brushed"],["glow","Glow"]];
+ const picks=el("div","ios-choice-grid");
+ for(const [key,title] of patterns){
+  const b=el("button","ios-pattern"+(state.theme.pattern===key?" selected":""));b.type="button";
+  const sample=el("span","pattern-sample"),[image,size]=patternStyle(key);sample.style.setProperty("--chip-image",image);sample.style.setProperty("--chip-size",size);
+  b.append(sample,el("span","",title));b.setAttribute("aria-pressed",String(state.theme.pattern===key));
+  b.onclick=()=>{state.theme.pattern=key;picks.querySelectorAll(".ios-pattern").forEach(n=>{n.classList.remove("selected");n.setAttribute("aria-pressed","false")});b.classList.add("selected");b.setAttribute("aria-pressed","true");liveUpdate();};
+  picks.append(b);
+ }
+ body.append(picks,el("p","ios-help","Terrain is an original cracked-earth-inspired pattern, recalling classic Uconnect display themes. Changes appear above immediately."));
+ body.append(sectionLabel("Buttons"),grouped(navigationRow("Button Design","Fonts, size, borders, spacing",()=>navigate("design"))));
+ body.append(sectionLabel("More"),grouped(navigationRow("Playback & Backup","Return method, save and restore",()=>navigate("playback"))));
+ body.append(el("p","ios-help","Organize categories and buttons with Edit at the upper left of the home screen."));
 }
-function showButtonEditor(id,sectionId,host){
- const found=id?findItem(id):null;const item=found?.item||null;
- mountEditor(host,panel=>{
-   panel.append(el("div","inline-heading",item?"Edit button":"New button"));
-   const name=textInput(item?.name||"","Displayed button name");
-   const section=selectInput(state.sections.map(s=>[s.id,s.name]),found?.section.id||sectionId||state.sections[0]?.id);
-   const action=selectInput([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
-   const target=textInput(item?.target||"","Exact Shortcut name");
-   const ret=checkRow("Return to RadioGrid",!item?.noReturn);
-   const fields=el("div","field-set");const targetRow=field("Shortcut",target);
-   fields.append(field("Name",name),field("Section",section),field("Action",action),targetRow,ret.row);
-   panel.append(fields);
-   function syncAction(){const isURL=action.value==="url";targetRow.querySelector("label").textContent=isURL?"Link":"Shortcut";target.placeholder=isURL?"https://music.apple.com/...":"Exact Shortcut name";ret.row.hidden=isURL;}
-   action.onchange=syncAction;syncAction();
-   const err=el("div","error");panel.append(err);
-   const actions=el("div","inline-actions");
-   const cancel=el("button","inline-cancel","Cancel");cancel.type="button";cancel.onclick=()=>panel.remove();
-   const done=el("button","inline-save","Save");done.type="button";done.onclick=()=>{
-     const n=name.value.trim(),t=target.value.trim(),dest=state.sections.find(s=>s.id===section.value);
-     if(!n||!t){err.textContent="Enter a button name and destination.";return;}
-     if(action.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(t)){err.textContent="Use a valid HTTPS or supported app link.";return;}
-     if(!dest){err.textContent="Select an existing section.";return;}
-     const next={id:item?.id||uid(),name:n,icon:item?.icon||"music",action:action.value,target:t,noReturn:action.value==="shortcut"&&!ret.input.checked,color:item?.color||""};
-     if(found){const at=found.section.items.findIndex(i=>i.id===id);found.section.items.splice(at,1);if(dest===found.section)dest.items.splice(at,0,next);else dest.items.push(next);}
-     else dest.items.push(next);
-     changed("Button saved");
-   };
-   actions.append(cancel,done);panel.append(actions);
- });
+function designPage(body){
+ body.append(sectionLabel("Button Text"));
+ const bf=choiceControl(FONT_OPTIONS,state.buttonFontStyle||state.fontStyle);
+ bf.onchange=()=>{state.buttonFontStyle=bf.value;liveUpdate();};
+ body.append(grouped(settingRow("Font",bf),sliderRow("Size",state.buttonFontSize,15,25," px",v=>{state.buttonFontSize=v;liveUpdate();}),styleRow("button"),colorRow("Text Color",state.theme.buttonText,v=>{state.theme.buttonText=v;liveUpdate();})));
+ body.append(sectionLabel("Button Appearance"));
+ body.append(grouped(colorRow("Fill Color",state.theme.card,v=>{state.theme.card=v;liveUpdate();}),sliderRow("Width",state.buttonStyle.width,75,100,"%",v=>{state.buttonStyle.width=v;liveUpdate();}),sliderRow("Height",state.buttonStyle.height,56,120," px",v=>{state.buttonStyle.height=v;liveUpdate();})));
+ body.append(sectionLabel("Border & Corners"));
+ body.append(grouped(colorRow("Border Color",state.buttonStyle.outlineColor,v=>{state.buttonStyle.outlineColor=v;liveUpdate();}),sliderRow("Border Width",state.buttonStyle.outlineWidth,0,4," px",v=>{state.buttonStyle.outlineWidth=v;liveUpdate();}),sliderRow("Corners",state.buttonStyle.cornerRadius,0,28," px",v=>{state.buttonStyle.cornerRadius=v;liveUpdate();})));
+ body.append(sectionLabel("Spacing"));
+ body.append(grouped(sliderRow("Horizontal",state.buttonStyle.gapX,0,24," px",v=>{state.buttonStyle.gapX=v;liveUpdate();}),sliderRow("Vertical",state.buttonStyle.gapY,0,24," px",v=>{state.buttonStyle.gapY=v;liveUpdate();})));
+ body.append(el("p","ios-help","Button height adapts when a category has many rows. Text automatically fits within each button; the live preview uses the same proportions as the home screen."));
 }
-function exportSettings(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=el("a");a.href=url;a.download="RadioGrid-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Download requested");}
-$("importPicker").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=normalise(JSON.parse(await file.text()));if(confirm("Replace current RadioGrid configuration with this backup?")){state=data;changed("Settings imported");navigateEditor("home");}}catch(_){alert("Import failed. Choose a valid RadioGrid settings JSON file.");}finally{e.target.value="";}};
-function resetDefaults(){if(!confirm("Restore all original sections, buttons, and colors? Export a backup first if needed."))return;state=defaults();changed("Defaults restored");}
-
-// --- V14: short settings pages with an always-visible live preview ---
-let editorPage="home";
-let previewSelection=null;
-let previewDraft=null;
-let editorReturn="organize";
-function updateLivePreview(){
- const host=$("settingsPreview");if(!host)return;
- const current=state.sections.find(s=>s.id===previewSelection)||activeSection()||state.sections[0];
- if(current)previewSelection=current.id;
+function playbackPage(body){
+ body.append(sectionLabel("Return After Playing"));
+ const method=choiceControl([["website","Website link"],["webapp","Home Screen app (experimental)"],["shortcut","Open Radio Grid Shortcut"]],state.returnMethod);
+ method.onchange=()=>{state.returnMethod=method.value;save();notify("Return behavior saved");};
+ body.append(grouped(settingRow("Method",method)),el("p","ios-help","The selected Shortcut finishes before iOS invokes its callback. Home Screen return uses an unofficial scheme that may not work on all iOS versions."));
+ body.append(sectionLabel("Backup"));
+ body.append(grouped(navigationRow("Export Settings","JSON file",exportSettings),navigationRow("Import Settings","Load saved configuration",()=>$('importPicker').click())));
+ body.append(sectionLabel("Reset"));
+ const reset=navigationRow("Restore Defaults","Deletes customizations",resetDefaults);reset.querySelector(".ios-row-label").style.color="#ff7b72";
+ body.append(grouped(reset),el("p","ios-help",storageWorks?"Changes are saved automatically in this web app. Back up before changing its website address or reinstalling.":"Local browser storage is unavailable. Export a backup before leaving."));
+}
+function drawMini(){
+ const host=$("settingsPreview");if(host.hidden||!host.isConnected)return;
+ const selected=state.sections.find(s=>s.id===previewSection)||activeSection()||state.sections[0];
+ if(!selected)return;previewSection=selected.id;
  host.replaceChildren();
- const caption=el("div","preview-kicker");
- caption.append(el("span","","SCREEN PREVIEW"));
- const scaleCaption=el("span","preview-scale-label","");caption.append(scaleCaption);host.append(caption);
- const frame=el("div","preview-frame");const shell=el("div","preview-mini-shell");
- const scene=el("div","preview-mini-scene");
- // Lay out the very same header, category tabs and grid classes used by the
- // real home screen at its native CSS dimensions, then scale the entire scene.
- // No independently sized miniature buttons: dimensions, borders, gaps and
- // fonts always retain their original proportions.
- const nativeWidth=document.querySelector(".app")?.getBoundingClientRect().width||390;
- const heightLimit=window.innerHeight<650?206:window.innerHeight<760?232:274;
- const maxPreviewWidth=Math.min(heightLimit,Math.max(175,host.clientWidth-58));
- const scale=Math.min(.88,maxPreviewWidth/nativeWidth);
- scene.style.width=nativeWidth+"px";
- const appPadding=getComputedStyle(document.querySelector(".app")).paddingLeft;
- scene.style.paddingLeft=appPadding;scene.style.paddingRight=appPadding;
- const header=el("div","header");
- const title=el("h1","app-title",previewDraft?.title??state.appTitle);
- title.style.fontSize=state.titleFontSize+"px";
- title.style.fontWeight=state.titleBold?"800":"450";
- title.style.fontStyle=state.titleItalic?"italic":"normal";
- header.append(title);
- const hamburger=el("div","menu");hamburger.setAttribute("aria-hidden","true");hamburger.append(svg("menu"));header.append(hamburger);
- scene.append(header);
- const tabs=el("nav","tabs");
- tabs.style.marginLeft="-"+appPadding;tabs.style.marginRight="-"+appPadding;tabs.style.paddingLeft=appPadding;tabs.style.paddingRight=appPadding;
- tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
- state.sections.forEach(sec=>{
-   const label=(previewDraft?.sectionId===sec.id&&previewDraft.sectionName!==undefined)?previewDraft.sectionName:sec.name;
-   const button=el("button","tab"+(current?.id===sec.id?" active":""));
-   button.type="button";button.append(el("span","",label));button.setAttribute("aria-label","Preview "+sec.name);
-   button.onclick=()=>{previewSelection=sec.id;previewDraft=null;if(editorPage==="organize")settingsOrganize();updateLivePreview();};
-   tabs.append(button);
- });
- scene.append(tabs);
- const grid=el("div","grid");
- // Use exactly the row height selected by the live responsive layout.
- const actualGrid=[...document.querySelectorAll("#pageTrack .page-slide")].find(x=>x.dataset.sectionId===current?.id)?.querySelector(".grid");
- const spec=state.buttonStyle;
- const cols=Math.max(1,(nativeWidth-28-2*spec.gapX)/3);
- const fallbackHeight=Math.max(48,Math.min(spec.height,Math.floor(cols*spec.width/100*.98)));
- const actualHeight=actualGrid?parseFloat(getComputedStyle(actualGrid).getPropertyValue("--card-height"))||fallbackHeight:fallbackHeight;
- grid.style.setProperty("--card-height",actualHeight+"px");
- let sample=(current?.items||[]).slice(0,6).map(v=>({...v}));
- if(previewDraft?.buttonName!==undefined && previewDraft.sectionId===current?.id){
-   const at=sample.findIndex(item=>item.id===previewDraft.buttonId);
-   if(at>=0)sample[at].name=previewDraft.buttonName||"New Button";
-   else sample.unshift({name:previewDraft.buttonName||"New Button"});
-   sample=sample.slice(0,6);
- }
- if(!sample.length)grid.append(el("div","grid-empty","No buttons in this category"));
- for(const item of sample){
-   const card=el("div","card");const label=el("span","card-label");
-   const radioParts=current?.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
-   if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
-   else label.textContent=item.name;
-   card.append(label);grid.append(card);
- }
- scene.append(grid);shell.append(scene);frame.append(shell);host.append(frame);
- scene.style.transform=`scale(${scale})`;
- shell.style.width=Math.round(nativeWidth*scale)+"px";
- shell.style.height=Math.ceil(scene.scrollHeight*scale)+"px";
- scaleCaption.textContent=Math.round(scale*100)+"% · scaled to fit";
- // Apply precisely the same label-fitting rules to the tiny replica.
+ const cap=el("div","preview-caption");cap.append(el("span","","LIVE PREVIEW"));
+ const chooser=choiceControl(state.sections.map(s=>[s.id,s.name]),previewSection);chooser.setAttribute("aria-label","Preview category");
+ chooser.style.cssText="color:var(--accent);border:0;background:transparent;font-size:12px;max-width:57%;text-align:right";
+ chooser.onchange=()=>{previewSection=chooser.value;drawMini();};cap.append(chooser);host.append(cap);
+ const stage=el("div","preview-stage"),wrap=el("div"),mini=el("div","preview-mini");
+ const app=document.querySelector(".app");const nativeWidth=app?.clientWidth||390;
+ const rowHeight=(()=>{const grid=[...document.querySelectorAll("#pageTrack .page-slide")].find(s=>s.dataset.sectionId===selected.id)?.querySelector(".grid");return grid?Number.parseFloat(getComputedStyle(grid).getPropertyValue("--card-height"))||80:80;})();
+ mini.style.width=nativeWidth+"px";
+ const header=el("div","header");header.append(el("div","header-action edit-home","Edit"),el("h1","app-title",state.appTitle),el("div","menu header-action"));
+ mini.append(header);
+ const tabs=el("div","tabs");tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
+ state.sections.forEach(s=>{const t=el("div","tab"+(s.id===selected.id?" active":""));t.append(el("span","",s.name));tabs.append(t)});mini.append(tabs);
+ const grid=el("div","grid");grid.style.setProperty("--card-height",rowHeight+"px");
+ const samples=selected.items.slice(0,6);
+ if(!samples.length)grid.append(el("p","grid-empty","Empty category"));
+ for(const item of samples){const c=el("div","card"),label=el("span","card-label");const radio=selected.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
+ if(radio)label.append(el("span","frequency",radio[1]),el("span","callsign",radio[2]));else label.textContent=item.name;c.append(label);grid.append(c);}
+ mini.append(grid);
+ const rows=Math.max(1,Math.ceil(Math.max(1,samples.length)/3));
+ const height=68+66+rows*rowHeight+(rows-1)*state.buttonStyle.gapY+20;
+ const available=Math.min(164,window.innerHeight<720?115:164);
+ const scale=Math.min(.62,(host.clientWidth-36)/nativeWidth,available/height);
+ wrap.style.width=(nativeWidth*scale)+"px";wrap.style.height=(height*scale)+"px";wrap.style.position="relative";mini.style.transform=`scale(${scale})`;mini.style.transformOrigin="top left";mini.style.position="absolute";mini.style.left="0";mini.style.top="0";mini.style.height=height+"px";
+ mini.style.setProperty("--pattern-image",getComputedStyle(document.documentElement).getPropertyValue("--pattern-image"));
+ mini.style.setProperty("--pattern-size",getComputedStyle(document.documentElement).getPropertyValue("--pattern-size"));
+ mini.style.setProperty("--pattern-opacity",getComputedStyle(document.documentElement).getPropertyValue("--pattern-opacity"));
+ wrap.append(mini);stage.append(wrap);host.append(stage);
+ // Match home-screen label fitting at native dimensions, before scaling.
  requestAnimationFrame(()=>{
-   if(!scene.isConnected)return;
-   title.style.fontSize=state.titleFontSize+"px";
-   const maxTitleWidth=nativeWidth-140;
-   for(let f=state.titleFontSize;f>17&&title.scrollWidth>maxTitleWidth;f--)title.style.fontSize=(f-1)+"px";
-   tabs.querySelectorAll(".tab span").forEach(span=>{
-     let f=15;span.style.fontSize=f+"px";
-     while(f>8&&span.scrollWidth>span.clientWidth){f--;span.style.fontSize=f+"px";}
-   });
-   grid.querySelectorAll(".card").forEach(card=>{
-     const label=card.firstElementChild;let f=state.buttonFontSize;label.style.fontSize=f+"px";
-     const style=getComputedStyle(card);
-     const room=card.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
-     while(f>10&&(label.scrollHeight>room+1||label.scrollWidth>label.clientWidth+1))label.style.fontSize=(--f)+"px";
-   });
+  if(!mini.isConnected)return;
+  let ts=state.titleFontSize;const heading=mini.querySelector(".app-title");heading.style.fontSize=ts+"px";
+  while(ts>17&&heading.scrollWidth>nativeWidth-138)heading.style.fontSize=(--ts)+"px";
+  mini.querySelectorAll(".tab span").forEach(label=>{let fs=15;label.style.fontSize=fs+"px";while(fs>10&&label.scrollWidth>label.clientWidth)label.style.fontSize=(--fs)+"px";});
+  mini.querySelectorAll(".card").forEach(c=>{const l=c.querySelector(".card-label");let fs=state.buttonFontSize;l.style.fontSize=fs+"px";const p=getComputedStyle(c);const room=c.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom);while(fs>10&&(l.scrollHeight>room+1||l.scrollWidth>l.clientWidth+1))l.style.fontSize=(--fs)+"px";});
  });
 }
-function commitLiveChange(){save();theme();render();updateLivePreview();}
-function editorView(title,backPage="home"){
- editorPage=title;
- const back=title==="home"?"Close":"‹ Back";
- const name=({home:"Settings",typography:"Text & Title",buttons:"Button Shape & Spacing",colors:"Colors",organize:"Organize",playback:"Playback & Backup",editButton:"Edit Button",editSection:"Edit Category"})[title]||"Settings";
- const body=sheet(name,back,"Done",()=>title==="home"?closeSheet():navigateEditor(backPage),closeSheet);
- $("sheetBack").style.visibility="visible";
- return body;
+function tinyButton(icon,label,handler,extra=""){
+ const b=el("button","org-btn "+extra);b.type="button";b.setAttribute("aria-label",label);b.title=label;b.append(svg(icon));if(handler)b.onclick=handler;return b;
 }
-function navigateEditor(page="home",options={}){
- previewDraft=null;
- const dispatch={home:settingsDashboard,typography:settingsTypography,buttons:settingsButtons,colors:settingsColors,organize:settingsOrganize,playback:settingsPlayback,editButton:()=>settingsEditButton(options.buttonId??null,options.sectionId??null),editSection:()=>settingsEditSection(options.sectionId??null)};
- (dispatch[page]||settingsDashboard)();
- updateLivePreview();
+function findButton(id){for(const sec of state.sections){const item=sec.items.find(i=>i.id===id);if(item)return {sec,item};}return null;}
+function swapIndex(items,i,delta){const j=i+delta;if(j<0||j>=items.length)return;[items[i],items[j]]=[items[j],items[i]];structuralUpdate("Order saved");}
+function organizePage(body){
+ body.append(el("p","organize-intro","Categories are the gray headings. Each indented row is a button in that category. Use the arrows or drag handles to reorder, or the pencil to edit."));
+ const root=el("div");root.id="hierarchyRoot";
+ state.sections.forEach((sec,i)=>{
+  const block=el("section","organize-section");block.dataset.sectionId=sec.id;
+  const head=el("div","organize-header");
+  const handle=tinyButton("grip","Drag category "+sec.name,null,"handle");
+  const marker=el("span","organize-marker"),title=el("div","organize-name",sec.name),count=el("span","organize-count",sec.items.length+" buttons");
+  const up=tinyButton("up","Move category up",()=>swapIndex(state.sections,i,-1));up.disabled=i===0;
+  const down=tinyButton("down","Move category down",()=>swapIndex(state.sections,i,1));down.disabled=i===state.sections.length-1;
+  head.append(handle,marker,title,count,up,down,tinyButton("pencil","Rename category",()=>navigate("section",{id:sec.id})),tinyButton("trash","Delete category",()=>removeCategory(sec.id),"danger"));block.append(head);
+  const list=el("div","organize-items");list.dataset.sectionId=sec.id;
+  sec.items.forEach((item,j)=>{
+   const row=el("div","organize-item");row.dataset.itemId=item.id;
+   const grip=tinyButton("grip","Drag "+item.name,null,"handle");
+   const text=el("span","organize-item-name",item.name);text.append(el("small","",item.action==="url"?"Link":"Shortcut"));
+   const u=tinyButton("up","Move button up",()=>swapIndex(sec.items,j,-1));u.disabled=j===0;
+   const d=tinyButton("down","Move button down",()=>swapIndex(sec.items,j,1));d.disabled=j===sec.items.length-1;
+   row.append(grip,text,u,d,tinyButton("pencil","Edit "+item.name,()=>navigate("button",{id:item.id})),tinyButton("trash","Delete "+item.name,()=>removeButton(item.id),"danger"));
+   list.append(row);enableDrag(grip,row,"item");
+  });
+  block.append(list);
+  const add=el("button","org-add","+ Add Button to "+sec.name);add.onclick=()=>navigate("button",{id:null,sectionId:sec.id});block.append(add);
+  root.append(block);enableDrag(handle,block,"section");
+ });
+ body.append(root);
+ const addCat=el("button","org-add org-add-section","+ Add Category");addCat.onclick=()=>navigate("section",{id:null});body.append(addCat);
+ body.append(el("p","editor-footer","Each button belongs to exactly one category. Edit a button to move it to another category."));
 }
-function settingsHome(){navigateEditor("home");}
-function navTile(icon,title,description,fn){
- const b=el("button","");b.type="button";
- const badge=el("span","nav-icon");badge.append(svg(icon));
- const texts=el("span","nav-copy");texts.append(el("span","nav-name",title),el("span","nav-description",description));
- b.append(badge,texts,el("span","nav-arrow","›"));b.onclick=fn;return b;
-}
-function settingsDashboard(){
- const body=editorView("home");
- body.append(el("p","editor-note","Make a change and watch the scaled RadioGrid preview above. Everything saves as you go."));
- const nav=el("div","editor-nav");
- nav.append(
-  navTile("pencil","Title & Typography","App name, sizes, font and style",()=>navigateEditor("typography")),
-  navTile("grip","Button Design","Dimensions, borders, corners and spacing",()=>navigateEditor("buttons")),
-  navTile("palette","Colors","Highlight, button fill, text and background",()=>navigateEditor("colors")),
-  navTile("music","Categories & Buttons","Add, rename, rearrange and remove",()=>navigateEditor("organize")),
-  navTile("arrow","Playback & Backup","Return behavior, export, import and reset",()=>navigateEditor("playback"))
- );body.append(nav);
-}
-function fontStyleRow(prefix){
- const row=el("div","field style-row");row.append(el("span","style-label","Style"));
- const controls=el("div","style-segments");
- for(const [setting,letter,title] of [["Bold","B","Bold"],["Italic","I","Italic"]]){
-   const key=prefix+setting;
-   const b=el("button","style-segment"+(state[key]?" selected":""),letter);
-   b.type="button";b.setAttribute("aria-label",prefix+" "+title);b.setAttribute("aria-pressed",String(state[key]));
-   if(setting==="Bold")b.style.fontWeight="900";else b.style.fontStyle="italic";
-   b.onclick=()=>{state[key]=!state[key];b.classList.toggle("selected",state[key]);b.setAttribute("aria-pressed",String(state[key]));commitLiveChange();};
-   controls.append(b);
- }
- row.append(controls);return row;
-}
-function settingsTypography(){
- const body=editorView("typography");
- body.append(el("div","editor-section-title","App name"));
- const title=textInput(state.appTitle,"RadioGrid");title.maxLength=32;
- title.oninput=()=>{state.appTitle=title.value.slice(0,32)||DEFAULT_APP_TITLE;commitLiveChange();};
- const titleGroup=el("div","field-set");titleGroup.append(field("Name",title));body.append(titleGroup);
- body.append(el("div","editor-section-title","Typeface"));
- const font=selectInput(FONT_OPTIONS,state.fontStyle);font.onchange=()=>{state.fontStyle=font.value;commitLiveChange();};
- const family=el("div","field-set");family.append(field("Font",font));body.append(family);
- body.append(el("div","editor-section-title","Title"));
- const t=el("div","field-set");t.append(sizeField("Size",state.titleFontSize,22,48,v=>{state.titleFontSize=v;commitLiveChange();}),fontStyleRow("title"));body.append(t);
- body.append(el("div","editor-section-title","Buttons"));
- const b=el("div","field-set");b.append(sizeField("Size",state.buttonFontSize,15,25,v=>{state.buttonFontSize=v;commitLiveChange();}),fontStyleRow("button"));body.append(b);
- body.append(el("p","editor-note","B and I can be enabled together. Font sizes are actual screen sizes; the entire screen is reduced proportionally in the preview."));
-}
-function settingsButtons(){
- const body=editorView("buttons");
- const spec=state.buttonStyle;
- body.append(el("div","editor-section-title","Button dimensions"));
- const dimensions=el("div","field-set");
- dimensions.append(sizeField("Width",spec.width,75,100,v=>{spec.width=v;commitLiveChange();},"%"),sizeField("Height",spec.height,56,120,v=>{spec.height=v;commitLiveChange();}));body.append(dimensions);
- body.append(el("div","editor-section-title","Outline & corners"));
- const outlines=el("div","field-set");
- outlines.append(sizeField("Thickness",spec.outlineWidth,0,4,v=>{spec.outlineWidth=v;commitLiveChange();}),sizeField("Corners",spec.cornerRadius,0,28,v=>{spec.cornerRadius=v;commitLiveChange();}));
- const color=el("input");color.type="color";color.value=spec.outlineColor;
- color.oninput=()=>{spec.outlineColor=color.value;commitLiveChange();};outlines.append(field("Outline color",color));body.append(outlines);
- body.append(el("div","editor-section-title","Distance between buttons"));
- const gaps=el("div","field-set");
- gaps.append(sizeField("Side to side",spec.gapX,0,24,v=>{spec.gapX=v;commitLiveChange();}),sizeField("Top to bottom",spec.gapY,0,24,v=>{spec.gapY=v;commitLiveChange();}));body.append(gaps);
- body.append(el("p","editor-note","Tiles remain inside their three-column grid. On smaller screens, height may shrink to keep each category on screen; labels automatically fit inside tiles."));
-}
-function settingsColors(){
- const body=editorView("colors");
- body.append(el("div","editor-section-title","Appearance"));
- const colors=el("div","field-set");
- for(const [key,label] of [["accent","Highlight"],["background","App background"],["card","Button fill"],["buttonText","Button text"]]){
-   const input=el("input","color-well");input.type="color";input.value=state.theme[key]||DEFAULT_THEME[key];
-   const sample=el("span","color-code",input.value.toUpperCase());
-   input.oninput=()=>{state.theme[key]=input.value;sample.textContent=input.value.toUpperCase();commitLiveChange();};
-   const line=el("div","field color-field");
-   line.append(el("span","color-title",label),sample,input);colors.append(line);
- }
- body.append(colors);
- body.append(el("p","editor-note","Try a lighter button fill with darker button text for contrast. The preview updates as you change each color."));
- const reset=el("button","reset-row","Reset to factory orange & graphite");
- reset.onclick=()=>{state.theme=clone(DEFAULT_THEME);commitLiveChange();settingsColors();};body.append(reset);
-}
-function settingsOrganize(){
- const body=editorView("organize");
- body.append(el("p","editor-note","Tap a category in the preview to inspect its buttons. Use arrows to reorder, or Edit to rename and change the destination."));
- const add=el("button","editor-action","+ Add Category");add.onclick=()=>navigateEditor("editSection",{sectionId:null});body.append(add);
- const sections=el("div","editor-list");
- state.sections.forEach((section,i)=>{
-  const head=el("div","edit-row");
-  head.append(el("span","mini-dot"),el("span","edit-row-name",section.name));
-  const up=miniButton("up","Move "+section.name+" up",()=>swap(state.sections,i,-1));up.disabled=i===0;
-  const down=miniButton("down","Move "+section.name+" down",()=>swap(state.sections,i,1));down.disabled=i===state.sections.length-1;
-  const edit=miniButton("pencil","Edit "+section.name,()=>navigateEditor("editSection",{sectionId:section.id}));
-  const remove=miniButton("trash","Delete "+section.name,()=>deleteSection(section.id),"danger");
-  const select=miniButton("music","Preview "+section.name,()=>{previewSelection=section.id;settingsOrganize();updateLivePreview();});
-  head.append(select,up,down,edit,remove);
-  sections.append(head);
-  if(section.id===previewSelection){
-   for(const [index,item] of section.items.entries()){
-    const row=el("div","edit-row");
-    const name=el("span","edit-row-name",item.name);name.append(el("span","edit-row-sub",item.action==="url"?"Link":"Shortcut"));row.append(name);
-    const up=miniButton("up","Move "+item.name+" up",()=>swap(section.items,index,-1));up.disabled=index===0;
-    const down=miniButton("down","Move "+item.name+" down",()=>swap(section.items,index,1));down.disabled=index===section.items.length-1;
-    row.append(up,down,miniButton("pencil","Edit "+item.name,()=>navigateEditor("editButton",{buttonId:item.id,sectionId:section.id})),miniButton("trash","Delete "+item.name,()=>deleteButton(item.id),"danger"));
-    sections.append(row);
-   }
-   const b=el("button","plain-add","+ Add Button to "+section.name);b.onclick=()=>navigateEditor("editButton",{sectionId:section.id});sections.append(b);
+function removeCategory(id){const s=state.sections.find(x=>x.id===id);if(!s||!confirm(`Delete “${s.name}” and its ${s.items.length} buttons?`))return;
+ state.sections=state.sections.filter(x=>x.id!==id);if(state.active===id)state.active=state.sections[0]?.id||"";structuralUpdate("Category deleted");}
+function removeButton(id){const f=findButton(id);if(!f||!confirm(`Delete “${f.item.name}”?`))return;f.sec.items=f.sec.items.filter(x=>x.id!==id);structuralUpdate("Button deleted");}
+function enableDrag(handle,row,kind){
+ let pointer=null,moved=false;
+ handle.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"&&e.button!==0)return;pointer=e.pointerId;moved=false;handle.setPointerCapture(pointer);row.classList.add("dragging");e.preventDefault()});
+ handle.addEventListener("pointermove",e=>{
+  if(e.pointerId!==pointer)return;const hit=document.elementFromPoint(e.clientX,e.clientY);if(!hit)return;
+  if(kind==="section"){
+   const other=hit.closest(".organize-section");if(!other||other===row)return;const box=other.getBoundingClientRect();rootInsert($("hierarchyRoot"),row,other,e.clientY<box.top+box.height/2);moved=true;
+  }else{
+   const other=hit.closest(".organize-item");
+   if(other&&other!==row){const b=other.getBoundingClientRect();rootInsert(other.parentNode,row,other,e.clientY<b.top+b.height/2);moved=true;}
+   else {const parent=hit.closest(".organize-items")||hit.closest(".organize-section")?.querySelector(".organize-items");if(parent&&parent!==row.parentNode){parent.append(row);moved=true;}}
   }
- });body.append(sections);
- if(state.sections.length && !state.sections.some(s=>s.id===previewSelection)){previewSelection=state.sections[0].id;settingsOrganize();}
+ });
+ const done=e=>{if(e.pointerId!==pointer)return;pointer=null;row.classList.remove("dragging");if(moved)syncHierarchy();};
+ handle.addEventListener("pointerup",done);handle.addEventListener("pointercancel",done);
 }
-function settingsEditSection(id){
- const original=id?state.sections.find(s=>s.id===id):null;
- const body=editorView("editSection","organize");
- body.append(el("div","editor-section-title",original?"Rename category":"New category"));
- const fieldset=el("div","field-set");const name=textInput(original?.name||"","Category name");name.maxLength=50;
- fieldset.append(field("Name",name));body.append(fieldset);
- const error=el("div","error");body.append(error);
- if(original)previewSelection=original.id;
- name.oninput=()=>{previewDraft={sectionId:original?.id,sectionName:name.value};updateLivePreview();};
- const actions=el("div","editor-actions-row");
- const cancel=el("button","","Cancel");cancel.onclick=()=>navigateEditor("organize");
- const saveButton=el("button","primary","Save Category");saveButton.onclick=()=>{
-  const value=name.value.trim();if(!value){error.textContent="Enter a category name.";name.focus();return;}
-  if(original)original.name=value;else{const entry={id:uid(),name:value,icon:"broadcast",items:[]};state.sections.push(entry);previewSelection=entry.id;if(!state.active)state.active=entry.id;}
-  changed("Category saved");navigateEditor("organize");
- };actions.append(cancel,saveButton);body.append(actions);
- updateLivePreview();
+function rootInsert(parent,row,other,before){parent.insertBefore(row,before?other:other.nextSibling);}
+function syncHierarchy(){const secMap=new Map(state.sections.map(s=>[s.id,s])),itemMap=new Map(state.sections.flatMap(s=>s.items.map(i=>[i.id,i]))),next=[];
+ $("hierarchyRoot").querySelectorAll(":scope > .organize-section").forEach(box=>{const s=secMap.get(box.dataset.sectionId);if(!s)return;s.items=[...box.querySelectorAll(":scope > .organize-items > .organize-item")].map(n=>itemMap.get(n.dataset.itemId)).filter(Boolean);next.push(s)});
+ state.sections=next;structuralUpdate("Reordered");}
+function editSectionPage(body,id){
+ const existing=id?state.sections.find(s=>s.id===id):null;
+ body.append(sectionLabel("Category"));const name=textControl(existing?.name||"","Category name");name.maxLength=50;
+ body.append(grouped(settingRow("Name",name)));
+ const err=el("p","error-line");body.append(err);
+ const saveButton=el("button","ios-button","Save Category");saveButton.id="editSave";
+ saveButton.onclick=()=>{const text=name.value.trim();if(!text){err.textContent="Enter a category name.";return;}
+  if(existing)existing.name=text;else{const cat={id:uid(),name:text,icon:"broadcast",items:[]};state.sections.push(cat);if(!state.active)state.active=cat.id;}
+  save();theme();render();navigate("organize");notify("Category saved");};body.append(saveButton);
 }
-function settingsEditButton(id,sectionId){
- const found=id?findItem(id):null;
- const item=found?.item;
- const body=editorView("editButton","organize");
- body.append(el("div","editor-section-title",item?"Edit media button":"Create media button"));
- const fields=el("div","field-set");
- const name=textInput(item?.name||"","Button label");name.maxLength=80;
- const section=selectInput(state.sections.map(s=>[s.id,s.name]),found?.section.id||sectionId||state.sections[0]?.id||"");
- const action=selectInput([["shortcut","Run Shortcut"],["url","Open URL"]],item?.action||"shortcut");
- const target=textInput(item?.target||"","Shortcut name");
- const returnChoice=checkRow("Return to RadioGrid",!item?.noReturn);
- const destination=field("Shortcut",target);
- fields.append(field("Label",name),field("Category",section),field("Action",action),destination,returnChoice.row);
- body.append(fields);
- const onType=()=>{previewSelection=section.value;previewDraft={buttonId:item?.id,buttonName:name.value||"New button",sectionId:section.value};updateLivePreview();};
- name.oninput=onType;section.onchange=onType;
- function syncAction(){const isURL=action.value==="url";destination.querySelector("label").textContent=isURL?"URL":"Shortcut";target.placeholder=isURL?"https://...":"Exact Shortcut name";returnChoice.row.hidden=isURL;}
- action.onchange=syncAction;syncAction();
- const error=el("div","error");body.append(error);
- const actions=el("div","editor-actions-row");const cancel=el("button","","Cancel");cancel.onclick=()=>navigateEditor("organize");
- const saveButton=el("button","primary","Save Button");saveButton.onclick=()=>{
-  const n=name.value.trim(),t=target.value.trim(),dest=state.sections.find(s=>s.id===section.value);
-  if(!n||!t||!dest){error.textContent="Enter a button name and a Shortcut name or URL.";return;}
-  if(action.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(t)){error.textContent="Enter a supported URL.";return;}
-  const next={id:item?.id||uid(),name:n,icon:item?.icon||"music",action:action.value,target:t,noReturn:action.value==="shortcut"&&!returnChoice.input.checked,color:item?.color||""};
-  if(found){const at=found.section.items.findIndex(i=>i.id===item.id);found.section.items.splice(at,1);if(dest===found.section)dest.items.splice(at,0,next);else dest.items.push(next);}else dest.items.push(next);
-  state.active=dest.id;previewSelection=dest.id;
-  changed("Button saved");navigateEditor("organize");
- };actions.append(cancel,saveButton);body.append(actions);
- onType();
+function editButtonPage(body,id,sectionId){
+ const found=id?findButton(id):null,item=found?.item||null;
+ body.append(sectionLabel("Button Details"));const name=textControl(item?.name||"","Button name");name.maxLength=80;
+ const sec=choiceControl(state.sections.map(s=>[s.id,s.name]),found?.sec.id||sectionId||state.sections[0]?.id);
+ const type=choiceControl([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
+ const target=textControl(item?.target||"","Exact Shortcut name");
+ const targetRow=settingRow("Shortcut",target);
+ const ret=el("input");ret.type="checkbox";ret.checked=!item?.noReturn;ret.style.cssText="width:22px;height:22px;accent-color:var(--accent)";const retRow=settingRow("Return to Grid",ret);
+ function toggleType(){targetRow.querySelector(".ios-row-label").textContent=type.value==="url"?"URL":"Shortcut";target.placeholder=type.value==="url"?"https://...":"Exact Shortcut name";retRow.hidden=type.value==="url";}
+ type.onchange=toggleType;toggleType();
+ body.append(grouped(settingRow("Name",name),settingRow("Category",sec),settingRow("Action",type),targetRow,retRow));
+ body.append(el("p","ios-help","Display name can differ from the exact Shortcut name. Choose Category to move this button to another group."));
+ const err=el("p","error-line");body.append(err);
+ const saveButton=el("button","ios-button","Save Button");saveButton.id="editSave";
+ saveButton.onclick=()=>{
+  const label=name.value.trim(),dest=state.sections.find(s=>s.id===sec.value),destination=target.value.trim();
+  if(!label||!destination||!dest){err.textContent="Enter a name, destination, and category.";return;}
+  if(type.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(destination)){err.textContent="Enter a valid URL or audio app link.";return;}
+  const next={id:item?.id||uid(),name:label,icon:item?.icon||"music",action:type.value,target:destination,noReturn:type.value==="shortcut"&&!ret.checked,color:item?.color||""};
+  if(found){const pos=found.sec.items.findIndex(i=>i.id===id);found.sec.items.splice(pos,1);if(dest===found.sec)dest.items.splice(pos,0,next);else dest.items.push(next)}else dest.items.push(next);
+  save();theme();render();navigate("organize");notify("Button saved");
+ };
+ body.append(saveButton);
 }
-function settingsPlayback(){
- const body=editorView("playback");
- body.append(el("div","editor-section-title","Return after playing"));
- const select=selectInput([["website","Website link"],["webapp","Home Screen app (experimental)"],["shortcut","Launch RadioGrid Shortcut"]],state.returnMethod);
- select.onchange=()=>{state.returnMethod=select.value;save();};
- const f=el("div","field-set");f.append(field("Method",select));body.append(f);
- body.append(el("p","editor-note","iOS returns after the selected Shortcut finishes. The Home Screen return scheme is unofficial and may not work on every version of iOS."));
- body.append(el("div","editor-section-title","Keep a backup"));
- const list=el("div","group-box");
- list.append(normalRow("Export settings as JSON",exportSettings),normalRow("Import settings from JSON",()=>$('importPicker').click()),normalRow("Restore original configuration",resetDefaults,true));body.append(list);
- body.append(el("p","editor-note",storageWorks?"Your changes are stored on this device for this website. Export a backup before changing hosts or reinstalling the web app.":"Storage is unavailable. Export a backup to avoid losing changes."));
+function exportSettings(){
+ const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(b),a=el("a");a.href=url;a.download="RadioGrid-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Backup download requested");
 }
-// iOS Safari pinch-to-zoom prevention, while preserving one-finger scrolling.
-["gesturestart","gesturechange","gestureend"].forEach(type=>document.addEventListener(type,e=>e.preventDefault(),{passive:false}));
-document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
-$("openSettings").onclick=openSheet;$("scrim").onclick=closeSheet;
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){closeSheet();}});
+$("importPicker").onchange=async e=>{const f=e.target.files?.[0];if(!f)return;
+ try{const data=normalise(JSON.parse(await f.text()));if(confirm("Replace your current settings with this backup?")){state=data;save();theme();render();showCurrentPage();notify("Backup restored");}}
+ catch(_){alert("Import failed. Select a RadioGrid JSON backup.");}finally{e.target.value="";}
+};
+function resetDefaults(){if(!confirm("Restore all original categories, buttons and appearance? Export a backup first if needed."))return;state=defaults();save();theme();render();showCurrentPage();notify("Defaults restored");}
+["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+$("openSettings").onclick=()=>showModal("settings");
+$("openEdit").onclick=()=>showModal("organize");
+$("scrim").onclick=closeModal;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){if(["design","playback"].includes(editorPage))navigate("settings");else if(["section","button"].includes(editorPage))navigate("organize");else closeModal();}});
+// The new button typography can use a different family from the title.
+const oldApplyIdentity=applyIdentity;
+applyIdentity=function(){oldApplyIdentity();document.documentElement.style.setProperty("--button-font",FONT_STACKS[state.buttonFontStyle]||FONT_STACKS[state.fontStyle]||FONT_STACKS.system);};
+
 theme();render();installCategorySwipe();
 </script>
 </body>

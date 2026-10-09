@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
 <title>RadioGrid</title>
-<!-- V14: multi-screen live-preview settings editor; saves in the existing V13 storage key -->
+<!-- V15: scaled 1:1-ratio preview, iOS-style grouped editor and button text color -->
 <style>
   :root {
     color-scheme:dark;
@@ -19,7 +19,7 @@
     --card-gap-x:10px; --card-gap-y:10px;
     --app-font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
     --title-font-size:32px; --title-font-weight:800; --title-font-style:normal;
-    --button-font-size:20px; --button-font-weight:800; --button-font-style:normal;
+    --button-font-size:20px; --button-font-weight:800; --button-font-style:normal; --card-text:#f3f4f5;
   }
   *,*::before,*::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html { min-height:100%; background:var(--bg); touch-action:pan-x pan-y; }
@@ -77,7 +77,7 @@
   .card:active { transform:scale(.963); filter:brightness(1.18); }
   /* One shared font size for every button, including radio frequency and station name. */
   .card-label { min-width:0; max-height:100%; font-size:var(--button-font-size); font-weight:var(--button-font-weight); font-style:var(--button-font-style);
-    line-height:1.14; letter-spacing:-.022em; color:#f3f4f5; overflow-wrap:normal; word-break:normal;
+    line-height:1.14; letter-spacing:-.022em; color:var(--card-text); overflow-wrap:normal; word-break:normal;
     display:block; width:100%; }
   .card-label .frequency, .card-label .callsign { display:block; font:inherit; line-height:1.14; }
   .card-label .callsign { margin-top:3px; }
@@ -248,6 +248,58 @@
   .preview-kicker { margin-bottom:3px; }
 }
 
+
+/* V15: native-style grouped settings and a genuinely scaled RadioGrid screen */
+.sheet { background:#1b1c20; height:min(94dvh,900px); max-height:94dvh; border-radius:25px 25px 0 0; }
+.sheet-head { min-height:55px; padding:5px 16px 6px; background:#1b1c20; }
+.sheet-head h2 { font-size:17px; font-weight:750; }
+.sheet-action { font-size:16px; font-weight:500; }
+.sheet-body { background:#1b1c20; padding:14px 18px max(28px,env(safe-area-inset-bottom)); }
+.settings-preview { padding:9px 14px 12px; background:#212228; border-bottom:1px solid rgba(255,255,255,.085); }
+.preview-kicker { font-size:10px; letter-spacing:.04em; text-transform:none; margin:0 2px 7px; font-weight:700; }
+.preview-scale-label { color:#8f959e; font-weight:500; }
+.preview-frame { display:flex; align-items:center; justify-content:center; border-radius:14px; background:#151619; border:1px solid rgba(255,255,255,.085); padding:9px 6px; overflow:hidden; }
+.preview-mini-shell { position:relative; flex:none; overflow:hidden; border-radius:5px; }
+.preview-mini-scene { position:absolute; top:0; left:0; transform-origin:top left; background:var(--bg); font-family:var(--app-font); padding:0 14px 0; }
+.preview-mini-scene .header { flex:none; height:76px; }
+.preview-mini-scene .header .menu { pointer-events:none; }
+.preview-mini-scene .tabs { margin:0 -14px 12px; padding:0 14px; }
+.preview-mini-scene .grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.preview-mini-scene .card { pointer-events:none; }
+.preview-mini-scene .card-label { color:var(--card-text); }
+.preview-mini-scene .tab { min-width:0; }
+.editor-nav { display:block; overflow:hidden; border-radius:15px; background:#292b31; }
+.editor-nav button { background:transparent; border:0; border-bottom:1px solid rgba(255,255,255,.075); border-radius:0; padding:13px 14px; min-height:59px; }
+.editor-nav button:last-child { border-bottom:0; }
+.editor-nav button:active { background:#373941; }
+.editor-nav .nav-icon { width:33px; height:33px; border-radius:8px; background:#34363e; }
+.editor-nav .nav-name { font-size:16px; font-weight:610; letter-spacing:-.01em; }
+.editor-nav .nav-description { font-size:12px; margin-top:2px; }
+.editor-nav .nav-arrow { color:#757983; font-size:24px; font-weight:300; }
+.editor-section-title { margin:16px 6px 7px; letter-spacing:.035em; color:#989ca5; font-size:12px; font-weight:650; }
+.editor-note { font-size:12px; line-height:1.45; color:#9297a1; margin:9px 8px 15px; }
+.editor-form .field-set,.field-set { background:#292b31; border-radius:13px; }
+.field { min-height:49px; padding:8px 14px; border-bottom:1px solid rgba(255,255,255,.075); }
+.field label { color:#f0f0f2; font-weight:480; flex:0 0 92px; }
+.field select { color:var(--accent); }
+.field.typography-field { min-height:52px; }
+.type-slider-control input[type=range] { accent-color:var(--accent); }
+.style-row { justify-content:space-between; }
+.style-label { color:#f0f0f2; font-size:14px; }
+.style-segments { display:inline-flex; align-items:center; border-radius:9px; padding:3px; background:#191b1f; gap:3px; }
+.style-segment { min-width:52px; min-height:34px; border-radius:7px; background:transparent; font-size:17px; color:#c2c5cb; }
+.style-segment.selected { color:#fff; background:#50535c; box-shadow:0 1px 4px rgba(0,0,0,.3); }
+.style-segment:active { filter:brightness(1.25); }
+.color-field { justify-content:space-between; min-height:57px; }
+.color-title { flex:1; font-size:15px; }
+.color-code { font-size:12px; color:#9fa4ad; font-variant-numeric:tabular-nums; }
+.color-well { flex:none; width:46px!important; height:37px!important; border-radius:8px; cursor:pointer; }
+.reset-row { display:block; padding:13px 12px; width:100%; text-align:center; color:var(--accent); font-weight:600; font-size:14px; background:#292b31; border-radius:13px; margin-top:13px; }
+.editor-list { gap:6px; }
+.editor-list .edit-row { border-radius:12px; }
+.editor-action,.save { box-shadow:none; }
+@media(max-height:710px) { .settings-preview { padding:5px 10px 7px; } .preview-frame { padding:5px 4px; } .preview-kicker { margin-bottom:4px; } }
+
 </style>
 </head>
 <body>
@@ -305,7 +357,7 @@ const DEFAULT_TYPOGRAPHY={titleFontSize:32,buttonFontSize:20,titleBold:true,titl
 // it is reduced when needed to keep every row visible without scrolling.
 const DEFAULT_BUTTON_STYLE={width:100,height:96,outlineColor:"#777b83",outlineWidth:1,cornerRadius:13,gapX:10,gapY:10};
 const clampNumber=(v,min,max,defaultValue)=>typeof v==="number"&&Number.isFinite(v)?Math.round(Math.max(min,Math.min(max,v))):defaultValue;
-const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23",card:"#373a41"};
+const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23",card:"#373a41",buttonText:"#f3f4f5"};
 const raw=(id,name,icon,extra={})=>({id,name,icon,action:"shortcut",target:name,...extra});
 const DEFAULT_SECTIONS=[
  {id:"podcasts",name:"Podcasts",icon:"podcast",items:[
@@ -383,7 +435,7 @@ function normalise(data){
  const active=sections.some(s=>s.id===data.active)?data.active:sections[0]?.id||"";
  const customTitle=typeof data.appTitle==="string"?data.appTitle.trim().slice(0,32):DEFAULT_APP_TITLE;
  const fontStyle=Object.hasOwn(FONT_STACKS,data.fontStyle)?data.fontStyle:DEFAULT_FONT_STYLE;
- return {sections,active,theme:{accent:safeColor(theme.accent)||DEFAULT_THEME.accent,background:safeColor(theme.background)||safeColor(theme.bg)||DEFAULT_THEME.background,surface:safeColor(theme.surface)||safeColor(theme.panel)||DEFAULT_THEME.surface,surface2:safeColor(theme.surface2)||safeColor(theme.panel2)||DEFAULT_THEME.surface2,card:safeColor(theme.card)||DEFAULT_THEME.card},returnMethod:data.returnMethod==="webapp"?"webapp":data.returnMethod==="shortcut"?"shortcut":"website",appTitle:customTitle||DEFAULT_APP_TITLE,fontStyle,
+ return {sections,active,theme:{accent:safeColor(theme.accent)||DEFAULT_THEME.accent,background:safeColor(theme.background)||safeColor(theme.bg)||DEFAULT_THEME.background,surface:safeColor(theme.surface)||safeColor(theme.panel)||DEFAULT_THEME.surface,surface2:safeColor(theme.surface2)||safeColor(theme.panel2)||DEFAULT_THEME.surface2,card:safeColor(theme.card)||DEFAULT_THEME.card,buttonText:safeColor(theme.buttonText)||DEFAULT_THEME.buttonText},returnMethod:data.returnMethod==="webapp"?"webapp":data.returnMethod==="shortcut"?"shortcut":"website",appTitle:customTitle||DEFAULT_APP_TITLE,fontStyle,
    titleFontSize:clampNumber(data.titleFontSize,22,48,DEFAULT_TYPOGRAPHY.titleFontSize),
    buttonFontSize:clampNumber(data.buttonFontSize,15,25,DEFAULT_TYPOGRAPHY.buttonFontSize),
    titleBold:typeof data.titleBold==="boolean"?data.titleBold:DEFAULT_TYPOGRAPHY.titleBold,
@@ -506,7 +558,7 @@ function applyButtonStyle(){
  root.setProperty("--card-gap-x",spec.gapX+"px");
  root.setProperty("--card-gap-y",spec.gapY+"px");
 }
-function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);document.querySelector('meta[name="theme-color"]').content=state.theme.background;applyButtonStyle();applyIdentity();}
+function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);root.style.setProperty("--card-text",state.theme.buttonText||DEFAULT_THEME.buttonText);document.querySelector('meta[name="theme-color"]').content=state.theme.background;applyButtonStyle();applyIdentity();}
 function notify(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800);}
 function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))navigateEditor(editorPage);if(message)notify(storageWorks?message:"Change made — export a backup");}
 function activeSection(){return state.sections.find(s=>s.id===state.active)||state.sections[0]||null;}
@@ -813,66 +865,95 @@ let previewSelection=null;
 let previewDraft=null;
 let editorReturn="organize";
 function updateLivePreview(){
- const host=$("settingsPreview");
- if(!host)return;
+ const host=$("settingsPreview");if(!host)return;
  const current=state.sections.find(s=>s.id===previewSelection)||activeSection()||state.sections[0];
  if(current)previewSelection=current.id;
  host.replaceChildren();
- const kick=el("div","preview-kicker");
- kick.append(el("span","","LIVE PREVIEW"));
- const status=el("span","");const dot=el("span","live-dot");status.append(dot,document.createTextNode(storageWorks?"Auto-saved":"Storage unavailable"));kick.append(status);host.append(kick);
- const stage=el("div","preview-stage");stage.style.background=state.theme.background;
- const title=el("div","preview-title",previewDraft?.title??state.appTitle);
- title.style.fontSize=Math.min(28,state.titleFontSize*.72)+"px";
+ const caption=el("div","preview-kicker");
+ caption.append(el("span","","SCREEN PREVIEW"));
+ const scaleCaption=el("span","preview-scale-label","");caption.append(scaleCaption);host.append(caption);
+ const frame=el("div","preview-frame");const shell=el("div","preview-mini-shell");
+ const scene=el("div","preview-mini-scene");
+ // Lay out the very same header, category tabs and grid classes used by the
+ // real home screen at its native CSS dimensions, then scale the entire scene.
+ // No independently sized miniature buttons: dimensions, borders, gaps and
+ // fonts always retain their original proportions.
+ const nativeWidth=document.querySelector(".app")?.getBoundingClientRect().width||390;
+ const heightLimit=window.innerHeight<650?206:window.innerHeight<760?232:274;
+ const maxPreviewWidth=Math.min(heightLimit,Math.max(175,host.clientWidth-58));
+ const scale=Math.min(.88,maxPreviewWidth/nativeWidth);
+ scene.style.width=nativeWidth+"px";
+ const appPadding=getComputedStyle(document.querySelector(".app")).paddingLeft;
+ scene.style.paddingLeft=appPadding;scene.style.paddingRight=appPadding;
+ const header=el("div","header");
+ const title=el("h1","app-title",previewDraft?.title??state.appTitle);
+ title.style.fontSize=state.titleFontSize+"px";
  title.style.fontWeight=state.titleBold?"800":"450";
  title.style.fontStyle=state.titleItalic?"italic":"normal";
- stage.append(title);
- const tabs=el("div","preview-tabs");
- for(const section of state.sections){
-  const b=el("button","preview-tab"+(current?.id===section.id?" selected":""),section.id===previewDraft?.sectionId?(previewDraft.sectionName||section.name):section.name);
-  b.type="button";b.title="Preview "+section.name;
-  b.onclick=()=>{previewSelection=section.id;previewDraft=null;if(editorPage==="organize")settingsOrganize();updateLivePreview();};
-  tabs.append(b);
+ header.append(title);
+ const hamburger=el("div","menu");hamburger.setAttribute("aria-hidden","true");hamburger.append(svg("menu"));header.append(hamburger);
+ scene.append(header);
+ const tabs=el("nav","tabs");
+ tabs.style.marginLeft="-"+appPadding;tabs.style.marginRight="-"+appPadding;tabs.style.paddingLeft=appPadding;tabs.style.paddingRight=appPadding;
+ tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
+ state.sections.forEach(sec=>{
+   const label=(previewDraft?.sectionId===sec.id&&previewDraft.sectionName!==undefined)?previewDraft.sectionName:sec.name;
+   const button=el("button","tab"+(current?.id===sec.id?" active":""));
+   button.type="button";button.append(el("span","",label));button.setAttribute("aria-label","Preview "+sec.name);
+   button.onclick=()=>{previewSelection=sec.id;previewDraft=null;if(editorPage==="organize")settingsOrganize();updateLivePreview();};
+   tabs.append(button);
+ });
+ scene.append(tabs);
+ const grid=el("div","grid");
+ // Use exactly the row height selected by the live responsive layout.
+ const actualGrid=[...document.querySelectorAll("#pageTrack .page-slide")].find(x=>x.dataset.sectionId===current?.id)?.querySelector(".grid");
+ const spec=state.buttonStyle;
+ const cols=Math.max(1,(nativeWidth-28-2*spec.gapX)/3);
+ const fallbackHeight=Math.max(48,Math.min(spec.height,Math.floor(cols*spec.width/100*.98)));
+ const actualHeight=actualGrid?parseFloat(getComputedStyle(actualGrid).getPropertyValue("--card-height"))||fallbackHeight:fallbackHeight;
+ grid.style.setProperty("--card-height",actualHeight+"px");
+ let sample=(current?.items||[]).slice(0,6).map(v=>({...v}));
+ if(previewDraft?.buttonName!==undefined && previewDraft.sectionId===current?.id){
+   const at=sample.findIndex(item=>item.id===previewDraft.buttonId);
+   if(at>=0)sample[at].name=previewDraft.buttonName||"New Button";
+   else sample.unshift({name:previewDraft.buttonName||"New Button"});
+   sample=sample.slice(0,6);
  }
- stage.append(tabs);
- const grid=el("div","preview-grid");
- const bs=state.buttonStyle;
- grid.style.columnGap=Math.round(bs.gapX*.67)+"px";
- grid.style.rowGap=Math.round(bs.gapY*.62)+"px";
- let sample=current?.items?.slice(0,6)||[];
- if(previewDraft?.buttonName && (previewDraft?.sectionId===current?.id || !previewDraft?.sectionId)){
-   sample=[{name:previewDraft.buttonName},...sample.filter(i=>i.id!==previewDraft.buttonId)].slice(0,6);
- }
- if(sample.length<6 && !previewDraft?.buttonName){
-   const extras=state.sections.flatMap(s=>s.items).filter(i=>!sample.some(j=>j.id===i.id));
-   sample=[...sample,...extras.slice(0,6-sample.length)];
- }
- if(!sample.length)sample=[{name:"Americana"},{name:"Classic Rock"},{name:"91.3 WUKY"},{name:"Country"},{name:"Worship"},{name:"KSR"}];
+ if(!sample.length)grid.append(el("div","grid-empty","No buttons in this category"));
  for(const item of sample){
-  const card=el("div","preview-card");
-  card.style.width=bs.width+"%";
-  card.style.height=Math.min(53,Math.max(27,Math.round(bs.height*.45)))+"px";
-  card.style.border=bs.outlineWidth+"px solid "+bs.outlineColor;
-  card.style.borderRadius=Math.min(21,Math.round(bs.cornerRadius*.7))+"px";
-  const label=el("span","");
-  label.style.fontSize=Math.max(10,Math.round(state.buttonFontSize*.68))+"px";
-  label.style.fontWeight=state.buttonBold?"800":"450";
-  label.style.fontStyle=state.buttonItalic?"italic":"normal";
-  const radioParts=current?.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
-  if(radioParts){label.append(el("span","preview-frequency",radioParts[1]),el("span","preview-callsign",radioParts[2]));}
-  else label.textContent=item.name;
-  card.append(label);grid.append(card);
+   const card=el("div","card");const label=el("span","card-label");
+   const radioParts=current?.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
+   if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
+   else label.textContent=item.name;
+   card.append(label);grid.append(card);
  }
- stage.append(grid);host.append(stage);
- // Fit all preview labels to their own rectangles, even with long names.
+ scene.append(grid);shell.append(scene);frame.append(shell);host.append(frame);
+ scene.style.transform=`scale(${scale})`;
+ shell.style.width=Math.round(nativeWidth*scale)+"px";
+ shell.style.height=Math.ceil(scene.scrollHeight*scale)+"px";
+ scaleCaption.textContent=Math.round(scale*100)+"% · scaled to fit";
+ // Apply precisely the same label-fitting rules to the tiny replica.
  requestAnimationFrame(()=>{
-   for(const c of grid.children){const label=c.firstElementChild;if(!label)continue;let px=parseFloat(label.style.fontSize);while(px>8&&(label.scrollHeight>c.clientHeight-8||label.scrollWidth>c.clientWidth-5)){label.style.fontSize=(--px)+"px";}}
+   if(!scene.isConnected)return;
+   title.style.fontSize=state.titleFontSize+"px";
+   const maxTitleWidth=nativeWidth-140;
+   for(let f=state.titleFontSize;f>17&&title.scrollWidth>maxTitleWidth;f--)title.style.fontSize=(f-1)+"px";
+   tabs.querySelectorAll(".tab span").forEach(span=>{
+     let f=15;span.style.fontSize=f+"px";
+     while(f>8&&span.scrollWidth>span.clientWidth){f--;span.style.fontSize=f+"px";}
+   });
+   grid.querySelectorAll(".card").forEach(card=>{
+     const label=card.firstElementChild;let f=state.buttonFontSize;label.style.fontSize=f+"px";
+     const style=getComputedStyle(card);
+     const room=card.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
+     while(f>10&&(label.scrollHeight>room+1||label.scrollWidth>label.clientWidth+1))label.style.fontSize=(--f)+"px";
+   });
  });
 }
 function commitLiveChange(){save();theme();render();updateLivePreview();}
 function editorView(title,backPage="home"){
  editorPage=title;
- const back=title==="home"?"Close":"Back";
+ const back=title==="home"?"Close":"‹ Back";
  const name=({home:"Settings",typography:"Text & Title",buttons:"Button Shape & Spacing",colors:"Colors",organize:"Organize",playback:"Playback & Backup",editButton:"Edit Button",editSection:"Edit Category"})[title]||"Settings";
  const body=sheet(name,back,"Done",()=>title==="home"?closeSheet():navigateEditor(backPage),closeSheet);
  $("sheetBack").style.visibility="visible";
@@ -893,32 +974,43 @@ function navTile(icon,title,description,fn){
 }
 function settingsDashboard(){
  const body=editorView("home");
- body.append(el("p","editor-note","Choose what to customize. The preview stays visible above the controls and updates immediately."));
+ body.append(el("p","editor-note","Make a change and watch the scaled RadioGrid preview above. Everything saves as you go."));
  const nav=el("div","editor-nav");
  nav.append(
-  navTile("pencil","Title & Typography","App name, font family, sizes, bold and italic",()=>navigateEditor("typography")),
-  navTile("grip","Button Design","Size, corner radius, outlines and spacing",()=>navigateEditor("buttons")),
-  navTile("palette","Colors","Orange accent, button gray and background",()=>navigateEditor("colors")),
+  navTile("pencil","Title & Typography","App name, sizes, font and style",()=>navigateEditor("typography")),
+  navTile("grip","Button Design","Dimensions, borders, corners and spacing",()=>navigateEditor("buttons")),
+  navTile("palette","Colors","Highlight, button fill, text and background",()=>navigateEditor("colors")),
   navTile("music","Categories & Buttons","Add, rename, rearrange and remove",()=>navigateEditor("organize")),
   navTile("arrow","Playback & Backup","Return behavior, export, import and reset",()=>navigateEditor("playback"))
  );body.append(nav);
 }
+function fontStyleRow(prefix){
+ const row=el("div","field style-row");row.append(el("span","style-label","Style"));
+ const controls=el("div","style-segments");
+ for(const [setting,letter,title] of [["Bold","B","Bold"],["Italic","I","Italic"]]){
+   const key=prefix+setting;
+   const b=el("button","style-segment"+(state[key]?" selected":""),letter);
+   b.type="button";b.setAttribute("aria-label",prefix+" "+title);b.setAttribute("aria-pressed",String(state[key]));
+   if(setting==="Bold")b.style.fontWeight="900";else b.style.fontStyle="italic";
+   b.onclick=()=>{state[key]=!state[key];b.classList.toggle("selected",state[key]);b.setAttribute("aria-pressed",String(state[key]));commitLiveChange();};
+   controls.append(b);
+ }
+ row.append(controls);return row;
+}
 function settingsTypography(){
  const body=editorView("typography");
- body.append(el("div","editor-section-title","App title"));
- const title=textInput(state.appTitle,"App name");title.maxLength=32;
+ body.append(el("div","editor-section-title","App name"));
+ const title=textInput(state.appTitle,"RadioGrid");title.maxLength=32;
  title.oninput=()=>{state.appTitle=title.value.slice(0,32)||DEFAULT_APP_TITLE;commitLiveChange();};
- body.append(el("div","field-set"));body.lastChild.append(field("Name",title));
- body.append(el("div","editor-section-title","Font family"));
+ const titleGroup=el("div","field-set");titleGroup.append(field("Name",title));body.append(titleGroup);
+ body.append(el("div","editor-section-title","Typeface"));
  const font=selectInput(FONT_OPTIONS,state.fontStyle);font.onchange=()=>{state.fontStyle=font.value;commitLiveChange();};
- const family=el("div","field-set");family.append(field("Typeface",font));body.append(family);
- body.append(el("div","editor-section-title","Title lettering"));
- const t=el("div","field-set");
- t.append(sizeField("Size",state.titleFontSize,22,48,v=>{state.titleFontSize=v;commitLiveChange();}),toggleField("Bold",state.titleBold,v=>{state.titleBold=v;commitLiveChange();}),toggleField("Italic",state.titleItalic,v=>{state.titleItalic=v;commitLiveChange();}));body.append(t);
- body.append(el("div","editor-section-title","Button lettering"));
- const b=el("div","field-set");
- b.append(sizeField("Size",state.buttonFontSize,15,25,v=>{state.buttonFontSize=v;commitLiveChange();}),toggleField("Bold",state.buttonBold,v=>{state.buttonBold=v;commitLiveChange();}),toggleField("Italic",state.buttonItalic,v=>{state.buttonItalic=v;commitLiveChange();}));body.append(b);
- body.append(el("p","editor-note","Lettering is scaled down in the compact preview. The actual app uses the size you choose, shrinking long labels only when needed to fit."));
+ const family=el("div","field-set");family.append(field("Font",font));body.append(family);
+ body.append(el("div","editor-section-title","Title"));
+ const t=el("div","field-set");t.append(sizeField("Size",state.titleFontSize,22,48,v=>{state.titleFontSize=v;commitLiveChange();}),fontStyleRow("title"));body.append(t);
+ body.append(el("div","editor-section-title","Buttons"));
+ const b=el("div","field-set");b.append(sizeField("Size",state.buttonFontSize,15,25,v=>{state.buttonFontSize=v;commitLiveChange();}),fontStyleRow("button"));body.append(b);
+ body.append(el("p","editor-note","B and I can be enabled together. Font sizes are actual screen sizes; the entire screen is reduced proportionally in the preview."));
 }
 function settingsButtons(){
  const body=editorView("buttons");
@@ -938,15 +1030,19 @@ function settingsButtons(){
 }
 function settingsColors(){
  const body=editorView("colors");
- body.append(el("div","editor-section-title","App color palette"));
+ body.append(el("div","editor-section-title","Appearance"));
  const colors=el("div","field-set");
- for(const [key,label] of [["accent","Selected category"],["card","Button background"],["background","Background"]]){
-   const input=el("input");input.type="color";input.value=state.theme[key]||DEFAULT_THEME[key];
-   input.oninput=()=>{state.theme[key]=input.value;commitLiveChange();};
-   colors.append(field(label,input));
+ for(const [key,label] of [["accent","Highlight"],["background","App background"],["card","Button fill"],["buttonText","Button text"]]){
+   const input=el("input","color-well");input.type="color";input.value=state.theme[key]||DEFAULT_THEME[key];
+   const sample=el("span","color-code",input.value.toUpperCase());
+   input.oninput=()=>{state.theme[key]=input.value;sample.textContent=input.value.toUpperCase();commitLiveChange();};
+   const line=el("div","field color-field");
+   line.append(el("span","color-title",label),sample,input);colors.append(line);
  }
- body.append(colors,el("p","editor-note","The live preview uses your current palette. Button outline color is in Button Design."));
- const reset=normalRow("Restore original orange and gray colors",()=>{state.theme=clone(DEFAULT_THEME);commitLiveChange();settingsColors();});body.append(reset);
+ body.append(colors);
+ body.append(el("p","editor-note","Try a lighter button fill with darker button text for contrast. The preview updates as you change each color."));
+ const reset=el("button","reset-row","Reset to factory orange & graphite");
+ reset.onclick=()=>{state.theme=clone(DEFAULT_THEME);commitLiveChange();settingsColors();};body.append(reset);
 }
 function settingsOrganize(){
  const body=editorView("organize");

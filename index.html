@@ -284,13 +284,22 @@ function normalise(data){
  return {sections,active,theme:{accent:safeColor(theme.accent)||DEFAULT_THEME.accent,background:safeColor(theme.background)||safeColor(theme.bg)||DEFAULT_THEME.background,surface:safeColor(theme.surface)||safeColor(theme.panel)||DEFAULT_THEME.surface,surface2:safeColor(theme.surface2)||safeColor(theme.panel2)||DEFAULT_THEME.surface2,card:safeColor(theme.card)||DEFAULT_THEME.card},returnMethod:data.returnMethod==="webapp"?"webapp":data.returnMethod==="shortcut"?"shortcut":"website"};
 }
 let state=defaults(),storageWorks=false,shown="home",lastFocus=null,toastTimer=null;
+let migratedFromLegacy=false;
 try{
  localStorage.setItem(KEY+"probe","1");localStorage.removeItem(KEY+"probe");storageWorks=true;
  const saved=localStorage.getItem(KEY);
- if(saved){state=normalise(JSON.parse(saved));}
- else {
-   for(const legacy of LEGACY){const v=localStorage.getItem(legacy);if(!v)continue;
-     const obj=JSON.parse(v);state=normalise(Array.isArray(obj)?{sections:obj,active:"podcasts",theme:DEFAULT_THEME}:obj);break;
+ if(saved){
+   // Saved settings are authoritative, including any intentionally deleted categories.
+   state=normalise(JSON.parse(saved));
+ } else {
+   // Import an old layout only on the first launch without an existing saved layout.
+   for(const legacy of LEGACY){
+     const v=localStorage.getItem(legacy);
+     if(!v)continue;
+     const obj=JSON.parse(v);
+     state=normalise(Array.isArray(obj)?{sections:obj,active:"podcasts",theme:DEFAULT_THEME}:obj);
+     migratedFromLegacy=true;
+     break;
    }
  }
 }catch(e){storageWorks=false;state=defaults();}
@@ -306,7 +315,6 @@ function restorePlaylists(){
  if(state.active===oldId)state.active="playlists";
  try { if(storageWorks)localStorage.setItem(KEY,JSON.stringify(state)); } catch(_){}
 }
-restorePlaylists();
 // Upgrade existing saved V6/V7 layouts to four standard categories without
 // overwriting custom buttons, destinations, colors, or user-created categories.
 function restoreFourCategories(){
@@ -339,7 +347,12 @@ function restoreFourCategories(){
  if(!state.sections.some(s=>s.id===state.active))state.active="podcasts";
  try{if(storageWorks)localStorage.setItem(KEY,JSON.stringify(state));}catch(_){}
 }
-restoreFourCategories();
+// Only migrate a layout imported from a LEGACY storage key.
+// Never force-add default categories on subsequent launches: deletions must persist.
+if(migratedFromLegacy){
+ restorePlaylists();
+ restoreFourCategories();
+}
 function save(){if(!storageWorks)return;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){storageWorks=false;}}
 function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);document.querySelector('meta[name="theme-color"]').content=state.theme.background;}
 function notify(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800);}

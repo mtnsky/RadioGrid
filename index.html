@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
 <title>RadioGrid</title>
-<!-- V15: scaled 1:1-ratio preview, iOS-style grouped editor and button text color -->
+<!-- V17: five-screen native-style settings navigation and unframed accent controls -->
 <style>
   :root {
     color-scheme:dark;
@@ -185,6 +185,40 @@ body { background:var(--bg); }
 .edit-actions button.primary{background:var(--accent);color:#161616}
 @media(max-height:700px){.settings-preview{padding:5px 8px 6px}.preview-stage{padding:3px 0}.sheet-body{padding-top:12px}}
 @media(prefers-reduced-motion:reduce){.sheet,.scrim{transition-duration:.01ms!important}}
+
+
+/* V17: unframed header controls and five-option iOS Settings landing page. */
+.header .header-action,
+.header .menu.header-action,
+.header .edit-home {
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  background-image:none !important;
+  box-shadow:none !important;
+  color:var(--accent);
+  -webkit-appearance:none;
+  appearance:none;
+}
+.header .edit-home { padding:0 7px; font-weight:650; font-size:17px; }
+.header .menu.header-action { padding:0; }
+.header .menu.header-action svg { width:25px; height:25px; }
+.header .header-action:active,
+.header .menu.header-action:active {
+  opacity:.58;
+  filter:none;
+  background:transparent !important;
+  transform:translateY(-50%);
+}
+.header .header-action:focus-visible { border-radius:7px !important; }
+.settings-hub { padding-top:2px; }
+.settings-hub .ios-group { margin-bottom:16px; }
+.settings-hub .ios-row-nav { min-height:59px; }
+.settings-hub .ios-row-nav .ios-row-label { font-size:17px; font-weight:475; }
+.settings-hub .ios-row-nav .ios-chevron { color:#85858d; font-size:23px; }
+.settings-hub .ios-row-nav:active { background:#404045; }
+.settings-hub .ios-nav-meta:empty { display:none; }
+.settings-hub .ios-help { margin:13px 10px; }
 
 </style>
 </head>
@@ -658,18 +692,31 @@ function closeModal(){
 }
 function navigate(page,args={}){editorPage=page;editorArgs=args;showCurrentPage();}
 function showCurrentPage(){
- const pages={settings:["Settings",null],design:["Button Design","settings"],playback:["Playback & Backup","settings"],organize:["Edit Categories",null],section:[editorArgs.id?"Edit Category":"New Category","organize"],button:[editorArgs.id?"Edit Button":"New Button","organize"]};
+ const pages={
+  settings:["Settings",null],
+  title:["Title","settings"],
+  background:["Background","settings"],
+  design:["Buttons","settings"],
+  playback:["Playback","settings"],
+  backup:["Backup","settings"],
+  organize:["Edit Categories",null],
+  section:[editorArgs.id?"Edit Category":"New Category","organize"],
+  button:[editorArgs.id?"Edit Button":"New Button","organize"]
+ };
  const [title,parent]=pages[editorPage]||pages.settings;
  $("sheetTitle").textContent=title;
- $("sheetBack").textContent=parent?"‹ Back":"Close";
+ $("sheetBack").textContent=parent?(parent==="settings"?"‹ Settings":"‹ Edit"):"Close";
  $("sheetBack").onclick=()=>parent?navigate(parent):closeModal();
  $("sheetDone").textContent=editorPage==="section"||editorPage==="button"?"Save":"Done";
  $("sheetDone").onclick=editorPage==="section"||editorPage==="button"?()=>$("editSave").click():closeModal;
- $("settingsPreview").hidden=!(["settings","design"].includes(editorPage));
- const body=$("sheetBody");body.replaceChildren();body.scrollTop=0;
+ $("settingsPreview").hidden=!(["title","background","design"].includes(editorPage));
+ const body=$("sheetBody");body.replaceChildren();body.classList.toggle("settings-hub",editorPage==="settings");body.scrollTop=0;
  if(editorPage==="settings")settingsPage(body);
+ if(editorPage==="title")titlePage(body);
+ if(editorPage==="background")backgroundPage(body);
  if(editorPage==="design")designPage(body);
  if(editorPage==="playback")playbackPage(body);
+ if(editorPage==="backup")backupPage(body);
  if(editorPage==="organize")organizePage(body);
  if(editorPage==="section")editSectionPage(body,editorArgs.id);
  if(editorPage==="button")editButtonPage(body,editorArgs.id,editorArgs.sectionId);
@@ -706,29 +753,50 @@ function navigationRow(label,subtitle,fn){
  b.append(el("span","ios-row-label",label),el("span","ios-nav-meta",subtitle),el("span","ios-chevron","›"));b.onclick=fn;return b;
 }
 function settingsPage(body){
+ body.classList.add("settings-hub");
+ const rows=[
+  ["Title","title"],
+  ["Background","background"],
+  ["Buttons","design"],
+  ["Playback","playback"],
+  ["Backup","backup"]
+ ];
+ body.append(grouped(...rows.map(([name,page])=>navigationRow(name,"",()=>navigate(page)))));
+ body.append(el("p","ios-help","Customize RadioGrid here. To organize categories and stations, use Edit on the home screen."));
+}
+function titlePage(body){
  body.append(sectionLabel("Title"));
  const name=textControl(state.appTitle,"RadioGrid");name.maxLength=32;
  name.oninput=()=>{state.appTitle=name.value||DEFAULT_APP_TITLE;liveUpdate();};
  name.onblur=()=>{if(!name.value.trim()){name.value=DEFAULT_APP_TITLE;state.appTitle=DEFAULT_APP_TITLE;liveUpdate();}};
- const font=choiceControl(FONT_OPTIONS,state.fontStyle);font.onchange=()=>{state.fontStyle=font.value;liveUpdate();};
- body.append(grouped(settingRow("Name",name),settingRow("Font",font),sliderRow("Size",state.titleFontSize,22,48," px",v=>{state.titleFontSize=v;liveUpdate();}),styleRow("title"),colorRow("Text Color",state.theme.titleColor,v=>{state.theme.titleColor=v;liveUpdate();})));
+ const font=choiceControl(FONT_OPTIONS,state.fontStyle);
+ font.onchange=()=>{state.fontStyle=font.value;liveUpdate();};
+ body.append(grouped(
+  settingRow("Name",name),
+  settingRow("Font",font),
+  sliderRow("Size",state.titleFontSize,22,48," px",v=>{state.titleFontSize=v;liveUpdate();}),
+  styleRow("title"),
+  colorRow("Text Color",state.theme.titleColor,v=>{state.theme.titleColor=v;liveUpdate();})
+ ));
+ body.append(sectionLabel("Interface Accent"));
+ body.append(grouped(colorRow("Accent Color",state.theme.accent,v=>{state.theme.accent=v;liveUpdate();})));
+ body.append(el("p","ios-help","The accent color also changes the Edit text, Settings gear, selected category, and interactive controls."));
+}
+function backgroundPage(body){
  body.append(sectionLabel("Background"));
- const accent=colorRow("Accent",state.theme.accent,v=>{state.theme.accent=v;liveUpdate();});
- body.append(grouped(colorRow("Color",state.theme.background,v=>{state.theme.background=v;liveUpdate();}),accent));
+ body.append(grouped(colorRow("Background Color",state.theme.background,v=>{state.theme.background=v;liveUpdate();})));
  body.append(sectionLabel("Pattern"));
  const patterns=[["none","Plain"],["terrain","Terrain"],["carbon","Carbon"],["grid","Grid"],["brushed","Brushed"],["glow","Glow"]];
  const picks=el("div","ios-choice-grid");
  for(const [key,title] of patterns){
   const b=el("button","ios-pattern"+(state.theme.pattern===key?" selected":""));b.type="button";
-  const sample=el("span","pattern-sample"),[image,size]=patternStyle(key);sample.style.setProperty("--chip-image",image);sample.style.setProperty("--chip-size",size);
+  const sample=el("span","pattern-sample"),[image,size]=patternStyle(key);
+  sample.style.setProperty("--chip-image",image);sample.style.setProperty("--chip-size",size);
   b.append(sample,el("span","",title));b.setAttribute("aria-pressed",String(state.theme.pattern===key));
   b.onclick=()=>{state.theme.pattern=key;picks.querySelectorAll(".ios-pattern").forEach(n=>{n.classList.remove("selected");n.setAttribute("aria-pressed","false")});b.classList.add("selected");b.setAttribute("aria-pressed","true");liveUpdate();};
   picks.append(b);
  }
- body.append(picks,el("p","ios-help","Terrain is an original cracked-earth-inspired pattern, recalling classic Uconnect display themes. Changes appear above immediately."));
- body.append(sectionLabel("Buttons"),grouped(navigationRow("Button Design","Fonts, size, borders, spacing",()=>navigate("design"))));
- body.append(sectionLabel("More"),grouped(navigationRow("Playback & Backup","Return method, save and restore",()=>navigate("playback"))));
- body.append(el("p","ios-help","Organize categories and buttons with Edit at the upper left of the home screen."));
+ body.append(picks,el("p","ios-help","These original textures take inspiration from classic automotive displays. The preview above updates instantly."));
 }
 function designPage(body){
  body.append(sectionLabel("Button Text"));
@@ -747,12 +815,17 @@ function playbackPage(body){
  body.append(sectionLabel("Return After Playing"));
  const method=choiceControl([["website","Website link"],["webapp","Home Screen app (experimental)"],["shortcut","Open Radio Grid Shortcut"]],state.returnMethod);
  method.onchange=()=>{state.returnMethod=method.value;save();notify("Return behavior saved");};
- body.append(grouped(settingRow("Method",method)),el("p","ios-help","The selected Shortcut finishes before iOS invokes its callback. Home Screen return uses an unofficial scheme that may not work on all iOS versions."));
- body.append(sectionLabel("Backup"));
- body.append(grouped(navigationRow("Export Settings","JSON file",exportSettings),navigationRow("Import Settings","Load saved configuration",()=>$('importPicker').click())));
+ body.append(grouped(settingRow("Method",method)));
+ body.append(el("p","ios-help","The selected Shortcut must finish before iOS invokes its callback. A website return can open Safari; Home Screen return uses an unofficial URL scheme."));
+}
+function backupPage(body){
+ body.append(sectionLabel("Backup & Restore"));
+ body.append(grouped(navigationRow("Export Settings","JSON file",exportSettings),navigationRow("Import Settings","Choose a backup",()=>$('importPicker').click())));
  body.append(sectionLabel("Reset"));
- const reset=navigationRow("Restore Defaults","Deletes customizations",resetDefaults);reset.querySelector(".ios-row-label").style.color="#ff7b72";
- body.append(grouped(reset),el("p","ios-help",storageWorks?"Changes are saved automatically in this web app. Back up before changing its website address or reinstalling.":"Local browser storage is unavailable. Export a backup before leaving."));
+ const reset=navigationRow("Restore Defaults","Remove customizations",resetDefaults);
+ reset.querySelector(".ios-row-label").style.color="#ff7b72";
+ body.append(grouped(reset));
+ body.append(el("p","ios-help",storageWorks?"Changes are saved automatically on this device. Export a backup before changing your website address or reinstalling.":"Local browser storage is unavailable. Export a backup before leaving."));
 }
 function drawMini(){
  const host=$("settingsPreview");if(host.hidden||!host.isConnected)return;
@@ -899,7 +972,7 @@ document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault
 $("openSettings").onclick=()=>showModal("settings");
 $("openEdit").onclick=()=>showModal("organize");
 $("scrim").onclick=closeModal;
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){if(["design","playback"].includes(editorPage))navigate("settings");else if(["section","button"].includes(editorPage))navigate("organize");else closeModal();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){if(["title","background","design","playback","backup"].includes(editorPage))navigate("settings");else if(["section","button"].includes(editorPage))navigate("organize");else closeModal();}});
 // The new button typography can use a different family from the title.
 const oldApplyIdentity=applyIdentity;
 applyIdentity=function(){oldApplyIdentity();document.documentElement.style.setProperty("--button-font",FONT_STACKS[state.buttonFontStyle]||FONT_STACKS[state.fontStyle]||FONT_STACKS.system);};

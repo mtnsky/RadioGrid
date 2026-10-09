@@ -220,6 +220,22 @@ body { background:var(--bg); }
 .settings-hub .ios-nav-meta:empty { display:none; }
 .settings-hub .ios-help { margin:13px 10px; }
 
+
+/* V18: Stable live-preview footprint prevents iOS scroll jumps while dragging.
+   Controls below are the only scrollable region; the preview never resizes. */
+.settings-preview:not([hidden]) {
+ height:220px;
+ flex:0 0 220px;
+ overflow:hidden;
+ overflow-anchor:none;
+}
+.settings-preview .preview-stage {height:184px;align-items:center;}
+.sheet-body {overflow-anchor:none;scroll-behavior:auto;}
+.ios-row-value input[type=range] {touch-action:pan-x;overscroll-behavior:contain;}
+@media (max-height:700px) {
+ .settings-preview:not([hidden]) {height:175px;flex-basis:175px;}
+ .settings-preview .preview-stage {height:138px;}
+}
 </style>
 </head>
 <body>
@@ -676,7 +692,20 @@ function run(item){
 let editorPage="settings";
 let editorArgs={};
 let previewSection=state.sections.find(s=>s.items.length>=6)?.id||state.active;
-function liveUpdate(){save();theme();render();drawMini();}
+// Appearance changes update CSS and measurements in place. Rebuilding the
+// entire app on each slider tick caused needless layout shifts on mobile.
+let activeSettingsSlider = null;
+function liveUpdate(){
+ const scroller=$("sheetBody");
+ const position=activeSettingsSlider !== null ? activeSettingsSlider : scroller.scrollTop;
+ save();theme();
+ fitTitle();fitTabText();sizeGrid();drawMini();
+ scroller.scrollTop=position;
+ // Safari may perform scroll anchoring after a layout pass; restore once more.
+ requestAnimationFrame(()=>{
+   if($("sheetBody")===scroller)scroller.scrollTop=position;
+ });
+}
 function structuralUpdate(message){save();theme();render();showCurrentPage();if(message)notify(storageWorks?message:"Changes made — export a backup");}
 function showModal(page="settings",args={}){
  lastFocus=document.activeElement;
@@ -686,12 +715,14 @@ function showModal(page="settings",args={}){
  showCurrentPage();
 }
 function closeModal(){
+ activeSettingsSlider=null;
  $("scrim").classList.remove("open");$("sheet").classList.remove("open");$("sheet").setAttribute("aria-hidden","true");
  $("settingsPreview").hidden=true;
  document.body.style.overflow="";lastFocus?.focus?.();
 }
 function navigate(page,args={}){editorPage=page;editorArgs=args;showCurrentPage();}
 function showCurrentPage(){
+ activeSettingsSlider=null;
  const pages={
   settings:["Settings",null],
   title:["Title","settings"],
@@ -732,6 +763,19 @@ function sliderRow(label,value,min,max,unit,callback){
  const input=el("input");input.type="range";input.min=min;input.max=max;input.step="1";input.value=value;
  input.id=uid();l.htmlFor=input.id;
  const output=el("output","ios-value",value+unit);
+ // On iOS a finger moving on a range can otherwise scroll the Settings
+ // sheet as its live preview is redrawn. Pin only the editing scroll position
+ // during that gesture; scrolling normally resumes on finger release.
+ const pin=()=>{activeSettingsSlider=$("sheetBody").scrollTop;};
+ const unpin=()=>{const scroller=$("sheetBody"),at=activeSettingsSlider;
+   if(at!==null){scroller.scrollTop=at;requestAnimationFrame(()=>{if($("sheetBody")===scroller)scroller.scrollTop=at;});}
+   activeSettingsSlider=null;};
+ input.addEventListener("pointerdown",pin,{passive:true});
+ input.addEventListener("touchstart",pin,{passive:true});
+ input.addEventListener("pointerup",unpin,{passive:true});
+ input.addEventListener("pointercancel",unpin,{passive:true});
+ input.addEventListener("touchend",unpin,{passive:true});
+ input.addEventListener("touchcancel",unpin,{passive:true});
  input.oninput=()=>{output.textContent=input.value+unit;callback(Number(input.value));};
  v.append(input,output);r.append(l,v);return r;
 }

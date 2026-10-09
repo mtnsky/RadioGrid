@@ -4,21 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Media">
+<meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
-<title>Media · JT Sport Audio</title>
+<title>RadioGrid</title>
 <style>
   :root {
     color-scheme:dark;
     --bg:#0b0d10; --surface:#22252a; --surface2:#1b1e23;
     --text:#f6f6f7; --muted:#a3a7af; --accent:#e77d20;
     --line:rgba(255,255,255,.13); --sheet:#1b1d22; --card:#373a41;
-    --danger:#ff6961; --tab-r:24px; --card-r:24px;
+    --danger:#ff6961; --tab-r:16px; --card-r:13px;
   }
   *,*::before,*::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html { min-height:100%; background:var(--bg); touch-action:pan-x pan-y; }
   body {
-    margin:0; min-height:100dvh; color:var(--text);
+    margin:0; height:100dvh; overflow:hidden; color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
     -webkit-font-smoothing:antialiased; overflow-x:hidden;
     background:radial-gradient(ellipse at 50% -30%, rgba(255,255,255,.06),transparent 56%),var(--bg);
@@ -27,46 +27,55 @@
   button,input,select { font:inherit; }
   button { cursor:pointer; color:inherit; border:0; -webkit-appearance:none; appearance:none; }
   button:focus-visible,input:focus-visible,select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  .app { margin:auto; min-height:100dvh; width:min(100%,760px); padding:max(10px,env(safe-area-inset-top)) 14px max(24px,env(safe-area-inset-bottom)); }
-  .header { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:106px; padding:5px 60px 14px; }
-  .app-title { font-size:clamp(32px,8vw,42px); font-weight:790; line-height:1; letter-spacing:-.055em; margin:0; }
+  /* Full-height app with one scrollable content region only when absolutely necessary. */
+  .app { margin:auto; width:min(100%,760px); height:100dvh; display:flex; flex-direction:column; min-height:0;
+    padding:max(8px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom)); overflow:hidden; }
+   .header { position:relative; flex:0 0 auto; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; height:76px; padding:4px 56px 7px; }
+  .app-title { font-size:clamp(29px,7vw,39px); font-weight:790; line-height:1; letter-spacing:-.055em; margin:0; }
   .subtitle { color:var(--muted); margin-top:8px; font-size:clamp(13px,3.4vw,18px); font-weight:480; letter-spacing:-.012em; white-space:nowrap; }
-  .menu { position:absolute; right:0; top:12px; width:54px; height:54px; display:grid; place-items:center; color:var(--accent); border-radius:15px; border:1px solid var(--line); background:linear-gradient(155deg,#25282d,#17191d); }
-  .menu:active { filter:brightness(1.3); transform:scale(.97); }
+  .menu { position:absolute; right:0; top:50%; transform:translateY(-50%); width:48px; height:48px; display:grid; place-items:center; color:var(--accent); border-radius:15px; border:1px solid var(--line); background:linear-gradient(155deg,#25282d,#17191d); }
+  .menu:active { filter:brightness(1.3); transform:translateY(-50%) scale(.97); }
   .menu svg { width:27px; height:27px; }
-  .tabs { display:flex; gap:3px; border-bottom:1px solid rgba(255,255,255,.11); margin:6px -14px 20px; padding:0 14px; overflow-x:auto; scrollbar-width:none; }
+  /* Fixed, unscrollable category bar. Font is automatically fit to one line. */
+  .tabs { flex:0 0 auto; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0;
+    border-bottom:1px solid rgba(255,255,255,.11); margin:0 -14px 12px; padding:0 14px;
+    overflow-x:hidden; touch-action:manipulation; }
   .tabs::-webkit-scrollbar { display:none; }
-  .tab { flex:1 0 auto; position:relative; min-width:92px; display:flex; flex-direction:column; align-items:center; gap:7px; padding:20px 8px 20px; color:#a5aab2; background:transparent; font-size:clamp(18px,4.8vw,22px); font-weight:700; }
+   .tab { min-width:0; position:relative; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; padding:13px 2px 15px; color:#a5aab2; background:transparent;
+    font-size:15px; font-weight:700; text-align:center;
+    white-space:nowrap; touch-action:manipulation; }
+  .tab span { display:block; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:clip; letter-spacing:-.025em; }
   .tab svg { display:none; }
   .tab.active { color:var(--accent); }
-  .tab.active::after { content:""; position:absolute; bottom:0; left:5%; right:5%; height:4px; border-radius:6px 6px 0 0; background:var(--accent); }
+  .tab.active::after { content:""; position:absolute; bottom:0; left:8%; right:8%; height:4px; border-radius:6px 6px 0 0; background:var(--accent); }
   .tab:active { background:rgba(255,255,255,.035); }
-  .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:11px; }
+  /* Full-width page strip tracks a finger drag and springs into place. */
+  .page-track { width:100%; height:100%; display:flex; align-items:stretch;
+    transform:translate3d(0,0,0); will-change:transform;
+    transition:transform .34s cubic-bezier(.22,1,.36,1); }
+  .page-slide { flex:0 0 100%; min-width:0; height:100%; overflow:hidden;
+    touch-action:pan-y; overscroll-behavior-y:contain; -webkit-overflow-scrolling:touch; }
+  .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-auto-rows:var(--card-height,96px); gap:10px; align-content:start; }
   /* Uniform graphite text-only tiles, no illustrated icons */
-  .card { min-width:0; height:clamp(96px,25vw,134px); position:relative;
+  .card { min-width:0; height:100%; position:relative;
     display:flex; align-items:center; justify-content:center; text-align:center;
-    padding:12px 9px; border-radius:22px;
+    padding:8px 8px; border-radius:var(--card-r);
     background:var(--card);
     border:1px solid rgba(255,255,255,.24);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 20px rgba(0,0,0,.24);
     touch-action:pan-y; transition:transform .08s,filter .08s; }
   .card:active { transform:scale(.963); filter:brightness(1.18); }
-  .card-label { font-size:clamp(18px,4.95vw,23px); font-weight:740;
-    line-height:1.16; letter-spacing:-.025em; color:#f3f4f5; overflow-wrap:anywhere; }
-  /* Keep long names inside the unchanged card dimensions. */
-  .card-label.long { font-size:clamp(16px,4.3vw,20px); }
-  .card-label.very-long { font-size:clamp(15px,3.9vw,18px); line-height:1.12; }
-  .page-viewport { min-height:max(260px,calc(100dvh - 250px)); touch-action:pan-y; }
-  .grid.swipe-next { animation:mediaSlideNext .19s ease-out both; }
-  .grid.swipe-prev { animation:mediaSlidePrev .19s ease-out both; }
-  @keyframes mediaSlideNext {
-    from { opacity:.65; transform:translate3d(30px,0,0); }
-    to { opacity:1; transform:translate3d(0,0,0); }
-  }
-  @keyframes mediaSlidePrev {
-    from { opacity:.65; transform:translate3d(-30px,0,0); }
-    to { opacity:1; transform:translate3d(0,0,0); }
-  }
+  /* One shared font size for every button, including radio frequency and station name. */
+  .card-label { font-size:clamp(17px,4.85vw,21px); font-weight:740;
+    line-height:1.14; letter-spacing:-.022em; color:#f3f4f5; overflow-wrap:anywhere;
+    display:block; width:100%; }
+  .card-label .frequency, .card-label .callsign { display:block; font:inherit; line-height:1.14; }
+  .card-label .callsign { margin-top:3px; }
+  .page-viewport { flex:1 1 auto; min-height:0; overflow:hidden;
+    touch-action:pan-y; overscroll-behavior:contain; }
   .grid-empty { color:var(--muted); padding:18px 4px; grid-column:1/-1; text-align:center; }
   .section-note { margin:15px 4px; color:#888e99; text-align:center; font-size:12px; }
   /* iOS-inspired editor */
@@ -144,11 +153,9 @@
     .app { padding-left:8px; padding-right:8px; }
     .tabs { margin-left:-8px; margin-right:-8px; padding:0 8px; }
     .grid { gap:7px; }
-    .card { border-radius:18px; gap:10px; }
-    .tab { min-width:85px; font-size:17px; }
-    .card-label { font-size:17px; }
-    .card-label.long { font-size:16px; }
-    .card-label.very-long { font-size:15px; }
+    .card { border-radius:11px; gap:7px; }
+    .tab { font-size:14px; }
+
     .icon-btn { width:27px; }
   }
   @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
@@ -171,15 +178,14 @@
 <body>
 <main class="app">
   <header class="header">
-    <h1 class="app-title">Media</h1>
-    <div class="subtitle">JT Sport Audio</div>
+    <h1 class="app-title">RadioGrid</h1>
     <button class="menu" type="button" id="openSettings" aria-label="Open settings" title="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
   </header>
-  <nav class="tabs" id="tabs" aria-label="Media sections"></nav>
-  <section class="page-viewport" id="pageViewport" aria-label="Swipe left or right to change media category">
-    <div class="grid" id="grid" aria-label="Media shortcuts"></div>
+  <nav class="tabs" id="tabs" aria-label="RadioGrid categories"></nav>
+  <section class="page-viewport" id="pageViewport" aria-label="Swipe left or right here to change category">
+    <div class="page-track" id="pageTrack" aria-label="Audio shortcut pages"></div>
   </section>
 </main>
 <div id="scrim" class="scrim" aria-hidden="true"></div>
@@ -205,7 +211,8 @@ const DEFAULT_SECTIONS=[
  {id:"podcasts",name:"Podcasts",icon:"podcast",items:[
   raw("ksr","KSR","mic"),raw("scripture","Bible Recap Scripture","book",{noReturn:true}),raw("recap","Bible Recap Podcast","book")
  ]},
- {id:"stations",name:"Stations",icon:"broadcast",items:[
+ {id:"apple-music",name:"Apple Music",icon:"music",items:[]},
+ {id:"playlists",name:"Playlists",icon:"broadcast",items:[
   raw("80s","80’s","cassette"),raw("americana","Americana","guitar"),raw("beatles","The Beatles","music"),raw("christian","Christian","cross"),
   raw("classic","Classic Rock","rock"),raw("coffee","Coffee House","coffee"),raw("country","Country","hat"),raw("dance","Dance","music"),
   raw("focus","Focus","headphones"),raw("family","Family","heart"),raw("oldies","Oldies","vinyl"),raw("worship","Worship","cross")
@@ -287,97 +294,199 @@ try{
    }
  }
 }catch(e){storageWorks=false;state=defaults();}
+// Preserve existing customized buttons while restoring the Playlists tab.
+// Existing older builds stored these same playlist buttons in a group called Stations.
+function restorePlaylists(){
+ const hasPlaylists=state.sections.some(x=>x.id==="playlists"||x.name.toLowerCase()==="playlists");
+ if(hasPlaylists)return;
+ const former=state.sections.find(x=>x.id==="stations"||x.name.toLowerCase()==="stations");
+ if(!former)return;
+ const oldId=former.id;
+ former.id="playlists";former.name="Playlists";
+ if(state.active===oldId)state.active="playlists";
+ try { if(storageWorks)localStorage.setItem(KEY,JSON.stringify(state)); } catch(_){}
+}
+restorePlaylists();
+// Upgrade existing saved V6/V7 layouts to four standard categories without
+// overwriting custom buttons, destinations, colors, or user-created categories.
+function restoreFourCategories(){
+ const standards=[
+  {id:"podcasts",name:"Podcasts"},
+  {id:"apple-music",name:"Apple Music"},
+  {id:"playlists",name:"Playlists"},
+  {id:"radio",name:"Radio"}
+ ];
+ const remaining=[...state.sections];
+ const arranged=[];
+ for(const {id,name} of standards){
+  let index=remaining.findIndex(s=>s.id===id);
+  if(index<0)index=remaining.findIndex(s=>s.name.toLowerCase()===name.toLowerCase());
+  if(index>=0){
+   const existing=remaining.splice(index,1)[0];
+   existing.name=name;
+   arranged.push(existing);
+  }else{
+   const base=DEFAULT_SECTIONS.find(s=>s.id===id);
+   // Do not duplicate any shortcut if it already exists in a customized group.
+   const existingTargets=new Set(state.sections.flatMap(s=>s.items.map(i=>i.target)));
+   const copy=clone(base);
+   copy.items=copy.items.filter(i=>!existingTargets.has(i.target));
+   arranged.push(copy);
+  }
+ }
+ // User-added sections are preserved rather than silently deleted.
+ state.sections=[...arranged,...remaining];
+ if(!state.sections.some(s=>s.id===state.active))state.active="podcasts";
+ try{if(storageWorks)localStorage.setItem(KEY,JSON.stringify(state));}catch(_){}
+}
+restoreFourCategories();
 function save(){if(!storageWorks)return;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){storageWorks=false;}}
 function theme(){const root=document.documentElement;root.style.setProperty("--accent",state.theme.accent);root.style.setProperty("--bg",state.theme.background);root.style.setProperty("--surface",state.theme.surface);root.style.setProperty("--surface2",state.theme.surface2);root.style.setProperty("--card",state.theme.card||DEFAULT_THEME.card);document.querySelector('meta[name="theme-color"]').content=state.theme.background;}
 function notify(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800);}
 function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))settingsHome(true);if(message)notify(storageWorks?message:"Change made — export a backup");}
 function activeSection(){return state.sections.find(s=>s.id===state.active)||state.sections[0]||null;}
 function iconFor(name,cl){const x=el("span",cl);x.append(svg(name));return x;}
-function render(swipeDirection=0){
- const tabs=$("tabs"),grid=$("grid");tabs.replaceChildren();grid.replaceChildren();
- for(const section of state.sections){
-   const b=el("button","tab"+(activeSection()?.id===section.id?" active":""));b.type="button";b.setAttribute("aria-current",activeSection()?.id===section.id?"page":"false");b.append(el("span","",section.name));
-   b.onclick=()=>{state.active=section.id;save();render();};tabs.append(b);
- }
- const section=activeSection();if(!section){grid.append(el("p","grid-empty","Add a section using Settings."));return;}
- for(const item of section.items){
-   const card=el("button","card");card.type="button";card.setAttribute("aria-label","Play "+item.name);
-   const label=el("span","card-label",item.name);
-   if(item.name.length>19)label.classList.add("very-long");
-   else if(item.name.length>13)label.classList.add("long");
-   card.append(label);
-   card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item);};
-   grid.append(card);
- }
- if(swipeDirection)grid.classList.add(swipeDirection>0?"swipe-next":"swipe-prev");
- // Ensure the currently selected tab remains visible if custom tabs overflow.
- const activeTab=tabs.querySelector(".tab.active");
- if(activeTab){
-   const left=activeTab.offsetLeft, right=left+activeTab.offsetWidth;
-   if(left<tabs.scrollLeft||right>tabs.scrollLeft+tabs.clientWidth){
-     tabs.scrollTo({left:left-(tabs.clientWidth-activeTab.offsetWidth)/2,behavior:"smooth"});
-   }
- }
-}
-
-// Whole-page gestures: swiping on a media card, the empty page, or the
-// surrounding layout changes category. A normal tap still plays the item.
-// Vertical scroll gestures and the settings sheet remain unaffected.
+// Render every category once; keep adjacent pages present so swiping can
+// literally move them with the finger rather than only switching at touchend.
 let suppressCardClickUntil=0;
 let pageTouch=null;
+let transitionLocked=false;
+function pageIndex(){return Math.max(0,state.sections.findIndex(s=>s.id===activeSection()?.id));}
+function placeTrack(animated=true,delta=0){
+ const track=$("pageTrack"), width=$("pageViewport").clientWidth;
+ track.style.transition=animated?"":"none";
+ track.style.transform=`translate3d(${Math.round(-pageIndex()*width+delta)}px,0,0)`;
+}
+function fitTabText(){
+ const labels=[...$("tabs").querySelectorAll(".tab")];
+ if(!labels.length)return;
+ const base=labels.length>=4?15:17;
+ let size=base;
+ while(size>10){
+   labels.forEach(t=>t.style.fontSize=size+"px");
+   if(labels.every(t=>{const span=t.firstElementChild;return span.scrollWidth<=span.clientWidth+1;}))break;
+   size-=1;
+ }
+}
+function updateTabs(){
+ const active=activeSection()?.id;
+ $("tabs").querySelectorAll(".tab").forEach((tab,i)=>{
+   const selected=state.sections[i]?.id===active;
+   tab.classList.toggle("active",selected);
+   tab.setAttribute("aria-current",selected?"page":"false");
+ });
+ $("pageTrack").querySelectorAll(".page-slide").forEach((slide,i)=>{
+   const isCurrent=state.sections[i]?.id===active;
+   slide.inert=!isCurrent;
+   slide.setAttribute("aria-hidden",isCurrent?"false":"true");
+ });
+}
+function activate(index,animate=true){
+ if(index<0||index>=state.sections.length||transitionLocked)return;
+ if(state.active===state.sections[index].id){placeTrack(animate);return;}
+ state.active=state.sections[index].id;
+ save();updateTabs();sizeGrid();
+ placeTrack(animate);
+}
+function render(){
+ const tabs=$("tabs"),track=$("pageTrack");
+ tabs.replaceChildren();track.replaceChildren();
+ for(const [index,section] of state.sections.entries()){
+   const b=el("button","tab");b.type="button";
+   b.append(el("span","",section.name));
+   b.onclick=()=>activate(index,true);
+   tabs.append(b);
+   const slide=el("div","page-slide");
+   slide.dataset.sectionId=section.id;
+   const grid=el("div","grid");
+   grid.setAttribute("aria-label",section.name+" buttons");
+   if(!section.items.length)grid.append(el("p","grid-empty","Add a button in Settings."));
+   for(const item of section.items){
+     const card=el("button","card");card.type="button";
+     card.setAttribute("aria-label","Play "+item.name);
+     const label=el("span","card-label");
+     const radioParts=section.id==="radio" ? item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/) : null;
+     if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
+     else label.textContent=item.name;
+     card.append(label);
+     card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item);};
+     grid.append(card);
+   }
+   slide.append(grid);track.append(slide);
+ }
+ tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
+ updateTabs();fitTabText();sizeGrid();placeTrack(false);
+}
+// Landscape-oriented cards; reduce height only when more rows won't fit.
+function sizeGrid(){
+ const viewport=$("pageViewport");
+ const available=viewport.clientHeight;
+ $("pageTrack").querySelectorAll(".page-slide").forEach((slide,i)=>{
+   const grid=slide.querySelector(".grid");
+   const rows=Math.max(1,Math.ceil(state.sections[i].items.length/3));
+   const gap=parseFloat(getComputedStyle(grid).rowGap)||0;
+   const ideal=Math.floor((available-gap*(rows-1))/rows);
+   // Width-driven cap keeps cards noticeably wider than they are tall.
+   // Give the longer podcast names a little more vertical room.
+   const columnWidth=(grid.clientWidth-gap*2)/3;
+   const maxHeight=Math.min(96,Math.floor(columnWidth*(state.sections[i].id==="podcasts"?.87:.77)));
+   const minimum=64;
+   const height=Math.max(minimum,Math.min(maxHeight,ideal));
+   grid.style.setProperty("--card-height",height+"px");
+   const isActive=i===pageIndex();
+   slide.style.overflowY=isActive && ideal<minimum?"auto":"hidden";
+ });
+}
+function layoutResize(){fitTabText();sizeGrid();placeTrack(false);}
+window.addEventListener("resize",()=>requestAnimationFrame(layoutResize));
+if(window.visualViewport)window.visualViewport.addEventListener("resize",()=>requestAnimationFrame(layoutResize));
+
+// Rubber-banded page swipe, matching iOS Home Screen's follow-finger feel.
+// Only the content area swipes; fixed tabs never swipe.
 function installCategorySwipe(){
-  const page=$('pageViewport');
-  const app=document.querySelector('.app');
-  // Capture on the document so nested buttons do not swallow the gesture.
-  // Do not attach only to the grid: swipes in blank page space work too.
-  document.addEventListener('touchstart',event=>{
-    pageTouch=null;
-    if(event.touches.length!==1 || $('sheet').classList.contains('open'))return;
-    const target=event.target instanceof Element ? event.target : event.target?.parentElement;
-    if(!target?.closest('.app') || target.closest('#openSettings'))return;
-    const finger=event.touches[0];
-    pageTouch={id:finger.identifier,x:finger.clientX,y:finger.clientY,dx:0,dy:0,axis:null};
-  },{capture:true,passive:true});
-  document.addEventListener('touchmove',event=>{
-    const gesture=pageTouch;
-    if(!gesture)return;
-    if(event.touches.length!==1){pageTouch=null;return;}
-    const finger=Array.from(event.touches).find(t=>t.identifier===gesture.id);
-    if(!finger){pageTouch=null;return;}
-    gesture.dx=finger.clientX-gesture.x;
-    gesture.dy=finger.clientY-gesture.y;
-    const ax=Math.abs(gesture.dx),ay=Math.abs(gesture.dy);
-    if(!gesture.axis && (ax>13 || ay>13)){
-      gesture.axis=ax>ay*1.22 ? 'horizontal' : (ay>ax*1.12 ? 'vertical' : null);
-    }
-    if(gesture.axis==='horizontal'){
-      // Touch action on cards is pan-y to keep horizontal moves in the page.
-      if(event.cancelable)event.preventDefault();
-      suppressCardClickUntil=performance.now()+500;
-    }
-  },{capture:true,passive:false});
-  document.addEventListener('touchend',event=>{
-    const gesture=pageTouch;
-    if(!gesture)return;
-    const finger=Array.from(event.changedTouches).find(t=>t.identifier===gesture.id);
-    if(!finger)return;
-    pageTouch=null;
-    // Capture the final finger position even for very quick flicks.
-    gesture.dx=finger.clientX-gesture.x;
-    gesture.dy=finger.clientY-gesture.y;
-    const ax=Math.abs(gesture.dx),ay=Math.abs(gesture.dy);
-    if((gesture.axis!=='horizontal' && !(ax>25 && ax>ay*1.22)) ||
-       ax<Math.max(48,Math.min(75,app.clientWidth*.13)) || ax<ay*1.22)return;
-    suppressCardClickUntil=performance.now()+500;
-    const index=state.sections.findIndex(section=>section.id===activeSection()?.id);
-    const direction=gesture.dx<0?1:-1;
-    const destination=state.sections[index+direction];
-    if(!destination)return;
-    state.active=destination.id;
-    save();
-    render(direction);
-  },{capture:true,passive:true});
-  document.addEventListener('touchcancel',()=>{pageTouch=null;},{capture:true,passive:true});
+ const viewport=$("pageViewport");
+ viewport.addEventListener("touchstart",e=>{
+   pageTouch=null;
+   if(e.touches.length!==1||$("sheet").classList.contains("open")||transitionLocked)return;
+   const finger=e.touches[0];
+   pageTouch={id:finger.identifier,x:finger.clientX,y:finger.clientY,t:performance.now(),dx:0,dy:0,axis:null};
+ },{passive:true});
+ viewport.addEventListener("touchmove",e=>{
+   const g=pageTouch;if(!g)return;
+   if(e.touches.length!==1){pageTouch=null;placeTrack(true);return;}
+   const finger=Array.from(e.touches).find(f=>f.identifier===g.id);if(!finger)return;
+   g.dx=finger.clientX-g.x;g.dy=finger.clientY-g.y;
+   const ax=Math.abs(g.dx),ay=Math.abs(g.dy);
+   if(!g.axis&&(ax>9||ay>9))g.axis=ax>ay*1.17?"horizontal":ay>ax*1.17?"vertical":null;
+   if(g.axis==="horizontal"){
+     if(e.cancelable)e.preventDefault();
+     suppressCardClickUntil=performance.now()+700;
+     const atLeft=pageIndex()===0&&g.dx>0;
+     const atRight=pageIndex()===state.sections.length-1&&g.dx<0;
+     const dx=(atLeft||atRight)?g.dx*.22:g.dx;
+     placeTrack(false,dx);
+   }
+ },{passive:false});
+ viewport.addEventListener("touchend",e=>{
+   const g=pageTouch;if(!g)return;
+   pageTouch=null;
+   const finger=Array.from(e.changedTouches).find(f=>f.identifier===g.id);
+   if(!finger){placeTrack(true);return;}
+   g.dx=finger.clientX-g.x;g.dy=finger.clientY-g.y;
+   const ax=Math.abs(g.dx),ay=Math.abs(g.dy);
+   if((g.axis!=="horizontal"&&!(ax>24&&ax>ay*1.17))||ax<20){placeTrack(true);return;}
+   suppressCardClickUntil=performance.now()+700;
+   const duration=Math.max(1,performance.now()-g.t);
+   const commit=ax>viewport.clientWidth*.22||(ax>34&&ax/duration>.5);
+   const direction=g.dx<0?1:-1;
+   const index=pageIndex()+direction;
+   if(commit&&index>=0&&index<state.sections.length){
+     activate(index,true);
+   } else {
+     placeTrack(true);
+   }
+ },{passive:true});
+ viewport.addEventListener("touchcancel",()=>{pageTouch=null;placeTrack(true);},{passive:true});
 }
 function returnURL(){
  if(state.returnMethod==="shortcut"||!/^https?:$/.test(location.protocol))return "shortcuts://run-shortcut?name="+encodeURIComponent("Radio Grid");
@@ -522,7 +631,7 @@ function showButtonEditor(id,sectionId,host){
    const section=selectInput(state.sections.map(s=>[s.id,s.name]),found?.section.id||sectionId||state.sections[0]?.id);
    const action=selectInput([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
    const target=textInput(item?.target||"","Exact Shortcut name");
-   const ret=checkRow("Return to Media",!item?.noReturn);
+   const ret=checkRow("Return to RadioGrid",!item?.noReturn);
    const fields=el("div","field-set");const targetRow=field("Shortcut",target);
    fields.append(field("Name",name),field("Section",section),field("Action",action),targetRow,ret.row);
    panel.append(fields);
@@ -544,8 +653,8 @@ function showButtonEditor(id,sectionId,host){
    actions.append(cancel,done);panel.append(actions);
  });
 }
-function exportSettings(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=el("a");a.href=url;a.download="Media-JT-Sport-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Download requested");}
-$("importPicker").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=normalise(JSON.parse(await file.text()));if(confirm("Replace current Media configuration with this backup?")){state=data;changed("Settings imported");settingsHome(true);}}catch(_){alert("Import failed. Choose a valid Media settings JSON file.");}finally{e.target.value="";}};
+function exportSettings(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=el("a");a.href=url;a.download="RadioGrid-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Download requested");}
+$("importPicker").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=normalise(JSON.parse(await file.text()));if(confirm("Replace current RadioGrid configuration with this backup?")){state=data;changed("Settings imported");settingsHome(true);}}catch(_){alert("Import failed. Choose a valid RadioGrid settings JSON file.");}finally{e.target.value="";}};
 function resetDefaults(){if(!confirm("Restore all original sections, buttons, and colors? Export a backup first if needed."))return;state=defaults();changed("Defaults restored");}
 // iOS Safari pinch-to-zoom prevention, while preserving one-finger scrolling.
 ["gesturestart","gesturechange","gestureend"].forEach(type=>document.addEventListener(type,e=>e.preventDefault(),{passive:false}));

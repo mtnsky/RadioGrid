@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
-<title>RadioGrid</title>
+<title>RadioGrid V23</title>
 <!-- V22: Categories appearance and accessible More menu; tap-only options -->
 <style>
   :root {
@@ -408,6 +408,82 @@ body { background:var(--bg); }
 .preview-mini .tabs.is-scrollable .tab{flex:0 0 auto;min-width:87px;padding-left:13px;padding-right:13px}
 .preview-mini .tabs.is-scrollable .tab span{max-width:min(68vw,255px);text-overflow:ellipsis}
 
+
+/* V23: direct on-Home-screen editing. No long-press, no dedicated Edit page. */
+#openMore[hidden],#editDone[hidden]{display:none!important}
+#editDone{right:0;min-width:52px;font-size:17px;font-weight:650;justify-content:flex-end}
+.app.is-editing .card{cursor:pointer;overflow:visible;-webkit-user-select:none;user-select:none}
+.app.is-editing .card:active{transform:none;filter:none}
+.app.is-editing .card-label{padding:0 17px}
+.edit-tile-action{position:absolute;top:-6px;z-index:3;width:28px;height:28px;border-radius:50%;
+ display:grid;place-items:center;box-shadow:0 2px 6px #0009;touch-action:none;-webkit-touch-callout:none;
+ -webkit-user-select:none;user-select:none}
+.edit-tile-action svg{height:15px;width:15px;stroke-width:2.6}
+.edit-tile-remove{left:-6px;background:var(--accent);color:#151515}
+.edit-tile-grip{right:-6px;background:#25262b;color:var(--accent);border:1px solid #777b83;cursor:grab}
+.edit-tile-grip:active{cursor:grabbing}
+.edit-add-tile{width:var(--card-width);justify-self:center;display:flex;align-items:center;justify-content:center;
+ flex-direction:column;gap:6px;background:transparent;border:1.5px dashed #81848a;
+ color:var(--accent);border-radius:var(--card-r);min-height:48px;font-size:13px;font-weight:650}
+.edit-add-tile svg{height:24px;width:24px}
+.app.is-editing .grid{padding-top:8px;padding-bottom:12px}
+.app.is-editing #tabs{display:flex!important;align-items:stretch;gap:3px;overflow-x:auto!important;
+ overflow-y:hidden;touch-action:pan-x;min-height:58px;scrollbar-width:none}
+.app.is-editing #tabs .edit-tab-wrap{display:flex;position:relative;align-items:center;
+ flex:0 0 auto;min-width:108px;min-height:57px;padding-right:42px;border-radius:9px}
+.app.is-editing #tabs .edit-tab-wrap>.tab{min-width:66px;padding:11px 3px 15px 8px;flex:1;max-width:175px}
+.app.is-editing #tabs .edit-tab-wrap>.tab span{max-width:100%;text-overflow:ellipsis}
+.edit-tab-tool{position:absolute;right:22px;top:50%;transform:translateY(-50%);width:23px;height:35px;
+ color:var(--accent);background:transparent;display:grid;place-items:center;touch-action:manipulation}
+.edit-tab-grip{right:0;touch-action:none;color:#a3a8b2;cursor:grab}
+.edit-tab-tool svg{width:16px;height:16px}
+.edit-tab-grip svg{width:18px;height:18px}
+.edit-tab-wrap.category-drop-before:before,.edit-tab-wrap.category-drop-after:after{content:"";
+ position:absolute;top:5px;bottom:5px;width:3px;background:var(--accent);z-index:5;border-radius:4px}
+.edit-tab-wrap.category-drop-before:before{left:0}.edit-tab-wrap.category-drop-after:after{right:0}
+.edit-add-category{min-width:49px;flex:0 0 49px;display:grid;place-items:center;
+ color:var(--accent);background:transparent;align-self:stretch}
+.edit-add-category svg{height:24px;width:24px}
+.edit-drag-ghost{position:fixed!important;z-index:110!important;pointer-events:none!important;
+ margin:0!important;transition:none!important;box-shadow:0 18px 44px #000b!important;
+ opacity:.95!important;transform-origin:center;isolation:isolate}
+.edit-drag-origin{opacity:.24!important}
+.app.is-editing .card.drop-before{outline:3px solid var(--accent);outline-offset:2px}
+.app.is-editing .card.drop-after{outline:3px dashed var(--accent);outline-offset:2px}
+.app.is-editing .grid.drop-empty{outline:2px dashed var(--accent);outline-offset:-2px}
+.edit-overlay{position:fixed;inset:0;z-index:65;background:#0008;display:flex;align-items:flex-end;
+ justify-content:center;opacity:0;transition:opacity .24s ease;overscroll-behavior:contain}
+.edit-overlay.open{opacity:1}
+.edit-panel{width:min(100%,660px);max-height:min(87dvh,800px);display:flex;flex-direction:column;
+ background:#1b1c20;border-radius:24px 24px 0 0;border:1px solid #ffffff1a;border-bottom:0;
+ padding-bottom:max(12px,env(safe-area-inset-bottom));box-shadow:0 -14px 50px #0007;
+ transform:translateY(35px);transition:transform .3s cubic-bezier(.22,.82,.28,1)}
+.edit-overlay.open .edit-panel{transform:translateY(0)}
+.edit-panel-top{flex:none;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid #ffffff16}
+.edit-panel-grabber{width:36px;height:5px;background:#74747a;border-radius:9px;margin:9px auto 0}
+.edit-panel-nav{display:grid;grid-template-columns:75px 1fr 75px;align-items:center;padding:2px 17px 12px}
+.edit-panel-nav h2{font-size:17px;margin:0;text-align:center;color:#f7f7f9;white-space:nowrap}
+.edit-panel-nav button{background:transparent;color:var(--accent);font-size:16px;min-height:36px}
+.edit-panel-nav button:first-child{text-align:left}.edit-panel-nav button:last-child{text-align:right;font-weight:650}
+.edit-panel-scroll{overflow:auto;min-height:0;padding:10px 16px 18px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.edit-panel .ios-group{margin-bottom:14px}
+.edit-panel .ios-row-label{flex:0 0 100px}
+.edit-panel input[type=text],.edit-panel input[type=url],.edit-panel select{width:100%;min-width:0;
+ border:0;background:transparent;color:#f3f3f7;font-size:16px;padding:8px 0;text-align:right}
+.edit-panel select{color:var(--accent)}
+.edit-panel .ios-row-value{min-width:0;flex:1}
+.edit-panel .ios-row-value input{min-width:0}
+.edit-panel input::placeholder{color:#92949c}
+.edit-panel .edit-danger{color:#ff7771;background:#2c2c2e;border-radius:13px;width:100%;min-height:48px;
+ font-size:16px;margin-top:12px}
+.edit-panel .edit-error{font-size:13px;color:#ff8680;margin:8px 7px}
+.edit-undo{position:fixed;z-index:90;bottom:calc(25px + env(safe-area-inset-bottom));
+ left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);
+ display:flex;gap:17px;align-items:center;padding:9px 11px 9px 17px;border-radius:14px;
+ background:#34343a;border:1px solid #ffffff27;color:#fff;box-shadow:0 12px 35px #0009;font-size:14px}
+.edit-undo button{color:var(--accent);background:#505056;border-radius:9px;min-height:35px;padding:0 13px;font-weight:700}
+@media(prefers-reduced-motion:reduce){.edit-overlay,.edit-panel{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -417,6 +493,7 @@ body { background:var(--bg); }
   <button type="button" class="menu header-action" id="openMore" aria-label="More options" aria-haspopup="menu" aria-expanded="false" title="More options">
    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><g fill="currentColor" stroke="none"><circle cx="7.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="16.5" cy="12" r="1.2"/></g></svg>
   </button>
+  <button type="button" id="editDone" class="header-action" hidden>Done</button>
  </header>
  <nav class="tabs" id="tabs" aria-label="RadioGrid categories"></nav>
  <section class="page-viewport" id="pageViewport" aria-label="Swipe here to change category"><div class="page-track" id="pageTrack"></div></section>
@@ -478,6 +555,7 @@ const DEFAULT_SECTIONS=[
  ]}
 ];
 const ICONS={
+ minus:'<path d="M5 12h14"/>',
  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a2 2 0 0 0 .4 2.2l.1.1-2.3 2.3-.2-.1a2 2 0 0 0-2.2-.4 2 2 0 0 0-1.2 1.8V21h-3.2v-.2a2 2 0 0 0-1.2-1.8 2 2 0 0 0-2.2.4l-.2.1-2.3-2.3.1-.1A2 2 0 0 0 5.4 15a2 2 0 0 0-1.8-1.2H3.4v-3.2h.2A2 2 0 0 0 5.4 9.4a2 2 0 0 0-.4-2.2l-.1-.1 2.3-2.3.2.1a2 2 0 0 0 2.2.4 2 2 0 0 0 1.2-1.8V3h3.2v.2A2 2 0 0 0 15.2 5a2 2 0 0 0 2.2-.4l.2-.1 2.3 2.3-.1.1a2 2 0 0 0-.4 2.2 2 2 0 0 0 1.8 1.2h.2v3.2h-.2A2 2 0 0 0 19.4 15Z"/>',
  ellipsis:'<circle cx="12" cy="12" r="9"/><circle cx="7.5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="16.5" cy="12" r="1.2" fill="currentColor" stroke="none"/>',
@@ -723,7 +801,7 @@ function updateTabIndicator(animated=true){
  const bar=$("tabs"),tab=bar.querySelector(".tab.active"),indicator=bar.querySelector(".tab-indicator");
  if(!tab||!indicator)return;
  if(!animated)indicator.classList.add("no-animation");
- const x=tab.offsetLeft+tab.offsetWidth*.08;
+ const x=tab.getBoundingClientRect().left-bar.getBoundingClientRect().left+bar.scrollLeft+tab.offsetWidth*.08;
  indicator.style.width=Math.max(16,tab.offsetWidth*.84)+"px";
  indicator.style.transform=`translate3d(${Math.round(x)}px,0,0)`;
  if(!animated)requestAnimationFrame(()=>indicator.classList.remove("no-animation"));
@@ -731,14 +809,15 @@ function updateTabIndicator(animated=true){
 function centerActiveTab(animated=true){
  const bar=$("tabs"),tab=bar.querySelector(".tab.active");
  if(!tab||!bar.classList.contains("is-scrollable"))return;
- const left=tab.offsetLeft-(bar.clientWidth-tab.offsetWidth)/2;
+ const left=tab.getBoundingClientRect().left-bar.getBoundingClientRect().left+bar.scrollLeft-(bar.clientWidth-tab.offsetWidth)/2;
  bar.scrollTo({left:Math.max(0,left),behavior:animated&&!matchMedia("(prefers-reduced-motion: reduce)").matches?"smooth":"instant"});
 }
 function fitTabText(){
  const bar=$("tabs"),labels=[...bar.querySelectorAll(".tab")];
  if(!labels.length)return;
  const size=state.categoryFontSize;
- bar.classList.remove("is-scrollable");
+ if(homeEditing){bar.classList.add("is-scrollable","edit-mode");labels.forEach(t=>t.style.fontSize=size+"px");updateTabIndicator(false);return;}
+ bar.classList.remove("is-scrollable","edit-mode");
  bar.style.gridTemplateColumns=`repeat(${labels.length},minmax(0,1fr))`;
  labels.forEach(t=>t.style.fontSize=size+"px");
  // Scroll instead of overriding the user-selected size or squeezing long names.
@@ -775,29 +854,59 @@ function activate(index,animate=true){
 function render(){
  const tabs=$("tabs"),track=$("pageTrack");
  tabs.replaceChildren();track.replaceChildren();
+ document.querySelector(".app").classList.toggle("is-editing",homeEditing);
+ $("openMore").hidden=homeEditing;$("editDone").hidden=!homeEditing;
  for(const [index,section] of state.sections.entries()){
-   const b=el("button","tab");b.type="button";
-   b.append(el("span","",section.name));
-   b.title=section.name;b.setAttribute("aria-label",section.name);
-   b.onclick=()=>activate(index,true);
-   tabs.append(b);
-   const slide=el("div","page-slide");
-   slide.dataset.sectionId=section.id;
-   const grid=el("div","grid");
-   grid.setAttribute("aria-label",section.name+" buttons");
-   if(!section.items.length)grid.append(el("p","grid-empty","Open the ••• menu and choose Edit to add a button."));
-   for(const item of section.items){
-     const card=el("button","card");card.type="button";
-     card.setAttribute("aria-label","Play "+item.name);
-     const label=el("span","card-label");
-     const radioParts=section.id==="radio" ? item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/) : null;
-     if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
-     else label.textContent=item.name;
-     card.append(label);
-     card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item,card);};
-     grid.append(card);
+  const b=el("button","tab");b.type="button";
+  b.append(el("span","",section.name));b.title=section.name;b.setAttribute("aria-label",section.name);
+  b.onclick=()=>activate(index,true);
+  if(homeEditing){
+   const wrap=el("div","edit-tab-wrap");wrap.dataset.sectionId=section.id;
+   wrap.append(b);
+   const edit=el("button","edit-tab-tool");edit.type="button";edit.append(svg("pencil"));
+   edit.setAttribute("aria-label","Edit category "+section.name);
+   edit.onclick=e=>{e.stopPropagation();openCategoryEditor(section.id);};
+   const grip=el("button","edit-tab-tool edit-tab-grip");grip.type="button";grip.append(svg("grip"));
+   grip.setAttribute("aria-label","Drag to reorder category "+section.name);
+   grip.addEventListener("pointerdown",e=>startCategoryDrag(e,section.id,wrap));
+   wrap.append(edit,grip);tabs.append(wrap);
+  }else tabs.append(b);
+  const slide=el("div","page-slide");slide.dataset.sectionId=section.id;
+  const grid=el("div","grid");grid.setAttribute("aria-label",section.name+" buttons");
+  if(!section.items.length&&!homeEditing)grid.append(el("p","grid-empty","Choose Edit from More to add a button."));
+  for(const item of section.items){
+   const card=el("button","card");card.type="button";card.dataset.itemId=item.id;
+   card.setAttribute("aria-label",(homeEditing?"Edit ":"Play ")+item.name);
+   const label=el("span","card-label");
+   const radioParts=section.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
+   if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
+   else label.textContent=item.name;
+   card.append(label);
+   card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;if(homeEditing)openButtonEditor(item.id,section.id);else run(item,card);};
+   if(homeEditing){
+    const del=el("span","edit-tile-action edit-tile-remove");del.setAttribute("role","button");
+    del.setAttribute("tabindex","0");del.setAttribute("aria-label","Delete "+item.name);del.append(svg("minus"));
+    del.onclick=e=>{e.stopPropagation();deleteHomeButton(item.id);};
+    del.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();deleteHomeButton(item.id);}};
+    const grip=el("span","edit-tile-action edit-tile-grip");grip.setAttribute("role","button");
+    grip.setAttribute("tabindex","0");grip.setAttribute("aria-label","Drag "+item.name+" to reorder");
+    grip.append(svg("grip"));grip.addEventListener("pointerdown",e=>startTileDrag(e,item.id,section.id,card));
+    card.append(del,grip);
    }
-   slide.append(grid);track.append(slide);
+   grid.append(card);
+  }
+  if(homeEditing){
+   const add=el("button","edit-add-tile");add.type="button";
+   add.append(svg("plus"),el("span","","Add Button"));
+   add.setAttribute("aria-label","Add button to "+section.name);
+   add.onclick=()=>openButtonEditor(null,section.id);grid.append(add);
+  }
+  slide.append(grid);track.append(slide);
+ }
+ if(homeEditing){
+  const addCat=el("button","edit-add-category");addCat.type="button";
+  addCat.append(svg("plus"));addCat.setAttribute("aria-label","Add Category");
+  addCat.onclick=()=>openCategoryEditor(null);tabs.append(addCat);
  }
  const indicator=el("span","tab-indicator no-animation");indicator.setAttribute("aria-hidden","true");tabs.append(indicator);
  updateTabs();fitTabText();sizeGrid();placeTrack(false);
@@ -825,7 +934,7 @@ function sizeGrid(){
  const spec=state.buttonStyle||DEFAULT_BUTTON_STYLE;
  $("pageTrack").querySelectorAll(".page-slide").forEach((slide,i)=>{
    const grid=slide.querySelector(".grid");
-   const rows=Math.max(1,Math.ceil(state.sections[i].items.length/3));
+   const rows=Math.max(1,Math.ceil((state.sections[i].items.length+(homeEditing?1:0))/3));
    const gap=parseFloat(getComputedStyle(grid).rowGap)||0;
    const fitHeight=Math.floor((available-gap*(rows-1))/rows);
    // Width can be reduced inside each column, but never exceeds it.
@@ -852,12 +961,12 @@ function installCategorySwipe(){
  const viewport=$("pageViewport");
  viewport.addEventListener("touchstart",e=>{
    pageTouch=null;
-   if(e.touches.length!==1||$("sheet").classList.contains("open")||transitionLocked)return;
+   if(e.touches.length!==1||$("sheet").classList.contains("open")||transitionLocked||editDrag||e.target.closest(".edit-tile-grip,.edit-tab-grip"))return;
    const finger=e.touches[0];
    pageTouch={id:finger.identifier,x:finger.clientX,y:finger.clientY,t:performance.now(),dx:0,dy:0,axis:null};
  },{passive:true});
  viewport.addEventListener("touchmove",e=>{
-   const g=pageTouch;if(!g)return;
+   const g=pageTouch;if(!g||editDrag)return;
    if(e.touches.length!==1){pageTouch=null;placeTrack(true);return;}
    const finger=Array.from(e.touches).find(f=>f.identifier===g.id);if(!finger)return;
    g.dx=finger.clientX-g.x;g.dy=finger.clientY-g.y;
@@ -919,7 +1028,7 @@ function toggleMoreMenu(){
  for(const [label,icon,page] of [["Edit","pencil","organize"],["Settings","gear","settings"]]){
   const item=el("button","more-item");item.type="button";item.setAttribute("role","menuitem");
   item.append(svg(icon),el("span","",label));
-  item.onclick=()=>{closeMoreMenu(false);showModal(page);};menu.append(item);
+  item.onclick=()=>{closeMoreMenu(false);if(page==="organize")enterHomeEdit();else showModal(page);};menu.append(item);
  }
  menu.onkeydown=e=>{
   if(e.key==="Escape"){e.preventDefault();e.stopPropagation();closeMoreMenu();}
@@ -972,7 +1081,7 @@ const activeEntry=()=>navHistory[navHistory.length-1]||null;
 const activeBody=()=>activeEntry()?.body||null;
 const activePreview=()=>activeEntry()?.preview||null;
 const PAGE_LABELS={settings:"Settings",title:"Title",background:"Background",design:"Buttons",categories:"Categories",
- playback:"Playback",backup:"Backup",organize:"Edit Categories",section:"Category",button:"Button",choice:"Select",color:"Color"};
+ playback:"Playback",backup:"Backup",choice:"Select",color:"Color"};
 function flushLiveSave(){if(liveSaveTimer){clearTimeout(liveSaveTimer);liveSaveTimer=0;save();}}
 function liveUpdate(){
  // Frames coalesce finger events; never rebuild any control or write scrollTop.
@@ -1005,9 +1114,6 @@ function paintPage(entry){
  else if(page==="categories")categoriesPage(body);
  else if(page==="playback")playbackPage(body);
  else if(page==="backup")backupPage(body);
- else if(page==="organize")organizePage(body);
- else if(page==="section")editSectionPage(body,args.id);
- else if(page==="button")editButtonPage(body,args.id,args.sectionId);
  else if(page==="choice")choicePage(body,args);
  else if(page==="color")colorPage(body,args);
  if(!entry.preview.hidden)drawMini(true);
@@ -1043,8 +1149,7 @@ function syncNavHeader(){
   back.removeAttribute("aria-label");
  }
  back.onclick=hasParent?goBack:null;
- const done=$("sheetDone");done.textContent=["section","button"].includes(entry.page)?"Save":"Done";
- done.onclick=["section","button"].includes(entry.page)?()=>entry.body.querySelector("#editSave")?.click():closeModal;
+ const done=$("sheetDone");done.textContent="Done";done.onclick=closeModal;
 }
 function syncNavClasses(){
  const last=navHistory.length-1;
@@ -1109,10 +1214,6 @@ function closeModal(){
  restore?.focus?.({preventScroll:true});
 }
 function navigate(page,args={}){
- // Returning to Edit after a save should pop, not stack another copy of Edit.
- if(page==="organize"&&["button","section"].includes(activeEntry()?.page)){
-  goBack();showCurrentPage(true);return;
- }
  pushScreen(page,args,true);
 }
 function showCurrentPage(preserveScroll=false){
@@ -1264,7 +1365,7 @@ function settingsPage(body){
   ["Backup","backup"]
  ];
  body.append(grouped(...rows.map(([name,page])=>navigationRow(name,"",()=>navigate(page)))));
- body.append(el("p","ios-help","Customize RadioGrid here. To organize categories and stations, open More (•••) and choose Edit."));
+ body.append(el("p","ios-help","Customize the appearance and behavior of RadioGrid. To edit categories and buttons, choose Edit from the ••• menu."));
 }
 function titlePage(body){
  body.append(sectionLabel("Title"));
@@ -1425,171 +1526,7 @@ function updateMini(){
   while(fs>10&&(l.scrollHeight>room+1||l.scrollWidth>l.clientWidth+1))l.style.fontSize=(--fs)+"px";
  });
 }
-function tinyButton(icon,label,handler,extra=""){
- const b=el("button","org-btn "+extra);b.type="button";b.setAttribute("aria-label",label);b.title=label;b.append(svg(icon));if(handler)b.onclick=handler;return b;
-}
 function findButton(id){for(const sec of state.sections){const item=sec.items.find(i=>i.id===id);if(item)return {sec,item};}return null;}
-function swapIndex(items,i,delta){const j=i+delta;if(j<0||j>=items.length)return;[items[i],items[j]]=[items[j],items[i]];structuralUpdate("Order saved");}
-function organizePage(body){
- body.append(el("p","organize-intro","Tap a name to edit. Hold and drag the handle on the right to reorder buttons or categories. Use the trash icon to delete. Open the ••• menu on the Home Screen to return to Edit."));
- const root=el("div");root.id="hierarchyRoot";
- state.sections.forEach((sec)=>{
-  const block=el("section","organize-section");block.dataset.sectionId=sec.id;
-  const head=el("div","organize-header");
-  const marker=el("span","organize-marker");
-  const main=el("button","org-row-main");main.type="button";
-  main.setAttribute("aria-label","Edit category "+sec.name);
-  const nameBox=el("span","organize-name",sec.name);
-  nameBox.append(el("small","",sec.items.length+" buttons"));
-  main.append(nameBox,el("span","ios-chevron","›"));
-  main.onclick=()=>navigate("section",{id:sec.id});
-  const handle=tinyButton("grip","Drag category "+sec.name,null,"handle");
-  head.append(marker,main,tinyButton("trash","Delete category "+sec.name,()=>removeCategory(sec.id),"danger"),handle);
-  block.append(head);
-  const list=el("div","organize-items");list.dataset.sectionId=sec.id;
-  sec.items.forEach(item=>{
-   const row=el("div","organize-item");row.dataset.itemId=item.id;
-   const label=el("button","org-row-main");label.type="button";
-   label.setAttribute("aria-label","Edit "+item.name);
-   const text=el("span","organize-item-name",item.name);
-   text.append(el("small","",item.action==="url"?"Link":"Shortcut"));
-   label.append(text,el("span","ios-chevron","›"));label.onclick=()=>navigate("button",{id:item.id});
-   const grip=tinyButton("grip","Drag "+item.name,null,"handle");
-   row.append(label,tinyButton("trash","Delete "+item.name,()=>removeButton(item.id),"danger"),grip);
-   list.append(row);enableDrag(grip,row,"item");
-  });
-  block.append(list);
-  const add=el("button","org-add","+ Add Button to "+sec.name);add.onclick=()=>navigate("button",{id:null,sectionId:sec.id});block.append(add);
-  root.append(block);enableDrag(handle,block,"section");
- });
- body.append(root);
- const addCat=el("button","org-add org-add-section","+ Add Category");addCat.onclick=()=>navigate("section",{id:null});body.append(addCat);
- body.append(el("p","editor-footer","Drag a button into another category, or open the button editor to change its category."));
-}
-async function removeCategory(id){
- const s=state.sections.find(x=>x.id===id);if(!s)return;
- if(!await iosConfirm("Delete Category?",`Delete “${s.name}” and its ${s.items.length} buttons?`,"Delete Category"))return;
- state.sections=state.sections.filter(x=>x.id!==id);
- if(state.active===id)state.active=state.sections[0]?.id||"";
- structuralUpdate("Category deleted");
-}
-async function removeButton(id){
- const f=findButton(id);if(!f)return;
- if(!await iosConfirm("Delete Button?",`Delete “${f.item.name}”?`,"Delete Button"))return;
- f.sec.items=f.sec.items.filter(x=>x.id!==id);structuralUpdate("Button deleted");
-}
-function enableDrag(handle,row,kind){
- let pointer=null,startY=0,ghost=null,moved=false,highlighted=null;
- const clearHighlight=()=>{
-  if(highlighted){highlighted.classList.remove("drop-before","drop-after","drop-into");highlighted=null;}
- };
- function animateNeighbors(before){
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-  for(const [node,prior] of before){
-   if(!node.isConnected||node===row)continue;
-   const now=node.getBoundingClientRect(),shift=prior.top-now.top;
-   if(Math.abs(shift)>1&&Math.abs(shift)<450)
-    node.animate([{transform:`translateY(${shift}px)`},{transform:"translateY(0)"}],{duration:180,easing:"cubic-bezier(.2,.8,.2,1)"});
-  }
- }
- handle.addEventListener("pointerdown",e=>{
-  if(pointer!==null||(e.pointerType==="mouse"&&e.button!==0))return;
-  e.preventDefault();pointer=e.pointerId;startY=e.clientY;moved=false;
-  // For an entire category, lift only its header to avoid covering the screen.
-  const lift=kind==="section"?row.querySelector(".organize-header"):row;
-  const rect=lift.getBoundingClientRect();
-  ghost=lift.cloneNode(true);ghost.classList.add("drag-ghost");ghost.classList.remove("dragging");
-  ghost.removeAttribute("id");ghost.setAttribute("aria-hidden","true");ghost.inert=true;
-  ghost.style.cssText+=`;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px`;
-  document.body.append(ghost);row.classList.add("dragging");
-  // The dragged DOM row changes parents/order; capturing on that moving handle
-  // can silently lose pointerup. Listen at document capture level instead.
-  document.addEventListener("pointermove",moveDrag,{capture:true,passive:false});
-  document.addEventListener("pointerup",finishDrag,true);
-  document.addEventListener("pointercancel",finishDrag,true);
- });
- const moveDrag=e=>{
-  if(e.pointerId!==pointer)return;
-  e.preventDefault();
-  if(ghost)ghost.style.transform=`translate3d(0,${e.clientY-startY}px,0) scale(1.025)`;
-  const hit=document.elementFromPoint(e.clientX,e.clientY);if(!hit)return;
-  let destination=null,ref=null,beforeIt=true,target=null;
-  if(kind==="section"){
-   target=hit.closest(".organize-section:not(.dragging)");
-   if(!target)return;
-   // A category reorders at the HEADER midpoint, not halfway through all its buttons.
-   const targetHead=target.querySelector(".organize-header")?.getBoundingClientRect()||target.getBoundingClientRect();
-   beforeIt=e.clientY<targetHead.top+targetHead.height/2;
-   destination=$("hierarchyRoot");ref=beforeIt?target:target.nextSibling;
-  }else{
-   // Work from the list's geometry instead of the element under the finger:
-   // the lifted row and animated neighbors can otherwise cause end-of-list jumps.
-   if(hit.closest(".organize-item.dragging"))return;
-   const section=hit.closest(".organize-section");
-   destination=section?.querySelector(".organize-items")||null;
-   if(!destination)return;
-   const siblings=[...destination.querySelectorAll(":scope > .organize-item:not(.dragging)")];
-   ref=siblings.find(n=>e.clientY<n.getBoundingClientRect().top+n.offsetHeight/2)||null;
-   target=ref||siblings[siblings.length-1]||null;
-   beforeIt=!!ref;
-  }
-  if(!destination)return;
-  clearHighlight();
-  highlighted=target||destination;
-  highlighted.classList.add(target?(beforeIt?"drop-before":"drop-after"):"drop-into");
-  if(destination===row.parentNode&&(ref===row||ref===row.nextSibling))return;
-  const candidates=[...$("hierarchyRoot").querySelectorAll(kind==="section"?":scope > .organize-section":".organize-item")];
-  const before=new Map(candidates.filter(n=>n!==row).map(n=>[n,n.getBoundingClientRect()]));
-  destination.insertBefore(row,ref);moved=true;animateNeighbors(before);
- };
- const finishDrag=e=>{
-  if(e.pointerId!==pointer)return;
-  pointer=null;
-  document.removeEventListener("pointermove",moveDrag,true);
-  document.removeEventListener("pointerup",finishDrag,true);
-  document.removeEventListener("pointercancel",finishDrag,true);
-  clearHighlight();ghost?.remove();ghost=null;row.classList.remove("dragging");
-  if(moved)syncHierarchy();
- };
-}
-function rootInsert(parent,row,other,before){parent.insertBefore(row,before?other:other.nextSibling);}
-function syncHierarchy(){const secMap=new Map(state.sections.map(s=>[s.id,s])),itemMap=new Map(state.sections.flatMap(s=>s.items.map(i=>[i.id,i]))),next=[];
- $("hierarchyRoot").querySelectorAll(":scope > .organize-section").forEach(box=>{const s=secMap.get(box.dataset.sectionId);if(!s)return;s.items=[...box.querySelectorAll(":scope > .organize-items > .organize-item")].map(n=>itemMap.get(n.dataset.itemId)).filter(Boolean);next.push(s)});
- state.sections=next;structuralUpdate("Reordered");}
-function editSectionPage(body,id){
- const existing=id?state.sections.find(s=>s.id===id):null;
- body.append(sectionLabel("Category"));const name=textControl(existing?.name||"","Category name");name.maxLength=50;
- body.append(grouped(settingRow("Name",name)));
- const err=el("p","error-line");body.append(err);
- const saveButton=el("button","ios-button","Save Category");saveButton.id="editSave";
- saveButton.onclick=()=>{const text=name.value.trim();if(!text){err.textContent="Enter a category name.";return;}
-  if(existing)existing.name=text;else{const cat={id:uid(),name:text,icon:"broadcast",items:[]};state.sections.push(cat);if(!state.active)state.active=cat.id;}
-  save();theme();render();navigate("organize");notify("Category saved");};body.append(saveButton);
-}
-function editButtonPage(body,id,sectionId){
- const found=id?findButton(id):null,item=found?.item||null;
- body.append(sectionLabel("Button Details"));const name=textControl(item?.name||"","Button name");name.maxLength=80;
- const sec=choiceControl(state.sections.map(s=>[s.id,s.name]),found?.sec.id||sectionId||state.sections[0]?.id);
- const type=choiceControl([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
- const target=textControl(item?.target||"","Exact Shortcut name");
- const targetRow=settingRow("Shortcut",target);
- const ret=el("input");ret.type="checkbox";ret.checked=!item?.noReturn;ret.className="ios-switch";ret.setAttribute("role","switch");ret.setAttribute("aria-label","Return to Grid");ret.onchange=()=>ret.setAttribute("aria-checked",String(ret.checked));ret.setAttribute("aria-checked",String(ret.checked));const retRow=settingRow("Return to Grid",ret);
- function toggleType(){targetRow.querySelector(".ios-row-label").textContent=type.value==="url"?"URL":"Shortcut";target.placeholder=type.value==="url"?"https://...":"Exact Shortcut name";retRow.hidden=type.value==="url";}
- type.onchange=toggleType;toggleType();
- body.append(grouped(settingRow("Name",name),settingRow("Category",sec),settingRow("Action",type),targetRow,retRow));
- body.append(el("p","ios-help","Display name can differ from the exact Shortcut name. Choose Category to move this button to another group."));
- const err=el("p","error-line");body.append(err);
- const saveButton=el("button","ios-button","Save Button");saveButton.id="editSave";
- saveButton.onclick=()=>{
-  const label=name.value.trim(),dest=state.sections.find(s=>s.id===sec.value),destination=target.value.trim();
-  if(!label||!destination||!dest){err.textContent="Enter a name, destination, and category.";return;}
-  if(type.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(destination)){err.textContent="Enter a valid URL or audio app link.";return;}
-  const next={id:item?.id||uid(),name:label,icon:item?.icon||"music",action:type.value,target:destination,noReturn:type.value==="shortcut"&&!ret.checked,color:item?.color||""};
-  if(found){const pos=found.sec.items.findIndex(i=>i.id===id);found.sec.items.splice(pos,1);if(dest===found.sec)dest.items.splice(pos,0,next);else dest.items.push(next)}else dest.items.push(next);
-  save();theme();render();navigate("organize");notify("Button saved");
- };
- body.append(saveButton);
-}
 function exportSettings(){
  const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(b),a=el("a");a.href=url;a.download="RadioGrid-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Backup download requested");
 }
@@ -1642,6 +1579,238 @@ document.addEventListener("keydown",e=>{
 // The new button typography can use a different family from the title.
 const oldApplyIdentity=applyIdentity;
 applyIdentity=function(){oldApplyIdentity();document.documentElement.style.setProperty("--button-font",FONT_STACKS[state.buttonFontStyle]||FONT_STACKS[state.fontStyle]||FONT_STACKS.system);};
+
+
+// V23 — direct editing. All gestures originate from visible handles, never a long press.
+let homeEditing=false,editDrag=null,editOverlay=null,undoTimeout=0,undoElement=null,dragHoverTimer=0;
+function enterHomeEdit(){
+ if($("sheet").classList.contains("open"))return;
+ closeMoreMenu(false);homeEditing=true;render();$("editDone").focus({preventScroll:true});
+}
+function exitHomeEdit(){
+ if(editOverlay)closeHomeEditor();
+ if(editDrag)endEditDrag(null,true);
+ homeEditing=false;render();save();$("openMore").focus({preventScroll:true});
+}
+$("editDone").onclick=exitHomeEdit;
+function persistHomeEdit(message){save();render();if(message)notify(message);}
+function offerUndo(message,snapshot){
+ clearTimeout(undoTimeout);undoElement?.remove();
+ const n=el("div","edit-undo"),text=el("span","",message),button=el("button","","Undo");button.type="button";
+ button.onclick=()=>{clearTimeout(undoTimeout);n.remove();undoElement=null;state=clone(snapshot);save();render();notify("Change undone");};
+ n.append(text,button);document.body.append(n);undoElement=n;
+ undoTimeout=setTimeout(()=>{n.remove();if(undoElement===n)undoElement=null;},6500);
+}
+function closeHomeEditor(){
+ if(!editOverlay)return;
+ const old=editOverlay;editOverlay=null;old.classList.remove("open");
+ setTimeout(()=>old.remove(),260);$("editDone").focus({preventScroll:true});
+}
+function buildHomeEditor(title,saveLabel="Save"){
+ if(editOverlay)closeHomeEditor();
+ const backdrop=el("div","edit-overlay"),panel=el("section","edit-panel");
+ backdrop.setAttribute("role","presentation");panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label",title);
+ const head=el("div","edit-panel-top"),grabber=el("div","edit-panel-grabber"),nav=el("div","edit-panel-nav");
+ const cancel=el("button","","Cancel"),heading=el("h2","",title),saveBtn=el("button","",saveLabel);
+ cancel.type="button";saveBtn.type="button";cancel.onclick=closeHomeEditor;
+ nav.append(cancel,heading,saveBtn);head.append(grabber,nav);
+ const body=el("div","edit-panel-scroll");panel.append(head,body);backdrop.append(panel);document.body.append(backdrop);
+ backdrop.addEventListener("click",e=>{if(e.target===backdrop)closeHomeEditor();});
+ backdrop.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){e.preventDefault();closeHomeEditor();}
+  if(e.key!=="Tab")return;
+  const els=[...panel.querySelectorAll("button,input,select,textarea")].filter(n=>!n.disabled&&!n.hidden&&n.getClientRects().length);
+  if(!els.length)return;
+  if(e.shiftKey&&document.activeElement===els[0]){e.preventDefault();els.at(-1).focus();}
+  else if(!e.shiftKey&&document.activeElement===els.at(-1)){e.preventDefault();els[0].focus();}
+ });
+ editOverlay=backdrop;requestAnimationFrame(()=>{backdrop.classList.add("open");cancel.focus({preventScroll:true});});
+ return {body,saveBtn,panel};
+}
+function editorField(name,value,type="text"){
+ const input=el("input");input.type=type;input.value=value||"";input.autocomplete="off";
+ if(name==="Name")input.maxLength=80;
+ return settingRow(name,input);
+}
+function simpleSelect(options,selected){
+ const sel=el("select");options.forEach(([value,label])=>{
+  const opt=el("option","",label);opt.value=value;sel.append(opt);
+ });sel.value=selected;return sel;
+}
+function openButtonEditor(id,sectionId){
+ const found=id?findButton(id):null,item=found?.item||null;
+ const v=buildHomeEditor(item?"Edit Button":"New Button"),b=v.body;
+ const name=textControl(item?.name||"","Display name"),sec=simpleSelect(state.sections.map(s=>[s.id,s.name]),found?.sec.id||sectionId||state.sections[0]?.id);
+ const type=simpleSelect([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
+ const target=textControl(item?.target||"","Exact Shortcut name");
+ const targetRow=settingRow("Shortcut",target);
+ const ret=el("input");ret.type="checkbox";ret.className="ios-switch";ret.checked=!item?.noReturn;
+ ret.setAttribute("role","switch");ret.setAttribute("aria-label","Return to Grid");
+ const retRow=settingRow("Return to Grid",ret);
+ const changeType=()=>{const isUrl=type.value==="url";targetRow.querySelector(".ios-row-label").textContent=isUrl?"URL":"Shortcut";
+  target.placeholder=isUrl?"https://...":"Exact Shortcut name";retRow.hidden=isUrl;};
+ type.onchange=changeType;changeType();
+ name.maxLength=80;b.append(sectionLabel("Button"),grouped(settingRow("Name",name),settingRow("Category",sec),settingRow("Action",type),targetRow,retRow));
+ b.append(el("p","ios-help","The display name may differ from the exact Shortcut name. Changes are saved when you tap Save."));
+ const error=el("p","edit-error");b.append(error);
+ if(item){const del=el("button","edit-danger","Delete Button");del.type="button";del.onclick=()=>deleteHomeButton(id);b.append(del);}
+ const save=()=>{
+  const label=name.value.trim(),dest=state.sections.find(s=>s.id===sec.value),link=target.value.trim();
+  if(!label||!dest||!link){error.textContent="Enter a name, category, and destination.";return;}
+  if(type.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(link)){
+   error.textContent="Enter a valid URL or supported audio link.";return;
+  }
+  const next={id:item?.id||uid(),name:label,icon:item?.icon||"music",action:type.value,target:link,
+   noReturn:type.value==="shortcut"&&!ret.checked,color:item?.color||""};
+  if(found){const oldIndex=found.sec.items.findIndex(i=>i.id===id);found.sec.items.splice(oldIndex,1);
+   if(found.sec===dest)dest.items.splice(oldIndex,0,next);else dest.items.push(next);
+  }else dest.items.push(next);
+  state.active=dest.id;closeHomeEditor();persistHomeEdit(item?"Button updated":"Button added");
+ };
+ v.saveBtn.onclick=save;
+ b.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT"&&e.target.type==="text"){e.preventDefault();save();}});
+}
+function openCategoryEditor(id){
+ const sec=id?state.sections.find(s=>s.id===id):null;
+ const v=buildHomeEditor(sec?"Edit Category":"New Category"),b=v.body;
+ const name=textControl(sec?.name||"","Category name");name.maxLength=50;
+ b.append(sectionLabel("Category"),grouped(settingRow("Name",name)));
+ b.append(el("p","ios-help","Drag category grip handles on the Home Screen to change category order."));
+ const error=el("p","edit-error");b.append(error);
+ if(sec){
+  const del=el("button","edit-danger","Delete Category");del.type="button";
+  del.onclick=()=>deleteHomeCategory(sec.id);b.append(del);
+ }
+ const save=()=>{
+  const label=name.value.trim();if(!label){error.textContent="Enter a category name.";return;}
+  if(sec)sec.name=label;else{const next={id:uid(),name:label,icon:"broadcast",items:[]};state.sections.push(next);state.active=next.id;}
+  closeHomeEditor();persistHomeEdit(sec?"Category renamed":"Category added");
+ };
+ v.saveBtn.onclick=save;
+ name.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();save();}});
+}
+async function deleteHomeButton(id){
+ const f=findButton(id);if(!f)return;
+ if(!await iosConfirm("Delete Button?",`Delete “${f.item.name}”?`,"Delete Button"))return;
+ const before=clone(state);f.sec.items=f.sec.items.filter(x=>x.id!==id);
+ closeHomeEditor();persistHomeEdit("");offerUndo("Button deleted",before);
+}
+async function deleteHomeCategory(id){
+ const sec=state.sections.find(s=>s.id===id);if(!sec)return;
+ if(state.sections.length<=1){notify("Keep at least one category");return;}
+ if(!await iosConfirm("Delete Category?",`Delete “${sec.name}” and its ${sec.items.length} buttons?`,"Delete Category"))return;
+ const before=clone(state);state.sections=state.sections.filter(s=>s.id!==id);
+ if(state.active===id)state.active=state.sections[0]?.id||"";
+ closeHomeEditor();persistHomeEdit("");offerUndo("Category deleted",before);
+}
+function resetEditDragVisual(){
+ document.querySelectorAll(".card.drop-before,.card.drop-after,.grid.drop-empty,.edit-tab-wrap.category-drop-before,.edit-tab-wrap.category-drop-after")
+  .forEach(n=>n.classList.remove("drop-before","drop-after","drop-empty","category-drop-before","category-drop-after"));
+}
+function startTileDrag(e,itemId,fromId,source){
+ if(!homeEditing||editOverlay||editDrag||(e.pointerType==="mouse"&&e.button!==0))return;
+ e.preventDefault();e.stopPropagation();pageTouch=null;
+ beginEditDrag(e,"item",itemId,fromId,source);
+}
+function startCategoryDrag(e,sectionId,source){
+ if(!homeEditing||editOverlay||editDrag||(e.pointerType==="mouse"&&e.button!==0))return;
+ e.preventDefault();e.stopPropagation();pageTouch=null;
+ beginEditDrag(e,"category",sectionId,sectionId,source);
+}
+function beginEditDrag(e,kind,id,fromId,source){
+ const rect=source.getBoundingClientRect();
+ const ghost=source.cloneNode(true);ghost.classList.add("edit-drag-ghost");
+ ghost.removeAttribute("id");ghost.setAttribute("aria-hidden","true");ghost.inert=true;
+ ghost.style.left=rect.left+"px";ghost.style.top=rect.top+"px";
+ ghost.style.width=rect.width+"px";ghost.style.height=rect.height+"px";
+ document.body.append(ghost);source.classList.add("edit-drag-origin");
+ editDrag={pointer:e.pointerId,kind,id,fromId,source,ghost,x:e.clientX,y:e.clientY,rect,
+  destinationId:fromId,toIndex:null,categoryIndex:null,categoryHoverId:null,startX:e.clientX,startY:e.clientY,hasMoved:false,validDrop:false};
+ document.addEventListener("pointermove",moveEditDrag,{capture:true,passive:false});
+ document.addEventListener("pointerup",finishEditDrag,true);
+ document.addEventListener("pointercancel",cancelEditDrag,true);
+}
+function dragCategoryAt(x,y){
+ const bar=$("tabs").getBoundingClientRect();if(y<bar.top-16||y>bar.bottom+16)return null;
+ const wraps=[...$("tabs").querySelectorAll(".edit-tab-wrap")];
+ return wraps.find(w=>{const r=w.getBoundingClientRect();return x>=r.left&&x<=r.right;})||null;
+}
+function moveEditDrag(e){
+ const d=editDrag;if(!d||e.pointerId!==d.pointer)return;
+ if(e.cancelable)e.preventDefault();d.x=e.clientX;d.y=e.clientY;
+ if(Math.hypot(e.clientX-d.startX,e.clientY-d.startY)>9)d.hasMoved=true;
+ d.validDrop=false;
+ // Re-anchor translation to the pointer's starting location; supports both finger and mouse.
+ d.ghost.style.transform=`translate3d(${e.clientX-d.startX}px,${e.clientY-d.startY}px,0) scale(1.035)`;
+ resetEditDragVisual();
+ if(d.kind==="category"){
+  const bar=$("tabs"),barBox=bar.getBoundingClientRect();
+  if(e.clientX<barBox.left+30)bar.scrollLeft-=13;
+  else if(e.clientX>barBox.right-30)bar.scrollLeft+=13;
+  const target=dragCategoryAt(e.clientX,e.clientY);
+  if(!target){d.categoryIndex=null;return;}
+  const i=state.sections.findIndex(s=>s.id===target.dataset.sectionId),r=target.getBoundingClientRect();
+  const before=e.clientX<r.left+r.width/2;
+  target.classList.add(before?"category-drop-before":"category-drop-after");
+  d.categoryIndex=i+(before?0:1);d.validDrop=true;return;
+ }
+ const tab=dragCategoryAt(e.clientX,e.clientY);
+ if(tab){
+  const id=tab.dataset.sectionId;d.destinationId=id;d.toIndex=null;d.validDrop=true;
+  if(id!==state.active&&d.categoryHoverId!==id){
+   clearTimeout(dragHoverTimer);d.categoryHoverId=id;
+   dragHoverTimer=setTimeout(()=>{if(editDrag===d){const i=state.sections.findIndex(s=>s.id===id);
+    if(i>=0){activate(i,false);d.categoryHoverId=null;}}},460);
+  }
+  return;
+ }
+ clearTimeout(dragHoverTimer);d.categoryHoverId=null;
+ const slide=[...$("pageTrack").querySelectorAll(".page-slide")].find(s=>s.dataset.sectionId===state.active);
+ const grid=slide?.querySelector(".grid");if(!grid)return;
+ const gr=grid.getBoundingClientRect();if(e.clientY<gr.top-15||e.clientY>gr.bottom+22||e.clientX<gr.left-15||e.clientX>gr.right+15)return;
+ const candidates=[...grid.querySelectorAll(":scope > .card")].filter(c=>c.dataset.itemId!==d.id);
+ d.destinationId=state.active;d.validDrop=true;
+ if(!candidates.length){d.toIndex=0;grid.classList.add("drop-empty");return;}
+ let closest=null,dist=Infinity;
+ for(const card of candidates){const r=card.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const dis=Math.hypot((e.clientX-cx)*.85,e.clientY-cy);if(dis<dist){dist=dis;closest=card;}}
+ const r=closest.getBoundingClientRect();const before=Math.abs(e.clientY-(r.top+r.height/2))>r.height*.3
+  ?e.clientY<r.top+r.height/2:e.clientX<r.left+r.width/2;
+ closest.classList.add(before?"drop-before":"drop-after");
+ const list=state.sections.find(s=>s.id===d.destinationId)?.items||[];
+ const index=list.findIndex(x=>x.id===closest.dataset.itemId);d.toIndex=index+(before?0:1);
+}
+function endEditDrag(e,cancel=false){
+ const d=editDrag;if(!d||(!cancel&&e&&e.pointerId!==d.pointer))return;
+ editDrag=null;clearTimeout(dragHoverTimer);dragHoverTimer=0;
+ document.removeEventListener("pointermove",moveEditDrag,true);
+ document.removeEventListener("pointerup",finishEditDrag,true);
+ document.removeEventListener("pointercancel",cancelEditDrag,true);
+ resetEditDragVisual();d.ghost.remove();d.source.classList.remove("edit-drag-origin");
+ suppressCardClickUntil=performance.now()+650;
+ if(cancel||!d.hasMoved||!d.validDrop)return;
+ const before=clone(state);
+ if(d.kind==="category"){
+  if(d.categoryIndex===null)return;
+  const old=state.sections.findIndex(s=>s.id===d.id);if(old<0)return;
+  let next=d.categoryIndex;if(next>old)next--;
+  if(next===old)return;
+  const section=state.sections.splice(old,1)[0];state.sections.splice(Math.max(0,next),0,section);
+  persistHomeEdit("");offerUndo("Category moved",before);return;
+ }
+ const from=state.sections.find(s=>s.id===d.fromId),to=state.sections.find(s=>s.id===d.destinationId);
+ if(!from||!to)return;
+ const index=from.items.findIndex(i=>i.id===d.id);if(index<0)return;
+ const [item]=from.items.splice(index,1);
+ let at=d.toIndex==null?to.items.length:d.toIndex;
+ if(from===to&&index<at)at--;
+ at=Math.max(0,Math.min(to.items.length,at));to.items.splice(at,0,item);
+ state.active=to.id;
+ if(from===to&&at===index){render();return;}
+ persistHomeEdit("");offerUndo(from===to?"Button reordered":"Button moved",before);
+}
+function finishEditDrag(e){endEditDrag(e,false)}
+function cancelEditDrag(e){endEditDrag(e,true)}
 
 theme();render();installCategorySwipe();installNavBackSwipe();
 </script>

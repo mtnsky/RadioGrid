@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
 <title>RadioGrid</title>
-<!-- V19: retained settings screens, stable live preview, interactive controls and launch feedback -->
+<!-- V20: adaptive categories, native long-press menus, streamlined drag editing (retains V19 fixes) -->
 <style>
   :root {
     color-scheme:dark;
@@ -326,6 +326,75 @@ body { background:var(--bg); }
 .confirm-cancel{width:100%;min-height:57px;border-radius:14px;background:#38383d;font-size:18px;font-weight:650;color:#f9f9fc}
 @media (prefers-reduced-motion:reduce){.nav-screen,.toast,.confirm-overlay,.confirm-panel,.ios-switch,.ios-switch:before{transition:none!important}.card.launching:after{animation:none!important}}
 
+/* V20 — adaptive categories, smooth selection indicator, and direct manipulation */
+#tabs{position:relative;scrollbar-width:none;scroll-padding-inline:14px}
+#tabs::-webkit-scrollbar{display:none}
+#tabs.is-scrollable{display:flex;grid-template-columns:none!important;gap:4px;overflow-x:auto;overflow-y:hidden;
+ touch-action:pan-x;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+#tabs.is-scrollable .tab{flex:0 0 auto;min-width:87px;padding-left:13px;padding-right:13px}
+#tabs.is-scrollable .tab span{max-width:min(68vw,255px);text-overflow:ellipsis}
+#tabs .tab.active::after{display:none}
+#tabs .tab-indicator{position:absolute;left:0;bottom:0;height:4px;border-radius:6px 6px 0 0;
+ background:var(--accent);z-index:1;pointer-events:none;transform:translate3d(0,0,0);
+ transition:transform .31s cubic-bezier(.2,.83,.28,1),width .31s cubic-bezier(.2,.83,.28,1)}
+#tabs .tab-indicator.no-animation{transition:none!important}
+.card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+/* iOS-like press-and-hold context action menu */
+.context-backdrop{position:fixed;inset:0;z-index:47;background:rgba(0,0,0,.31);
+ opacity:0;transition:opacity .17s ease;touch-action:manipulation}
+.context-backdrop.open{opacity:1}
+.context-menu{position:fixed;z-index:48;width:min(290px,calc(100vw - 24px));max-height:min(65dvh,550px);
+ overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:rgba(45,45,49,.97);
+ border:1px solid #ffffff22;box-shadow:0 18px 45px #000a;border-radius:15px;
+ backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+ opacity:0;transform:translateY(7px) scale(.97);transition:transform .2s cubic-bezier(.18,.83,.28,1),opacity .2s}
+.context-menu.open{opacity:1;transform:translateY(0) scale(1)}
+.context-title{min-height:47px;display:flex;align-items:center;padding:11px 15px;
+ font-size:14px;font-weight:700;color:#ececf0;overflow-wrap:anywhere;border-bottom:1px solid #ffffff18}
+.context-action{width:100%;min-height:53px;display:flex;align-items:center;gap:11px;padding:9px 15px;
+ background:transparent;color:#f4f4f7;text-align:left;font-size:16px;font-weight:450;
+ border-bottom:1px solid #ffffff1a}
+.context-action:last-child{border-bottom:0}
+.context-action:active,.context-action:focus-visible{background:#ffffff1c}
+.context-action svg{width:20px;height:20px;flex:none;color:#cbd0d8}
+.context-action span{min-width:0;flex:1;overflow-wrap:anywhere}
+.context-action.is-danger,.context-action.is-danger svg{color:#ff7973}
+.context-action .context-check,.context-action .context-chevron{flex:none;color:var(--accent);font-size:22px}
+.context-action.is-current{color:#b7bac2}
+.context-back{background:transparent;color:var(--accent);font-size:14px;min-height:41px;
+ padding:9px 14px;width:100%;text-align:left;border-bottom:1px solid #ffffff1c}
+/* Cleaner Edit hierarchy: one obvious drag handle, tappable text and discrete delete. */
+.organize-header{gap:7px;padding:5px 9px;min-height:59px}
+.organize-item{gap:6px;min-height:55px;padding:3px 7px 3px 0}
+.org-row-main{background:transparent;display:flex;align-items:center;min-width:0;flex:1;
+ gap:8px;text-align:left;padding:7px 2px;color:#eeeef0}
+.org-row-main:active{opacity:.66}
+.org-row-main .organize-name{font-weight:700;font-size:16px;flex:1;min-width:0}
+.org-row-main .organize-item-name{font-size:15px;flex:1;min-width:0}
+.org-row-main small{display:block;color:#999ba4;font-size:11px;margin-top:3px;font-weight:400}
+.org-row-main .ios-chevron{font-size:20px;color:#888994}
+.org-btn.handle{height:45px;width:37px;min-width:37px;color:#a9aab2;cursor:grab;touch-action:none}
+.org-btn.handle svg{width:21px;height:21px}
+.org-btn.handle:active{cursor:grabbing}
+.org-btn.danger{width:34px;min-width:34px;height:44px}
+.org-btn.danger svg{width:18px;height:18px}
+.organize-item.dragging,.organize-section.dragging{opacity:.24;box-shadow:none!important;pointer-events:none}
+.organize-item,.organize-section{position:relative}
+.organize-item.drop-before::before,.organize-section.drop-before::before,
+.organize-item.drop-after::after,.organize-section.drop-after::after{
+ content:"";position:absolute;left:5px;right:5px;height:3px;border-radius:4px;
+ background:var(--accent);z-index:4;pointer-events:none;box-shadow:0 0 0 1px #171718}
+.organize-item.drop-before::before,.organize-section.drop-before::before{top:-2px}
+.organize-item.drop-after::after,.organize-section.drop-after::after{bottom:-2px}
+.organize-items.drop-into{outline:2px dashed var(--accent);outline-offset:-3px;border-radius:8px;min-height:48px}
+.organize-items:empty{min-height:45px}
+.drag-ghost{position:fixed;z-index:95;pointer-events:none;opacity:.97;box-sizing:border-box;
+ background:#4c4140!important;border:1px solid color-mix(in srgb,var(--accent) 70%,transparent)!important;
+ border-radius:12px!important;box-shadow:0 15px 45px #000b!important;overflow:hidden;
+ transform-origin:center center;will-change:transform}
+.drag-ghost .org-btn{pointer-events:none}
+@media(prefers-reduced-motion:reduce){#tabs .tab-indicator,.context-backdrop,.context-menu{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -615,36 +684,68 @@ function placeTrack(animated=true,delta=0){
  track.style.transition=animated?"":"none";
  track.style.transform=`translate3d(${Math.round(-pageIndex()*width+delta)}px,0,0)`;
 }
+// Preserve the fixed four-tab presentation as long as its labels remain legible.
+// Switch to a native-feeling horizontal strip instead of shrinking text below 14px.
+let tabScrollFrame=0,tabLayoutMode="fixed";
+function updateTabIndicator(animated=true){
+ const bar=$("tabs"),tab=bar.querySelector(".tab.active"),indicator=bar.querySelector(".tab-indicator");
+ if(!tab||!indicator)return;
+ if(!animated)indicator.classList.add("no-animation");
+ const x=tab.offsetLeft+tab.offsetWidth*.08;
+ indicator.style.width=Math.max(16,tab.offsetWidth*.84)+"px";
+ indicator.style.transform=`translate3d(${Math.round(x)}px,0,0)`;
+ if(!animated)requestAnimationFrame(()=>indicator.classList.remove("no-animation"));
+}
+function centerActiveTab(animated=true){
+ const bar=$("tabs"),tab=bar.querySelector(".tab.active");
+ if(!tab||!bar.classList.contains("is-scrollable"))return;
+ const left=tab.offsetLeft-(bar.clientWidth-tab.offsetWidth)/2;
+ bar.scrollTo({left:Math.max(0,left),behavior:animated&&!matchMedia("(prefers-reduced-motion: reduce)").matches?"smooth":"instant"});
+}
 function fitTabText(){
- const labels=[...$("tabs").querySelectorAll(".tab")];
+ const bar=$("tabs"),labels=[...bar.querySelectorAll(".tab")];
  if(!labels.length)return;
  const base=labels.length>=4?15:17;
- let size=base;
- while(size>10){
+ bar.classList.remove("is-scrollable");
+ bar.style.gridTemplateColumns=`repeat(${labels.length},minmax(0,1fr))`;
+ let fits=false;
+ if(labels.length<=4){
+  for(let size=base;size>=14;size--){
    labels.forEach(t=>t.style.fontSize=size+"px");
-   if(labels.every(t=>{const span=t.firstElementChild;return span.scrollWidth<=span.clientWidth+1;}))break;
-   size-=1;
+   if(labels.every(t=>t.firstElementChild.scrollWidth<=t.firstElementChild.clientWidth+1)){
+    fits=true;break;
+   }
+  }
  }
+ if(labels.length>4||!fits){
+  bar.classList.add("is-scrollable");
+  labels.forEach(t=>t.style.fontSize="15px");
+  tabLayoutMode="scrollable";
+ }else tabLayoutMode="fixed";
+ updateTabIndicator(false);
+ if(tabScrollFrame)cancelAnimationFrame(tabScrollFrame);
+ tabScrollFrame=requestAnimationFrame(()=>{tabScrollFrame=0;centerActiveTab(false);});
 }
 function updateTabs(){
  const active=activeSection()?.id;
  $("tabs").querySelectorAll(".tab").forEach((tab,i)=>{
-   const selected=state.sections[i]?.id===active;
-   tab.classList.toggle("active",selected);
-   tab.setAttribute("aria-current",selected?"page":"false");
+  const selected=state.sections[i]?.id===active;
+  tab.classList.toggle("active",selected);
+  tab.setAttribute("aria-current",selected?"page":"false");
  });
  $("pageTrack").querySelectorAll(".page-slide").forEach((slide,i)=>{
-   const isCurrent=state.sections[i]?.id===active;
-   slide.inert=!isCurrent;
-   slide.setAttribute("aria-hidden",isCurrent?"false":"true");
+  const isCurrent=state.sections[i]?.id===active;
+  slide.inert=!isCurrent;
+  slide.setAttribute("aria-hidden",isCurrent?"false":"true");
  });
+ updateTabIndicator(true);
+ centerActiveTab(true);
 }
 function activate(index,animate=true){
  if(index<0||index>=state.sections.length||transitionLocked)return;
- if(state.active===state.sections[index].id){placeTrack(animate);return;}
+ if(state.active===state.sections[index].id){placeTrack(animate);centerActiveTab(animate);return;}
  state.active=state.sections[index].id;
- save();updateTabs();sizeGrid();
- placeTrack(animate);
+ save();updateTabs();sizeGrid();placeTrack(animate);
 }
 function render(){
  const tabs=$("tabs"),track=$("pageTrack");
@@ -652,6 +753,7 @@ function render(){
  for(const [index,section] of state.sections.entries()){
    const b=el("button","tab");b.type="button";
    b.append(el("span","",section.name));
+   b.title=section.name;b.setAttribute("aria-label",section.name);
    b.onclick=()=>activate(index,true);
    tabs.append(b);
    const slide=el("div","page-slide");
@@ -667,12 +769,13 @@ function render(){
      if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
      else label.textContent=item.name;
      card.append(label);
-     card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item,card);};
+     card.onclick=()=>{if(performance.now()<suppressCardClickUntil||contextMenuOverlay)return;run(item,card);};
+     installLongPress(card,item);
      grid.append(card);
    }
    slide.append(grid);track.append(slide);
  }
- tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
+ const indicator=el("span","tab-indicator no-animation");indicator.setAttribute("aria-hidden","true");tabs.append(indicator);
  updateTabs();fitTabText();sizeGrid();placeTrack(false);
 }
 // Landscape-oriented cards; reduce height only when more rows won't fit.
@@ -715,7 +818,7 @@ function sizeGrid(){
  });
  fitButtonLabels();
 }
-function layoutResize(){fitTabText();sizeGrid();fitTitle();placeTrack(false);}
+function layoutResize(){fitTabText();sizeGrid();fitTitle();placeTrack(false);updateTabIndicator(false);}
 window.addEventListener("resize",()=>requestAnimationFrame(layoutResize));
 if(window.visualViewport)window.visualViewport.addEventListener("resize",()=>requestAnimationFrame(layoutResize));
 
@@ -766,6 +869,104 @@ function installCategorySwipe(){
  },{passive:true});
  viewport.addEventListener("touchcancel",()=>{pageTouch=null;placeTrack(true);},{passive:true});
 }
+// V20: long-press/secondary-click context actions; do not intercept normal taps or swipes.
+let contextMenuOverlay=null,contextMenuCard=null,contextMenuItem=null,contextMenuPane=null;
+let contextOriginRect=null;
+function closeContextMenu(restoreFocus=true){
+ const backdrop=contextMenuOverlay,card=contextMenuCard;
+ if(!backdrop)return;
+ backdrop.remove();contextMenuPane?.remove();
+ contextMenuOverlay=null;contextMenuPane=null;contextMenuCard=null;contextMenuItem=null;contextOriginRect=null;
+ card?.removeAttribute("aria-expanded");
+ if(restoreFocus&&card?.isConnected)card.focus({preventScroll:true});
+}
+function positionContextMenu(){
+ const menu=contextMenuPane,rect=contextOriginRect;if(!menu||!rect)return;
+ const width=menu.getBoundingClientRect().width||290,height=menu.getBoundingClientRect().height||220;
+ const vw=window.innerWidth,vh=window.innerHeight;
+ const left=Math.max(12,Math.min(vw-width-12,rect.left+(rect.width-width)/2));
+ const below=rect.bottom+11;
+ const above=rect.top-height-11;
+ const top=below+height<=vh-14?below:above>=12?above:Math.max(12,Math.min(vh-height-12,rect.top));
+ menu.style.left=Math.round(left)+"px";menu.style.top=Math.round(top)+"px";
+}
+function contextAction(label,icon,handler,extra=""){
+ const b=el("button","context-action "+extra);b.type="button";b.setAttribute("role","menuitem");
+ if(icon)b.append(svg(icon));b.append(el("span","",label));
+ b.onclick=e=>{e.stopPropagation();handler();};return b;
+}
+function moveContextButton(sectionId){
+ const match=findButton(contextMenuItem?.id),dest=state.sections.find(s=>s.id===sectionId);
+ if(!match||!dest){closeContextMenu();return;}
+ closeContextMenu();
+ if(dest===match.sec){notify("Already in "+dest.name);return;}
+ match.sec.items=match.sec.items.filter(i=>i.id!==match.item.id);
+ dest.items.push(match.item);state.active=dest.id;save();render();notify("Moved to "+dest.name);
+}
+function paintContextMenu(mode="actions"){
+ const menu=contextMenuPane,item=contextMenuItem;
+ if(!menu||!item)return;
+ menu.replaceChildren();menu.setAttribute("role","menu");menu.setAttribute("aria-label",mode==="move"?"Choose destination category":"Actions for "+item.name);
+ if(mode==="move"){
+  const back=el("button","context-back","‹  Move to Category");back.type="button";back.onclick=()=>paintContextMenu("actions");menu.append(back);
+  state.sections.forEach(s=>{
+   const active=findButton(item.id)?.sec.id===s.id;
+   const action=contextAction(s.name,"",()=>moveContextButton(s.id),active?"is-current":"");
+   if(active)action.append(el("span","context-check","✓"));
+   menu.append(action);
+  });
+ }else{
+  menu.append(el("div","context-title",item.name));
+  menu.append(contextAction("Edit Button","pencil",()=>{closeContextMenu();showModal("button",{id:item.id});}));
+  const move=contextAction("Move to Category","move",()=>paintContextMenu("move"));
+  move.append(el("span","context-chevron","›"));menu.append(move);
+  menu.append(contextAction("Delete Button","trash",()=>{closeContextMenu();removeButton(item.id);},"is-danger"));
+ }
+ positionContextMenu();
+ const first=menu.querySelector(".context-action,.context-back");first?.focus({preventScroll:true});
+}
+function openContextMenu(card,item){
+ if($("sheet").classList.contains("open")||!findButton(item.id))return;
+ closeContextMenu(false);resetLaunching();
+ pageTouch=null;placeTrack(true);
+ suppressCardClickUntil=performance.now()+1050;
+ contextMenuCard=card;contextMenuItem=item;contextOriginRect=card.getBoundingClientRect();
+ const backdrop=el("div","context-backdrop"),menu=el("div","context-menu");
+ backdrop.setAttribute("aria-hidden","true");backdrop.onclick=()=>closeContextMenu();
+ document.body.append(backdrop,menu);contextMenuOverlay=backdrop;contextMenuPane=menu;
+ card.setAttribute("aria-expanded","true");
+ paintContextMenu();
+ requestAnimationFrame(()=>{if(contextMenuOverlay===backdrop){backdrop.classList.add("open");menu.classList.add("open");positionContextMenu();}});
+}
+function installLongPress(card,item){
+ let timer=0,point=null;
+ const cancel=()=>{if(timer){clearTimeout(timer);timer=0;}point=null;};
+ card.setAttribute("aria-haspopup","menu");
+ card.title=item.name+" — press and hold to edit";
+ card.addEventListener("pointerdown",e=>{
+  if(contextMenuOverlay||(e.pointerType==="mouse"&&e.button!==0))return;
+  cancel();point={id:e.pointerId,x:e.clientX,y:e.clientY};
+  timer=setTimeout(()=>{
+   if(!point||point.id!==e.pointerId)return;
+   timer=0;point=null;openContextMenu(card,item);
+  },490);
+ });
+ card.addEventListener("pointermove",e=>{
+  if(point?.id===e.pointerId&&Math.hypot(e.clientX-point.x,e.clientY-point.y)>11)cancel();
+ });
+ card.addEventListener("pointerup",cancel);
+ card.addEventListener("pointercancel",cancel);
+ card.addEventListener("contextmenu",e=>{e.preventDefault();cancel();openContextMenu(card,item);});
+ card.addEventListener("keydown",e=>{
+  if(e.key==="ContextMenu"||(e.shiftKey&&e.key==="F10")){
+   e.preventDefault();openContextMenu(card,item);
+  }
+ });
+}
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"&&contextMenuOverlay){e.preventDefault();e.stopImmediatePropagation();closeContextMenu();}
+},true);
+window.addEventListener("resize",()=>{if(contextMenuOverlay)positionContextMenu();});
 function returnURL(){
  if(state.returnMethod==="shortcut"||!/^https?:$/.test(location.protocol))return "shortcuts://run-shortcut?name="+encodeURIComponent("Radio Grid");
  const url=new URL(location.href);url.hash="";url.searchParams.delete("result");url.searchParams.delete("errorMessage");
@@ -1161,7 +1362,7 @@ function drawMini(force=false){
  const stage=el("div","preview-stage"),wrap=el("div","preview-frame"),mini=el("div","preview-mini");
  const header=el("div","header");header.append(el("div","header-action edit-home","Edit"),el("h1","app-title",state.appTitle),el("div","menu header-action"));
  mini.append(header);
- const tabs=el("div","tabs");tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
+ const tabs=el("div","tabs"+(state.sections.length>4||$("tabs").classList.contains("is-scrollable")?" is-scrollable":""));tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
  state.sections.forEach(s=>{const t=el("div","tab"+(s.id===selected.id?" active":""));t.append(el("span","",s.name));tabs.append(t);});mini.append(tabs);
  const grid=el("div","grid");
  const samples=selected.items.slice(0,6);
@@ -1173,6 +1374,7 @@ function drawMini(force=false){
   c.append(label);grid.append(c);
  }
  mini.append(grid);wrap.append(mini);stage.append(wrap);host.append(stage);
+ const mt=tabs.querySelector(".tab.active");if(mt&&tabs.classList.contains("is-scrollable"))tabs.scrollLeft=Math.max(0,mt.offsetLeft-(nativeWidth-mt.offsetWidth)/2);
  updateMini();
 }
 function updateMini(){
@@ -1180,6 +1382,12 @@ function updateMini(){
  const mini=host.querySelector(".preview-mini");if(!mini)return;
  const selected=state.sections.find(s=>s.id===host.dataset.category);
  if(!selected)return;
+ const miniTabs=mini.querySelector(".tabs");
+ if(miniTabs){
+  miniTabs.classList.toggle("is-scrollable",state.sections.length>4||$("tabs").classList.contains("is-scrollable"));
+  const chosen=miniTabs.querySelector(".tab.active");
+  if(chosen&&miniTabs.classList.contains("is-scrollable"))miniTabs.scrollLeft=Math.max(0,chosen.offsetLeft-(miniTabs.clientWidth-chosen.offsetWidth)/2);
+ }
  // Only modify existing nodes and inline sizes. Never touch the scroll container.
  const main=$("pageViewport"),nativeWidth=document.querySelector(".app")?.clientWidth||390;
  const heading=mini.querySelector(".app-title");heading.textContent=state.appTitle;
@@ -1211,24 +1419,31 @@ function tinyButton(icon,label,handler,extra=""){
 function findButton(id){for(const sec of state.sections){const item=sec.items.find(i=>i.id===id);if(item)return {sec,item};}return null;}
 function swapIndex(items,i,delta){const j=i+delta;if(j<0||j>=items.length)return;[items[i],items[j]]=[items[j],items[i]];structuralUpdate("Order saved");}
 function organizePage(body){
- body.append(el("p","organize-intro","Categories are the gray headings. Each indented row is a button in that category. Use the arrows or drag handles to reorder, or the pencil to edit."));
+ body.append(el("p","organize-intro","Tap a name to edit. Hold and drag the handle on the right to reorder buttons or categories. Use the trash icon to delete, or press and hold a home-screen tile for quick actions."));
  const root=el("div");root.id="hierarchyRoot";
- state.sections.forEach((sec,i)=>{
+ state.sections.forEach((sec)=>{
   const block=el("section","organize-section");block.dataset.sectionId=sec.id;
   const head=el("div","organize-header");
+  const marker=el("span","organize-marker");
+  const main=el("button","org-row-main");main.type="button";
+  main.setAttribute("aria-label","Edit category "+sec.name);
+  const nameBox=el("span","organize-name",sec.name);
+  nameBox.append(el("small","",sec.items.length+" buttons"));
+  main.append(nameBox,el("span","ios-chevron","›"));
+  main.onclick=()=>navigate("section",{id:sec.id});
   const handle=tinyButton("grip","Drag category "+sec.name,null,"handle");
-  const marker=el("span","organize-marker"),title=el("div","organize-name",sec.name),count=el("span","organize-count",sec.items.length+" buttons");
-  const up=tinyButton("up","Move category up",()=>swapIndex(state.sections,i,-1));up.disabled=i===0;
-  const down=tinyButton("down","Move category down",()=>swapIndex(state.sections,i,1));down.disabled=i===state.sections.length-1;
-  head.append(handle,marker,title,count,up,down,tinyButton("pencil","Rename category",()=>navigate("section",{id:sec.id})),tinyButton("trash","Delete category",()=>removeCategory(sec.id),"danger"));block.append(head);
+  head.append(marker,main,tinyButton("trash","Delete category "+sec.name,()=>removeCategory(sec.id),"danger"),handle);
+  block.append(head);
   const list=el("div","organize-items");list.dataset.sectionId=sec.id;
-  sec.items.forEach((item,j)=>{
+  sec.items.forEach(item=>{
    const row=el("div","organize-item");row.dataset.itemId=item.id;
+   const label=el("button","org-row-main");label.type="button";
+   label.setAttribute("aria-label","Edit "+item.name);
+   const text=el("span","organize-item-name",item.name);
+   text.append(el("small","",item.action==="url"?"Link":"Shortcut"));
+   label.append(text,el("span","ios-chevron","›"));label.onclick=()=>navigate("button",{id:item.id});
    const grip=tinyButton("grip","Drag "+item.name,null,"handle");
-   const text=el("span","organize-item-name",item.name);text.append(el("small","",item.action==="url"?"Link":"Shortcut"));
-   const u=tinyButton("up","Move button up",()=>swapIndex(sec.items,j,-1));u.disabled=j===0;
-   const d=tinyButton("down","Move button down",()=>swapIndex(sec.items,j,1));d.disabled=j===sec.items.length-1;
-   row.append(grip,text,u,d,tinyButton("pencil","Edit "+item.name,()=>navigate("button",{id:item.id})),tinyButton("trash","Delete "+item.name,()=>removeButton(item.id),"danger"));
+   row.append(label,tinyButton("trash","Delete "+item.name,()=>removeButton(item.id),"danger"),grip);
    list.append(row);enableDrag(grip,row,"item");
   });
   block.append(list);
@@ -1237,7 +1452,7 @@ function organizePage(body){
  });
  body.append(root);
  const addCat=el("button","org-add org-add-section","+ Add Category");addCat.onclick=()=>navigate("section",{id:null});body.append(addCat);
- body.append(el("p","editor-footer","Each button belongs to exactly one category. Edit a button to move it to another category."));
+ body.append(el("p","editor-footer","Drag a button into another category or choose Move to Category from its long-press menu."));
 }
 async function removeCategory(id){
  const s=state.sections.find(x=>x.id===id);if(!s)return;
@@ -1252,20 +1467,78 @@ async function removeButton(id){
  f.sec.items=f.sec.items.filter(x=>x.id!==id);structuralUpdate("Button deleted");
 }
 function enableDrag(handle,row,kind){
- let pointer=null,moved=false;
- handle.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"&&e.button!==0)return;pointer=e.pointerId;moved=false;handle.setPointerCapture(pointer);row.classList.add("dragging");e.preventDefault()});
- handle.addEventListener("pointermove",e=>{
-  if(e.pointerId!==pointer)return;const hit=document.elementFromPoint(e.clientX,e.clientY);if(!hit)return;
-  if(kind==="section"){
-   const other=hit.closest(".organize-section");if(!other||other===row)return;const box=other.getBoundingClientRect();rootInsert($("hierarchyRoot"),row,other,e.clientY<box.top+box.height/2);moved=true;
-  }else{
-   const other=hit.closest(".organize-item");
-   if(other&&other!==row){const b=other.getBoundingClientRect();rootInsert(other.parentNode,row,other,e.clientY<b.top+b.height/2);moved=true;}
-   else {const parent=hit.closest(".organize-items")||hit.closest(".organize-section")?.querySelector(".organize-items");if(parent&&parent!==row.parentNode){parent.append(row);moved=true;}}
+ let pointer=null,startY=0,ghost=null,moved=false,highlighted=null;
+ const clearHighlight=()=>{
+  if(highlighted){highlighted.classList.remove("drop-before","drop-after","drop-into");highlighted=null;}
+ };
+ function animateNeighbors(before){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  for(const [node,prior] of before){
+   if(!node.isConnected||node===row)continue;
+   const now=node.getBoundingClientRect(),shift=prior.top-now.top;
+   if(Math.abs(shift)>1&&Math.abs(shift)<450)
+    node.animate([{transform:`translateY(${shift}px)`},{transform:"translateY(0)"}],{duration:180,easing:"cubic-bezier(.2,.8,.2,1)"});
   }
+ }
+ handle.addEventListener("pointerdown",e=>{
+  if(pointer!==null||(e.pointerType==="mouse"&&e.button!==0))return;
+  e.preventDefault();pointer=e.pointerId;startY=e.clientY;moved=false;
+  // For an entire category, lift only its header to avoid covering the screen.
+  const lift=kind==="section"?row.querySelector(".organize-header"):row;
+  const rect=lift.getBoundingClientRect();
+  ghost=lift.cloneNode(true);ghost.classList.add("drag-ghost");ghost.classList.remove("dragging");
+  ghost.removeAttribute("id");ghost.setAttribute("aria-hidden","true");ghost.inert=true;
+  ghost.style.cssText+=`;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px`;
+  document.body.append(ghost);row.classList.add("dragging");
+  // The dragged DOM row changes parents/order; capturing on that moving handle
+  // can silently lose pointerup. Listen at document capture level instead.
+  document.addEventListener("pointermove",moveDrag,{capture:true,passive:false});
+  document.addEventListener("pointerup",finishDrag,true);
+  document.addEventListener("pointercancel",finishDrag,true);
  });
- const done=e=>{if(e.pointerId!==pointer)return;pointer=null;row.classList.remove("dragging");if(moved)syncHierarchy();};
- handle.addEventListener("pointerup",done);handle.addEventListener("pointercancel",done);
+ const moveDrag=e=>{
+  if(e.pointerId!==pointer)return;
+  e.preventDefault();
+  if(ghost)ghost.style.transform=`translate3d(0,${e.clientY-startY}px,0) scale(1.025)`;
+  const hit=document.elementFromPoint(e.clientX,e.clientY);if(!hit)return;
+  let destination=null,ref=null,beforeIt=true,target=null;
+  if(kind==="section"){
+   target=hit.closest(".organize-section:not(.dragging)");
+   if(!target)return;
+   // A category reorders at the HEADER midpoint, not halfway through all its buttons.
+   const targetHead=target.querySelector(".organize-header")?.getBoundingClientRect()||target.getBoundingClientRect();
+   beforeIt=e.clientY<targetHead.top+targetHead.height/2;
+   destination=$("hierarchyRoot");ref=beforeIt?target:target.nextSibling;
+  }else{
+   // Work from the list's geometry instead of the element under the finger:
+   // the lifted row and animated neighbors can otherwise cause end-of-list jumps.
+   if(hit.closest(".organize-item.dragging"))return;
+   const section=hit.closest(".organize-section");
+   destination=section?.querySelector(".organize-items")||null;
+   if(!destination)return;
+   const siblings=[...destination.querySelectorAll(":scope > .organize-item:not(.dragging)")];
+   ref=siblings.find(n=>e.clientY<n.getBoundingClientRect().top+n.offsetHeight/2)||null;
+   target=ref||siblings[siblings.length-1]||null;
+   beforeIt=!!ref;
+  }
+  if(!destination)return;
+  clearHighlight();
+  highlighted=target||destination;
+  highlighted.classList.add(target?(beforeIt?"drop-before":"drop-after"):"drop-into");
+  if(destination===row.parentNode&&(ref===row||ref===row.nextSibling))return;
+  const candidates=[...$("hierarchyRoot").querySelectorAll(kind==="section"?":scope > .organize-section":".organize-item")];
+  const before=new Map(candidates.filter(n=>n!==row).map(n=>[n,n.getBoundingClientRect()]));
+  destination.insertBefore(row,ref);moved=true;animateNeighbors(before);
+ };
+ const finishDrag=e=>{
+  if(e.pointerId!==pointer)return;
+  pointer=null;
+  document.removeEventListener("pointermove",moveDrag,true);
+  document.removeEventListener("pointerup",finishDrag,true);
+  document.removeEventListener("pointercancel",finishDrag,true);
+  clearHighlight();ghost?.remove();ghost=null;row.classList.remove("dragging");
+  if(moved)syncHierarchy();
+ };
 }
 function rootInsert(parent,row,other,before){parent.insertBefore(row,before?other:other.nextSibling);}
 function syncHierarchy(){const secMap=new Map(state.sections.map(s=>[s.id,s])),itemMap=new Map(state.sections.flatMap(s=>s.items.map(i=>[i.id,i]))),next=[];
@@ -1342,8 +1615,8 @@ async function resetDefaults(){
 }
 ["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
-$("openSettings").onclick=()=>showModal("settings");
-$("openEdit").onclick=()=>showModal("organize");
+$("openSettings").onclick=()=>{closeContextMenu(false);showModal("settings");};
+$("openEdit").onclick=()=>{closeContextMenu(false);showModal("organize");};
 $("scrim").onclick=closeModal;
 document.addEventListener("keydown",e=>{
  if(!$("sheet").classList.contains("open")||document.querySelector(".confirm-overlay"))return;

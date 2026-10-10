@@ -447,6 +447,7 @@ body { background:var(--bg); }
  -webkit-user-select:none;user-select:none}
 .edit-tile-action svg{height:15px;width:15px;stroke-width:2.6}
 .edit-tile-remove{left:-6px;background:var(--accent);color:#151515}
+.edit-tile-edit{right:-6px;background:#2b2d33;color:var(--accent);border:1px solid #ffffff24}
 .edit-add-tile{width:var(--card-width);justify-self:center;display:flex;align-items:center;justify-content:center;
  flex-direction:column;gap:6px;background:transparent;border:1.5px dashed #81848a;
  color:var(--accent);border-radius:var(--card-r);min-height:48px;font-size:13px;font-weight:650}
@@ -914,6 +915,10 @@ function render(){
     del.setAttribute("tabindex","0");del.setAttribute("aria-label","Delete "+item.name);del.append(svg("minus"));
     del.onclick=e=>{e.stopPropagation();deleteHomeButton(item.id);};
     del.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();deleteHomeButton(item.id);}};
+    const editBtn=el("span","edit-tile-action edit-tile-edit");editBtn.setAttribute("role","button");
+    editBtn.setAttribute("tabindex","0");editBtn.setAttribute("aria-label","Edit "+item.name);editBtn.append(svg("pencil"));
+    editBtn.onclick=e=>{e.stopPropagation();openButtonEditor(item.id,section.id);};
+    editBtn.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();openButtonEditor(item.id,section.id);}};
     // Tap controls replace the former six-dot tile drag handle.
     const directions=el("span","edit-tile-directions");directions.setAttribute("role","group");
     directions.setAttribute("aria-label","Move "+item.name);
@@ -934,7 +939,7 @@ function render(){
      });
      directions.append(control);
     }
-    card.append(del,directions);
+    card.append(del,editBtn,directions);
    }
    grid.append(card);
   }
@@ -1403,8 +1408,8 @@ function settingsPage(body){
  const rows=[
   ["Title","title"],
   ["Background","background"],
-  ["Buttons","design"],
   ["Categories","categories"],
+  ["Buttons","design"],
   ["Playback","playback"],
   ["Backup","backup"]
  ];
@@ -1655,9 +1660,8 @@ function moveHomeButton(itemId,sectionId,direction){
  const index=section.items.findIndex(item=>item.id===itemId);
  const destination=directionTarget(index,section.items.length,direction);
  if(destination<0)return;
- const before=clone(state);
  [section.items[index],section.items[destination]]=[section.items[destination],section.items[index]];
- persistHomeEdit("");offerUndo("Button moved "+direction,before);
+ persistHomeEdit("");
  // Preserve keyboard focus on the same direction after rerendering the moved tile.
  const moved=[...document.querySelectorAll(".card")].find(c=>c.dataset.itemId===itemId);
  moved?.querySelector(`.edit-direction[aria-label="Move ${CSS.escape(section.items[destination].name)} ${direction}"]`)?.focus({preventScroll:true});
@@ -1852,14 +1856,13 @@ function endEditDrag(e,cancel=false){
  resetEditDragVisual();d.ghost.remove();d.source.classList.remove("edit-drag-origin");
  suppressCardClickUntil=performance.now()+650;
  if(cancel||!d.hasMoved||!d.validDrop)return;
- const before=clone(state);
  if(d.kind==="category"){
   if(d.categoryIndex===null)return;
   const old=state.sections.findIndex(s=>s.id===d.id);if(old<0)return;
   let next=d.categoryIndex;if(next>old)next--;
   if(next===old)return;
   const section=state.sections.splice(old,1)[0];state.sections.splice(Math.max(0,next),0,section);
-  persistHomeEdit("");offerUndo("Category moved",before);return;
+  persistHomeEdit("");return;
  }
  const from=state.sections.find(s=>s.id===d.fromId),to=state.sections.find(s=>s.id===d.destinationId);
  if(!from||!to)return;
@@ -1870,7 +1873,7 @@ function endEditDrag(e,cancel=false){
  at=Math.max(0,Math.min(to.items.length,at));to.items.splice(at,0,item);
  state.active=to.id;
  if(from===to&&at===index){render();return;}
- persistHomeEdit("");offerUndo(from===to?"Button reordered":"Button moved",before);
+ persistHomeEdit("");
 }
 function finishEditDrag(e){endEditDrag(e,false)}
 function cancelEditDrag(e){endEditDrag(e,true)}

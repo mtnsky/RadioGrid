@@ -6,7 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
-<title>RadioGrid V23</title>
+<title>RadioGrid V31</title>
+<!-- V31: streamlined button customization, explicit fit and reliable typography. -->
 <!-- V22: Categories appearance and accessible More menu; tap-only options -->
 <style>
   :root {
@@ -510,6 +511,32 @@ body { background:var(--bg); }
 .edit-undo button{color:var(--accent);background:#505056;border-radius:9px;min-height:35px;padding:0 13px;font-weight:700}
 @media(prefers-reduced-motion:reduce){.edit-overlay,.edit-panel{transition:none!important}}
 
+
+/* V31: clearer full-width, one-purpose Controls with a fixed preview footprint. */
+.card-label{overflow-wrap:anywhere;word-break:normal;hyphens:auto}
+.card-label.is-truncated{overflow:hidden}
+.nav-screen[data-page="design"] .settings-preview:not([hidden]){height:185px;flex-basis:185px}
+.nav-screen[data-page="design"] .settings-preview .preview-stage{height:148px}
+@media(max-height:700px){
+ .nav-screen[data-page="design"] .settings-preview:not([hidden]){height:157px;flex-basis:157px}
+ .nav-screen[data-page="design"] .settings-preview .preview-stage{height:120px}
+}
+.v31-slider-row{display:flex;flex-direction:column;align-items:stretch;gap:1px;padding:9px 14px 8px}
+.v31-slider-head{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+.v31-slider-head .ios-row-label{flex:none;min-width:0;font-size:15px}
+.v31-slider-head .ios-value{font-size:13px;min-width:50px;text-align:right}
+.v31-slider-row input[type=range]{width:100%;height:30px;min-height:30px;accent-color:var(--accent);touch-action:pan-x;
+ -webkit-user-select:none;user-select:none;overscroll-behavior:contain;}
+.nav-screen[data-page="design"] .ios-group-title{margin-top:19px}
+.nav-screen[data-page="design"] .ios-help{line-height:1.35;margin-top:7px;margin-bottom:10px}
+.nav-screen[data-page="design"] .v31-reset .ios-row-label{font-size:15px}
+.preview-caption .v31-preview-toggle{font-size:12px;background:#ffffff11;border-radius:8px;padding:4px 8px;color:var(--accent);flex:none}
+.preview-caption .v31-preview-toggle[aria-pressed="true"]{background:#ffffff24}
+.v31-inspect{display:flex;flex-direction:column;gap:9px;align-items:center;justify-content:center;position:absolute;inset:4px}
+.v31-inspect[hidden],.preview-frame[hidden]{display:none!important}
+.v31-inspect .card{flex:none;justify-self:initial;width:110px;height:96px;pointer-events:none}
+.v31-inspect-caption{font-size:10px;font-weight:550;color:#afb0b9;text-align:center;margin:0;max-width:96%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-screen[data-page="design"] .preview-stage{position:relative;align-items:center;justify-content:center;overflow:hidden}
 </style>
 </head>
 <body>
@@ -559,9 +586,8 @@ const DEFAULT_FONT_STYLE="system";
 const DEFAULT_TYPOGRAPHY={titleFontSize:32,buttonFontSize:20,titleBold:true,titleItalic:false,buttonBold:true,buttonItalic:false};
 const DEFAULT_CATEGORY_STYLE={categoryFontStyle:"system",categoryFontSize:15,categoryBold:true,categoryItalic:false,
  categoryTextColor:"#a5aab2",categoryActiveColor:"",categoryUnderlineColor:"",categoryUnderlineHeight:4};
-// Width is a percentage of each grid cell. Height is a preferred pixel height;
-// it is reduced when needed to keep every row visible without scrolling.
-const DEFAULT_BUTTON_STYLE={width:100,height:96,outlineColor:"#777b83",outlineWidth:1,cornerRadius:13,gapX:10,gapY:10};
+// All buttons fill their grid cell. Height is exact unless Fit on Screen is enabled.
+const DEFAULT_BUTTON_STYLE={height:96,fitScreen:true,outlineColor:"#777b83",outlineWidth:1,cornerRadius:13,gapX:10,gapY:10};
 const clampNumber=(v,min,max,defaultValue)=>typeof v==="number"&&Number.isFinite(v)?Math.round(Math.max(min,Math.min(max,v))):defaultValue;
 const DEFAULT_THEME={accent:"#e77d20",background:"#0b0d10",surface:"#22252a",surface2:"#1b1e23",card:"#373a41",buttonText:"#f3f4f5",titleColor:"#f6f6f7",pattern:"none"};
 const raw=(id,name,icon,extra={})=>({id,name,icon,action:"shortcut",target:name,...extra});
@@ -662,12 +688,18 @@ function normalise(data){
    buttonBold:typeof data.buttonBold==="boolean"?data.buttonBold:DEFAULT_TYPOGRAPHY.buttonBold,
    buttonItalic:typeof data.buttonItalic==="boolean"?data.buttonItalic:DEFAULT_TYPOGRAPHY.buttonItalic,
    buttonStyle:{
-     width:clampNumber(data.buttonStyle?.width,75,100,DEFAULT_BUTTON_STYLE.width),
      height:clampNumber(data.buttonStyle?.height,56,120,DEFAULT_BUTTON_STYLE.height),
+     fitScreen:typeof data.buttonStyle?.fitScreen==="boolean"?data.buttonStyle.fitScreen:DEFAULT_BUTTON_STYLE.fitScreen,
      outlineColor:safeColor(data.buttonStyle?.outlineColor)||DEFAULT_BUTTON_STYLE.outlineColor,
      outlineWidth:clampNumber(data.buttonStyle?.outlineWidth,0,4,DEFAULT_BUTTON_STYLE.outlineWidth),
      cornerRadius:clampNumber(data.buttonStyle?.cornerRadius,0,28,DEFAULT_BUTTON_STYLE.cornerRadius),
-     gapX:clampNumber(data.buttonStyle?.gapX,0,24,DEFAULT_BUTTON_STYLE.gapX),
+     // Old V30 backups may include a Width slider. Convert its visual gutters
+     // into a single horizontal-spacing control without silently deleting that choice.
+     gapX:Math.max(0,Math.min(40,Math.round(
+      clampNumber(data.buttonStyle?.gapX,0,40,DEFAULT_BUTTON_STYLE.gapX)+
+      (1-clampNumber(data.buttonStyle?.width,75,100,100)/100)*
+      (112-clampNumber(data.buttonStyle?.gapX,0,40,DEFAULT_BUTTON_STYLE.gapX))
+     ))),
      gapY:clampNumber(data.buttonStyle?.gapY,0,24,DEFAULT_BUTTON_STYLE.gapY)
    }};
 }
@@ -779,7 +811,7 @@ function applyIdentity(){
 function applyButtonStyle(){
  const root=document.documentElement.style;
  const spec=state.buttonStyle||DEFAULT_BUTTON_STYLE;
- root.setProperty("--card-width",spec.width+"%");
+ root.setProperty("--card-width","100%");
  root.setProperty("--card-outline-color",spec.outlineColor);
  root.setProperty("--card-outline-width",spec.outlineWidth+"px");
  root.setProperty("--card-r",spec.cornerRadius+"px");
@@ -962,41 +994,54 @@ function render(){
 // Landscape-oriented cards; reduce height only when more rows won't fit.
 // Each button starts at the common requested text size. Shrink only when the
 // chosen rectangle would otherwise clip the text; no label overflows its tile.
+// Never silently shrink text smaller than the 15 px supported font minimum.
+// Long labels wrap; if still too long they are clamped and remain accessible
+// through the button's full aria-label and the edit form.
+function fitOneButtonLabel(card){
+ const label=card.querySelector(".card-label");if(!label)return false;
+ const selected=state.buttonFontSize;
+ label.classList.remove("is-truncated");
+ label.style.webkitLineClamp="";
+ label.style.display="block";
+ label.style.fontSize=selected+"px";
+ const p=getComputedStyle(card);
+ const room=Math.max(1,card.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom));
+ let trial=selected;
+ while(trial>15 && (label.scrollHeight>room+1||label.scrollWidth>label.clientWidth+1)){
+  label.style.fontSize=(--trial)+"px";
+ }
+ const clipped=label.scrollHeight>room+1||label.scrollWidth>label.clientWidth+1;
+ if(clipped){
+  const lines=Math.max(1,Math.floor(room/(trial*1.14)));
+  label.style.display="-webkit-box";
+  label.style.webkitBoxOrient="vertical";
+  label.style.webkitLineClamp=String(lines);
+  label.classList.add("is-truncated");
+ }
+ return clipped;
+}
 function fitButtonLabels(){
- const size=state.buttonFontSize;
- document.querySelectorAll(".card").forEach(card=>{
-   const label=card.querySelector(".card-label");
-   if(!label)return;
-   label.style.fontSize=size+"px";
-   const computed=getComputedStyle(card);
-   const verticalRoom=card.clientHeight-parseFloat(computed.paddingTop)-parseFloat(computed.paddingBottom);
-   let trial=size;
-   while(trial>10 && (label.scrollHeight>verticalRoom+1 || label.scrollWidth>label.clientWidth+1)){
-     trial--;
-     label.style.fontSize=trial+"px";
-   }
- });
+ document.querySelectorAll("#pageTrack .card").forEach(fitOneButtonLabel);
 }
 function sizeGrid(){
  const available=$("pageViewport").clientHeight;
  const spec=state.buttonStyle||DEFAULT_BUTTON_STYLE;
  $("pageTrack").querySelectorAll(".page-slide").forEach((slide,i)=>{
-   const grid=slide.querySelector(".grid");
-   const rows=Math.max(1,Math.ceil((state.sections[i].items.length+(homeEditing?1:0))/3));
-   const gap=parseFloat(getComputedStyle(grid).rowGap)||0;
-   const fitHeight=Math.floor((available-gap*(rows-1))/rows);
-   // Width can be reduced inside each column, but never exceeds it.
-   // The aspect-ratio cap preserves the wide, rectangular appearance.
-   const columnWidth=Math.max(1,(grid.clientWidth-gap*2)/3);
-   const visibleWidth=columnWidth*spec.width/100;
-   const rectangularMax=Math.floor(visibleWidth*.98);
-   const requestedHeight=Math.min(spec.height,rectangularMax);
-   // Edit mode needs enough height for a readable label plus the in-tile chevrons.
-   // Scroll if necessary rather than squeezing the directional controls offscreen.
-   const rowHeight=Math.max(homeEditing?76:48,Math.min(requestedHeight,fitHeight));
-   grid.style.setProperty("--card-height",rowHeight+"px");
-   const requiresScroll=rows*rowHeight+gap*(rows-1)>available+1;
-   slide.style.overflowY=i===pageIndex() && requiresScroll?"auto":"hidden";
+  const grid=slide.querySelector(".grid");
+  const rows=Math.max(1,Math.ceil((state.sections[i].items.length+(homeEditing?1:0))/3));
+  const gap=spec.gapY;
+  const css=getComputedStyle(grid);
+  const inset=(parseFloat(css.paddingTop)||0)+(parseFloat(css.paddingBottom)||0);
+  const fitHeight=Math.floor((available-inset-gap*(rows-1))/rows);
+  // No aspect-ratio or width cap: Height now means the requested pixel height.
+  // The only exception is an explicit Fit on Screen preference; in that mode
+  // never squeeze tiles below a usable minimum — scroll the remaining rows.
+  const minimum=homeEditing?76:56;
+  const requestedHeight=Math.max(spec.height,homeEditing?76:0);
+  const rowHeight=spec.fitScreen?Math.max(minimum,Math.min(requestedHeight,fitHeight)):requestedHeight;
+  grid.style.setProperty("--card-height",rowHeight+"px");
+  const requiresScroll=rows*rowHeight+gap*(rows-1)+inset>available+1;
+  slide.style.overflowY=i===pageIndex()&&requiresScroll?"auto":"hidden";
  });
  fitButtonLabels();
 }
@@ -1130,7 +1175,7 @@ const activeEntry=()=>navHistory[navHistory.length-1]||null;
 const activeBody=()=>activeEntry()?.body||null;
 const activePreview=()=>activeEntry()?.preview||null;
 const PAGE_LABELS={settings:"Settings",title:"Title",background:"Background",design:"Buttons",categories:"Categories",
- playback:"Playback",backup:"Backup",choice:"Select",color:"Color"};
+ backup:"Backup",choice:"Select",color:"Color"};
 function flushLiveSave(){if(liveSaveTimer){clearTimeout(liveSaveTimer);liveSaveTimer=0;save();}}
 function liveUpdate(){
  // Frames coalesce finger events; never rebuild any control or write scrollTop.
@@ -1161,7 +1206,6 @@ function paintPage(entry){
  else if(page==="background")backgroundPage(body);
  else if(page==="design")designPage(body);
  else if(page==="categories")categoriesPage(body);
- else if(page==="playback")playbackPage(body);
  else if(page==="backup")backupPage(body);
  else if(page==="choice")choicePage(body,args);
  else if(page==="color")colorPage(body,args);
@@ -1345,6 +1389,39 @@ function sliderRow(label,value,min,max,unit,callback){
 const COLOR_PRESETS=["#0b0d10","#1b1c20","#2c2c2e","#373a41","#777b83",
  "#a3a7af","#f3f4f5","#ffffff","#e77d20","#ff9f0a","#ff453a","#ff375f",
  "#30d158","#64d2ff","#0a84ff","#5e5ce6","#bf5af2","#ac8e68","#f3a144","#cb4540"];
+// Full-width slider rows remain comfortable on 360–430px iPhones.
+function buttonSliderRow(label,value,min,max,unit,callback){
+ const row=el("div","ios-row v31-slider-row"),head=el("div","v31-slider-head");
+ const l=el("label","ios-row-label",label),out=el("output","ios-value",value+unit);
+ const range=el("input");range.type="range";range.min=min;range.max=max;
+ range.step="1";range.value=value;range.id=uid();range.setAttribute("aria-label",label);
+ l.htmlFor=range.id;out.htmlFor=range.id;
+ range.oninput=()=>{out.textContent=range.value+unit;callback(Number(range.value));};
+ range.onchange=flushLiveSave;
+ head.append(l,out);row.append(head,range);return row;
+}
+function updateButtonDesignStatus(){
+ const entry=activeEntry();if(entry?.page!=="design")return;
+ const section=state.sections.find(s=>s.id===previewSection)||activeSection();
+ const grid=[...document.querySelectorAll("#pageTrack .page-slide")].find(x=>x.dataset.sectionId===section?.id)?.querySelector(".grid");
+ const actual=grid?parseFloat(grid.style.getPropertyValue("--card-height")):NaN;
+ const heightStatus=entry.body.querySelector("#buttonHeightStatus");
+ if(heightStatus){
+  const requested=state.buttonStyle.height;
+  const adjusted=Number.isFinite(actual)&&actual!==requested;
+  heightStatus.textContent=state.buttonStyle.fitScreen
+   ?adjusted?`Fit on Screen: ${requested} px requested, ${actual} px displayed in ${section.name}.`:
+    `Fit on Screen: ${requested} px displayed in ${section?.name||"this category"}.`
+   :`Exact height: ${requested} px. Extra rows scroll instead of shrinking.`;
+ }
+ const textStatus=entry.body.querySelector("#buttonTextStatus");
+ if(textStatus&&grid){
+  const shortened=grid.querySelectorAll(".card-label.is-truncated").length;
+  textStatus.textContent=shortened
+   ?`${shortened} label${shortened===1?"":"s"} shortened to stay legible. Full names remain available in Edit Mode.`
+   :"Labels use the selected size when space allows, with a readable 15 px minimum.";
+ }
+}
 function colorRow(label,value,callback){
  const button=el("button","ios-color-button");button.type="button";
  const text=el("span","ios-color-code",String(value).toUpperCase());
@@ -1410,11 +1487,10 @@ function settingsPage(body){
   ["Background","background"],
   ["Categories","categories"],
   ["Buttons","design"],
-  ["Playback","playback"],
   ["Backup","backup"]
  ];
  body.append(grouped(...rows.map(([name,page])=>navigationRow(name,"",()=>navigate(page)))));
- body.append(el("p","ios-help","Customize the appearance and behavior of RadioGrid. To edit categories and buttons, choose Edit from the ••• menu."));
+ body.append(el("p","ios-help","Customize the appearance of RadioGrid. To edit categories and buttons, choose Edit from the ••• menu."));
 }
 function titlePage(body){
  body.append(sectionLabel("Title"));
@@ -1451,17 +1527,58 @@ function backgroundPage(body){
  body.append(picks,el("p","ios-help","These original textures take inspiration from classic automotive displays. The preview above updates instantly."));
 }
 function designPage(body){
- body.append(sectionLabel("Button Text"));
+ body.append(sectionLabel("Text"));
  const bf=choiceControl(FONT_OPTIONS,state.buttonFontStyle||state.fontStyle);
  bf.onchange=()=>{state.buttonFontStyle=bf.value;liveUpdate();};
- body.append(grouped(settingRow("Font",bf),sliderRow("Size",state.buttonFontSize,15,25," px",v=>{state.buttonFontSize=v;liveUpdate();}),styleRow("button"),colorRow("Text Color",state.theme.buttonText,v=>{state.theme.buttonText=v;liveUpdate();})));
- body.append(sectionLabel("Button Appearance"));
- body.append(grouped(colorRow("Fill Color",state.theme.card,v=>{state.theme.card=v;liveUpdate();}),sliderRow("Width",state.buttonStyle.width,75,100,"%",v=>{state.buttonStyle.width=v;liveUpdate();}),sliderRow("Height",state.buttonStyle.height,56,120," px",v=>{state.buttonStyle.height=v;liveUpdate();})));
- body.append(sectionLabel("Border & Corners"));
- body.append(grouped(colorRow("Border Color",state.buttonStyle.outlineColor,v=>{state.buttonStyle.outlineColor=v;liveUpdate();}),sliderRow("Border Width",state.buttonStyle.outlineWidth,0,4," px",v=>{state.buttonStyle.outlineWidth=v;liveUpdate();}),sliderRow("Corners",state.buttonStyle.cornerRadius,0,28," px",v=>{state.buttonStyle.cornerRadius=v;liveUpdate();})));
- body.append(sectionLabel("Spacing"));
- body.append(grouped(sliderRow("Horizontal",state.buttonStyle.gapX,0,24," px",v=>{state.buttonStyle.gapX=v;liveUpdate();}),sliderRow("Vertical",state.buttonStyle.gapY,0,24," px",v=>{state.buttonStyle.gapY=v;liveUpdate();})));
- body.append(el("p","ios-help","Button height adapts when a category has many rows. Text automatically fits within each button; the live preview uses the same proportions as the home screen."));
+ body.append(grouped(
+  settingRow("Font",bf),
+  buttonSliderRow("Font Size",state.buttonFontSize,15,25," px",v=>{state.buttonFontSize=v;liveUpdate();}),
+  styleRow("button"),
+  colorRow("Text Color",state.theme.buttonText,v=>{state.theme.buttonText=v;liveUpdate();})
+ ));
+ const textStatus=el("p","ios-help","Labels use the selected size when space allows, with a readable 15 px minimum.");
+ textStatus.id="buttonTextStatus";body.append(textStatus);
+ body.append(sectionLabel("Appearance"));
+ const borderColor=colorRow("Border Color",state.buttonStyle.outlineColor,v=>{state.buttonStyle.outlineColor=v;liveUpdate();});
+ borderColor.hidden=state.buttonStyle.outlineWidth===0;
+ const borderThickness=buttonSliderRow("Border Thickness",state.buttonStyle.outlineWidth,0,4," px",v=>{
+  state.buttonStyle.outlineWidth=v;borderColor.hidden=v===0;liveUpdate();
+ });
+ body.append(grouped(
+  colorRow("Button Color",state.theme.card,v=>{state.theme.card=v;liveUpdate();}),
+  buttonSliderRow("Corner Roundness",state.buttonStyle.cornerRadius,0,28," px",v=>{state.buttonStyle.cornerRadius=v;liveUpdate();}),
+  borderThickness,borderColor
+ ));
+ body.append(sectionLabel("Size & Spacing"));
+ const fit=el("input");fit.type="checkbox";fit.className="ios-switch";
+ fit.checked=state.buttonStyle.fitScreen;fit.setAttribute("role","switch");
+ fit.setAttribute("aria-label","Fit Buttons on Screen");
+ fit.onchange=()=>{state.buttonStyle.fitScreen=fit.checked;liveUpdate();};
+ body.append(grouped(
+  buttonSliderRow("Button Height",state.buttonStyle.height,56,120," px",v=>{state.buttonStyle.height=v;liveUpdate();}),
+  buttonSliderRow("Horizontal Spacing",state.buttonStyle.gapX,0,40," px",v=>{state.buttonStyle.gapX=v;liveUpdate();}),
+  buttonSliderRow("Vertical Spacing",state.buttonStyle.gapY,0,24," px",v=>{state.buttonStyle.gapY=v;liveUpdate();}),
+  settingRow("Fit Buttons on Screen",fit)
+ ));
+ const sizeStatus=el("p","ios-help","Requested height is maintained unless Fit Buttons on Screen is enabled.");
+ sizeStatus.id="buttonHeightStatus";body.append(sizeStatus);
+ body.append(sectionLabel("Restore"));
+ const reset=navigationRow("Reset Button Appearance","Restore default button styling",resetButtonAppearance);
+ reset.classList.add("v31-reset");body.append(grouped(reset));
+ body.append(el("p","ios-help","Button width always fills each of the three columns; Horizontal Spacing controls the gaps. Use the 1:1 preview above to inspect button text and borders at their actual size."));
+ updateButtonDesignStatus();
+}
+async function resetButtonAppearance(){
+ if(!await iosConfirm("Reset Button Appearance?","Restore default text, colors, borders, height, spacing and fit behavior? Your categories and button actions will not change.","Reset Appearance"))return;
+ state.buttonFontStyle=DEFAULT_FONT_STYLE;
+ state.buttonFontSize=DEFAULT_TYPOGRAPHY.buttonFontSize;
+ state.buttonBold=DEFAULT_TYPOGRAPHY.buttonBold;
+ state.buttonItalic=DEFAULT_TYPOGRAPHY.buttonItalic;
+ state.theme.card=DEFAULT_THEME.card;
+ state.theme.buttonText=DEFAULT_THEME.buttonText;
+ state.buttonStyle=clone(DEFAULT_BUTTON_STYLE);
+ flushLiveSave();save();theme();sizeGrid();showCurrentPage(true);
+ notify("Button appearance restored");
 }
 function categoriesPage(body){
  body.append(sectionLabel("Category Text"));
@@ -1490,13 +1607,6 @@ function categoriesPage(body){
   sliderRow("Thickness",state.categoryUnderlineHeight,2,7," px",v=>{state.categoryUnderlineHeight=v;liveUpdate();})));
  body.append(el("p","ios-help","Custom Color off follows the global accent automatically. Long category names scroll rather than shrink the chosen font size. Changes appear in the live preview."));
 }
-function playbackPage(body){
- body.append(sectionLabel("Return After Playing"));
- const method=choiceControl([["website","Website link"],["webapp","Home Screen app (experimental)"],["shortcut","Open Radio Grid Shortcut"]],state.returnMethod);
- method.onchange=()=>{state.returnMethod=method.value;save();notify("Return behavior saved");};
- body.append(grouped(settingRow("Method",method)));
- body.append(el("p","ios-help","The selected Shortcut must finish before iOS invokes its callback. A website return can open Safari; Home Screen return uses an unofficial URL scheme."));
-}
 function backupPage(body){
  body.append(sectionLabel("Backup & Restore"));
  body.append(grouped(navigationRow("Export Settings","JSON file",exportSettings),navigationRow("Import Settings","Choose a backup",()=>$('importPicker').click())));
@@ -1520,7 +1630,20 @@ function drawMini(force=false){
  chooser.onclick=()=>navigate("choice",{title:"Preview Category",
   choices:state.sections.map(s=>[s.id,s.name]),selected:()=>previewSection,
   onSelect(value){previewSection=value;drawMini(true);}});
- cap.append(chooser);host.append(cap);
+ cap.append(chooser);
+ if(activeEntry()?.page==="design"){
+  const inspect=el("button","v31-preview-toggle","1:1");inspect.type="button";
+  inspect.setAttribute("aria-label","Toggle full-size button preview");
+  inspect.setAttribute("aria-pressed",String(host.dataset.inspecting==="true"));
+  inspect.onclick=()=>{
+   host.dataset.inspecting=host.dataset.inspecting==="true"?"false":"true";
+   inspect.setAttribute("aria-pressed",String(host.dataset.inspecting==="true"));
+   inspect.textContent=host.dataset.inspecting==="true"?"Grid":"1:1";
+   updateMini();
+  };
+  cap.append(inspect);
+ }
+ host.append(cap);
  const stage=el("div","preview-stage"),wrap=el("div","preview-frame"),mini=el("div","preview-mini");
  const header=el("div","header"),morePreview=el("div","menu header-action");
  morePreview.append(svg("ellipsis"));header.append(el("h1","app-title",state.appTitle),morePreview);
@@ -1536,7 +1659,14 @@ function drawMini(force=false){
   if(radio)label.append(el("span","frequency",radio[1]),el("span","callsign",radio[2]));else label.textContent=item.name;
   c.append(label);grid.append(c);
  }
- mini.append(grid);wrap.append(mini);stage.append(wrap);host.append(stage);
+ mini.append(grid);wrap.append(mini);stage.append(wrap);
+ if(activeEntry()?.page==="design"){
+  const inspected=el("div","v31-inspect");inspected.hidden=true;
+  const sample=el("div","card v31-inspected-card"),sampleLabel=el("span","card-label");
+  sample.append(sampleLabel);inspected.append(sample,el("p","v31-inspect-caption","Actual-size button · selected category"));
+  stage.append(inspected);
+ }
+ host.append(stage);
  const mt=tabs.querySelector(".tab.active");if(mt&&tabs.classList.contains("is-scrollable"))tabs.scrollLeft=Math.max(0,mt.offsetLeft-(tabs.clientWidth-mt.offsetWidth)/2);
  updateMini();
 }
@@ -1569,11 +1699,25 @@ function updateMini(){
  let ts=state.titleFontSize;heading.style.fontSize=ts+"px";
  while(ts>17&&heading.scrollWidth>nativeWidth-138)heading.style.fontSize=(--ts)+"px";
  mini.querySelectorAll(".tab span").forEach(label=>{label.style.fontSize=state.categoryFontSize+"px";});
- mini.querySelectorAll(".card").forEach(c=>{
-  const l=c.querySelector(".card-label");let fs=state.buttonFontSize;l.style.fontSize=fs+"px";
-  const p=getComputedStyle(c),room=c.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom);
-  while(fs>10&&(l.scrollHeight>room+1||l.scrollWidth>l.clientWidth+1))l.style.fontSize=(--fs)+"px";
- });
+ mini.querySelectorAll(".card").forEach(fitOneButtonLabel);
+ const inspect=host.querySelector(".v31-inspect");
+ if(inspect){
+  const inspected=host.dataset.inspecting==="true";
+  inspect.hidden=!inspected;
+  wrap.hidden=inspected;
+  if(inspected){
+   const sample=inspect.querySelector(".v31-inspected-card");
+   const label=sample.querySelector(".card-label");
+   const sampleItem=[...selected.items].sort((a,b)=>b.name.length-a.name.length)[0];
+   label.textContent=sampleItem?.name||"Sample Button";
+   sample.style.width=Math.min(140,Math.max(72,homeGrid?.querySelector(".card")?.clientWidth||104))+"px";
+   sample.style.height=rowHeight+"px";
+   fitOneButtonLabel(sample);
+   inspect.querySelector(".v31-inspect-caption").textContent=
+    (sampleItem?.name||"Sample Button")+" · 100% scale";
+  }
+ }
+ updateButtonDesignStatus();
 }
 function findButton(id){for(const sec of state.sections){const item=sec.items.find(i=>i.id===id);if(item)return {sec,item};}return null;}
 function exportSettings(){

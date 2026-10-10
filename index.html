@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
 <title>RadioGrid</title>
-<!-- V20: adaptive categories, native long-press menus, streamlined drag editing (retains V19 fixes) -->
+<!-- V21: iOS long-press selection suppression and single-action Settings navigation -->
 <style>
   :root {
     color-scheme:dark;
@@ -394,6 +394,28 @@ body { background:var(--bg); }
  transform-origin:center center;will-change:transform}
 .drag-ghost .org-btn{pointer-events:none}
 @media(prefers-reduced-motion:reduce){#tabs .tab-indicator,.context-backdrop,.context-menu{transition:none!important}}
+
+/* V21 — prevent WebKit native text-selection handles and Copy/Look Up callout.
+   Scope strictly to the launcher, NOT Settings/Editors where selection is needed.
+   In iOS WebKit, disabling selection only on the button is insufficient when
+   nested labels, browser hit-testing or long-press callouts are involved. */
+.app, .app *, .app *::before, .app *::after,
+.context-menu, .context-menu * {
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+.app ::selection, .context-menu ::selection {background:transparent;color:inherit}
+.card, .card * {-webkit-user-drag:none}
+/* The left side stays in the grid for a centered title but is not a second
+   dismissal button on the root Settings / Edit screen. */
+.sheet-head #sheetBack.is-placeholder {visibility:hidden;pointer-events:none}
+.sheet-head #sheetBack:not(.is-placeholder) {
+  min-width:44px;justify-content:flex-start;padding:0 9px 0 0;
+  -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+}
+.sheet-head #sheetBack .nav-back-icon {width:25px;height:25px;display:block;flex:none;stroke:var(--accent)}
+.sheet-head #sheetBack:not(.is-placeholder):active {opacity:.56}
 
 </style>
 </head>
@@ -872,6 +894,7 @@ function installCategorySwipe(){
 // V20: long-press/secondary-click context actions; do not intercept normal taps or swipes.
 let contextMenuOverlay=null,contextMenuCard=null,contextMenuItem=null,contextMenuPane=null;
 let contextOriginRect=null;
+let ignoreReleaseBackdropClickUntil=0;
 function closeContextMenu(restoreFocus=true){
  const backdrop=contextMenuOverlay,card=contextMenuCard;
  if(!backdrop)return;
@@ -925,24 +948,37 @@ function paintContextMenu(mode="actions"){
  positionContextMenu();
  const first=menu.querySelector(".context-action,.context-back");first?.focus({preventScroll:true});
 }
+function clearHomeSelection(){
+ const selection=window.getSelection?.();
+ if(selection && !selection.isCollapsed)selection.removeAllRanges();
+}
 function openContextMenu(card,item){
  if($("sheet").classList.contains("open")||!findButton(item.id))return;
+ clearHomeSelection();
  closeContextMenu(false);resetLaunching();
  pageTouch=null;placeTrack(true);
  suppressCardClickUntil=performance.now()+1050;
  contextMenuCard=card;contextMenuItem=item;contextOriginRect=card.getBoundingClientRect();
  const backdrop=el("div","context-backdrop"),menu=el("div","context-menu");
- backdrop.setAttribute("aria-hidden","true");backdrop.onclick=()=>closeContextMenu();
+ backdrop.setAttribute("aria-hidden","true");
+ backdrop.onclick=()=>{
+  // Prevent the finger-release click from closing a just-opened menu.
+  if(performance.now()<ignoreReleaseBackdropClickUntil)return;
+  closeContextMenu();
+ };
  document.body.append(backdrop,menu);contextMenuOverlay=backdrop;contextMenuPane=menu;
  card.setAttribute("aria-expanded","true");
  paintContextMenu();
- requestAnimationFrame(()=>{if(contextMenuOverlay===backdrop){backdrop.classList.add("open");menu.classList.add("open");positionContextMenu();}});
+ requestAnimationFrame(()=>{if(contextMenuOverlay===backdrop){clearHomeSelection();backdrop.classList.add("open");menu.classList.add("open");positionContextMenu();}});
 }
 function installLongPress(card,item){
  let timer=0,point=null;
  const cancel=()=>{if(timer){clearTimeout(timer);timer=0;}point=null;};
  card.setAttribute("aria-haspopup","menu");
- card.title=item.name+" — press and hold to edit";
+ // A title tooltip can independently trigger WebKit's native long-press popover.
+ // Accessible menu description is preserved without the browser tooltip.
+ card.removeAttribute("title");
+ card.setAttribute("aria-description","Press and hold for button actions");
  card.addEventListener("pointerdown",e=>{
   if(contextMenuOverlay||(e.pointerType==="mouse"&&e.button!==0))return;
   cancel();point={id:e.pointerId,x:e.clientX,y:e.clientY};
@@ -954,9 +990,16 @@ function installLongPress(card,item){
  card.addEventListener("pointermove",e=>{
   if(point?.id===e.pointerId&&Math.hypot(e.clientX-point.x,e.clientY-point.y)>11)cancel();
  });
- card.addEventListener("pointerup",cancel);
+ card.addEventListener("pointerup",()=>{
+  if(contextMenuCard===card)ignoreReleaseBackdropClickUntil=performance.now()+280;
+  cancel();
+ });
  card.addEventListener("pointercancel",cancel);
- card.addEventListener("contextmenu",e=>{e.preventDefault();cancel();openContextMenu(card,item);});
+ card.addEventListener("contextmenu",e=>{
+  e.preventDefault();e.stopPropagation();cancel();
+  // iOS may fire contextmenu AFTER the 490ms timer. Do not reopen the sheet.
+  if(!contextMenuOverlay)openContextMenu(card,item);
+ });
  card.addEventListener("keydown",e=>{
   if(e.key==="ContextMenu"||(e.shiftKey&&e.key==="F10")){
    e.preventDefault();openContextMenu(card,item);
@@ -967,6 +1010,15 @@ document.addEventListener("keydown",e=>{
  if(e.key==="Escape"&&contextMenuOverlay){e.preventDefault();e.stopImmediatePropagation();closeContextMenu();}
 },true);
 window.addEventListener("resize",()=>{if(contextMenuOverlay)positionContextMenu();});
+// iOS Safari sometimes synthesizes a selection even when the pressed button has
+// user-select:none. Cancel only gestures in the non-editable Home Screen.
+const homeApp=document.querySelector(".app");
+homeApp.addEventListener("selectstart",e=>e.preventDefault(),{passive:false});
+homeApp.addEventListener("contextmenu",e=>e.preventDefault(),{passive:false});
+document.addEventListener("selectionchange",()=>{
+ const selection=window.getSelection?.(),anchor=selection?.anchorNode;
+ if(anchor&&homeApp.contains(anchor)&&!selection.isCollapsed)selection.removeAllRanges();
+});
 function returnURL(){
  if(state.returnMethod==="shortcut"||!/^https?:$/.test(location.protocol))return "shortcuts://run-shortcut?name="+encodeURIComponent("Radio Grid");
  const url=new URL(location.href);url.hash="";url.searchParams.delete("result");url.searchParams.delete("errorMessage");
@@ -1052,15 +1104,29 @@ function syncNavHeader(){
   (entry.page==="choice"||entry.page==="color")?entry.args.title:PAGE_LABELS[entry.page];
  $("sheetTitle").textContent=title;$("sheetTitle").tabIndex=-1;
  const back=$("sheetBack");back.replaceChildren();
- if(navHistory.length>1){
-   back.append(el("span","nav-chevron","‹"),document.createTextNode(
-    navHistory[navHistory.length-2].page==="settings"?"Settings":
-    navHistory[navHistory.length-2].page==="organize"?"Edit":
-    navHistory[navHistory.length-2].page==="title"?"Title":
-    navHistory[navHistory.length-2].page==="design"?"Buttons":
-    navHistory[navHistory.length-2].page==="background"?"Background":"Back"));
- }else back.textContent="Close";
- back.onclick=navHistory.length>1?goBack:closeModal;
+ const hasParent=navHistory.length>1;
+ back.classList.toggle("is-placeholder",!hasParent);
+ back.disabled=!hasParent;
+ if(hasParent){
+  const arrow=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  arrow.setAttribute("viewBox","0 0 24 24");
+  arrow.setAttribute("fill","none");
+  arrow.setAttribute("stroke-width","2.25");
+  arrow.setAttribute("stroke-linecap","round");
+  arrow.setAttribute("stroke-linejoin","round");
+  arrow.setAttribute("aria-hidden","true");
+  arrow.classList.add("nav-back-icon");
+  const path=document.createElementNS("http://www.w3.org/2000/svg","path");
+  path.setAttribute("d","m15 18-6-6 6-6");
+  arrow.append(path);
+  back.append(arrow);
+  back.setAttribute("aria-label","Back");
+  back.removeAttribute("aria-hidden");
+ }else{
+  back.setAttribute("aria-hidden","true");
+  back.removeAttribute("aria-label");
+ }
+ back.onclick=hasParent?goBack:null;
  const done=$("sheetDone");done.textContent=["section","button"].includes(entry.page)?"Save":"Done";
  done.onclick=["section","button"].includes(entry.page)?()=>entry.body.querySelector("#editSave")?.click():closeModal;
 }
@@ -1112,7 +1178,9 @@ function showModal(page="settings",args={}){
  $("scrim").classList.add("open");$("sheet").classList.add("open");
  $("sheet").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
  pushScreen(page,args,false);
- $("sheetBack").focus({preventScroll:true});
+ // Root has only Done (or Save for direct button editing); the chevron exists
+ // only when there is a previous Settings screen to return to.
+ $("sheetDone").focus({preventScroll:true});
 }
 function closeModal(){
  flushLiveSave();if(appearanceFrame){cancelAnimationFrame(appearanceFrame);appearanceFrame=0;theme();}

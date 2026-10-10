@@ -455,7 +455,13 @@ body { background:var(--bg); }
 
 
 /* V31: clearer full-width, one-purpose Controls with a fixed preview footprint. */
-.card-label{overflow-wrap:anywhere;word-break:normal;hyphens:auto}
+/* V35: preserve whole words when labels wrap. In particular, iOS WebKit must
+   not auto-hyphenate Music (or any other word) mid-word. */
+.card-label, .card-label .label-primary, .card-label .label-secondary,
+.card-label .frequency, .card-label .callsign{
+ overflow-wrap:normal;word-wrap:normal;word-break:normal;
+ hyphens:none;-webkit-hyphens:none;white-space:normal;
+}
 .card-label.is-truncated{overflow:hidden}
 .nav-screen[data-page="design"] .settings-preview:not([hidden]){height:185px;flex-basis:185px}
 .nav-screen[data-page="design"] .settings-preview .preview-stage{height:148px}
@@ -492,7 +498,7 @@ body { background:var(--bg); }
 .edit-card .edit-label-trigger:active .card-label{opacity:.65}
 .edit-card .edit-label-trigger:focus-visible{outline:2px solid var(--accent);outline-offset:-1px;border-radius:5px}
 .edit-card .edit-label-trigger .card-label{width:100%;min-width:0;max-height:100%;font-size:min(var(--button-font-size),16px);
- line-height:1.1;hyphens:auto;overflow-wrap:anywhere}
+ line-height:1.1;hyphens:none;-webkit-hyphens:none;overflow-wrap:normal;word-break:normal}
 .edit-card .edit-tile-action{top:3px;width:28px;height:28px;z-index:4;
  cursor:pointer;touch-action:manipulation}
 .edit-card .edit-tile-remove{left:3px}

@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
 <title>RadioGrid</title>
-<!-- V17: five-screen native-style settings navigation and unframed accent controls -->
+<!-- V19: retained settings screens, stable live preview, interactive controls and launch feedback -->
 <style>
   :root {
     color-scheme:dark;
@@ -236,6 +236,96 @@ body { background:var(--bg); }
  .settings-preview:not([hidden]) {height:175px;flex-basis:175px;}
  .settings-preview .preview-stage {height:138px;}
 }
+
+/* V19 — retained iOS navigation stack and fixed-footprint preview */
+.nav-stack{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;isolation:isolate;touch-action:pan-y}
+.nav-screen{position:absolute;inset:0;display:flex;flex-direction:column;min-height:0;
+  background:#1b1c20;transform:translate3d(100%,0,0);opacity:1;visibility:visible;
+  transition:transform .32s cubic-bezier(.25,.82,.3,1),filter .32s;pointer-events:none;will-change:transform}
+.nav-screen.is-active{transform:translate3d(0,0,0);pointer-events:auto;z-index:3}
+.nav-screen.is-behind{transform:translate3d(-27%,0,0);filter:brightness(.72);z-index:1}
+.nav-screen.is-far{transform:translate3d(-100%,0,0);visibility:hidden;z-index:0;transition:none}
+.nav-screen.is-entering{transform:translate3d(100%,0,0);z-index:4}
+.nav-screen.is-exiting{transform:translate3d(101%,0,0);z-index:4}
+.nav-screen.is-dragging,.nav-screen.is-dragging~.nav-screen{transition:none!important}
+.nav-screen>.settings-preview{width:100%}
+.nav-screen>.sheet-body{width:100%;flex:1 1 auto;min-height:0;contain:layout style;overflow-y:auto;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+.sheet-head{grid-template-columns:minmax(96px,1fr) minmax(0,1.4fr) minmax(76px,1fr);
+  background:#1b1c20;position:relative;z-index:5;min-height:54px}
+.sheet-head h2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet-action{min-height:44px;display:flex;align-items:center;font-weight:450;white-space:nowrap}
+.sheet-action:last-child{justify-content:flex-end;font-weight:650}
+.sheet-action .nav-chevron{font-size:27px;line-height:1;font-weight:300;margin-right:4px}
+.sheet-body:focus{outline:none}
+.settings-preview:not([hidden]){height:220px;flex-basis:220px;contain:layout;overflow:hidden}
+.settings-preview .preview-stage{height:184px;overflow:hidden}
+.preview-caption button{background:transparent;color:var(--accent);font-size:12px;font-weight:650;
+  max-width:62%;padding:3px 5px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-caption button:active{opacity:.65}
+@media(max-height:700px){.settings-preview:not([hidden]){height:175px;flex-basis:175px}.settings-preview .preview-stage{height:138px}}
+/* iOS-like push-selection and grouped list controls */
+.ios-row-value>.ios-picker{min-width:0;max-width:100%;display:flex;align-items:center;justify-content:flex-end;gap:7px;
+  text-align:right;background:transparent;color:#b6b6bf;font-size:16px;font-weight:400;padding:7px 0}
+.ios-picker-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ios-picker .ios-picker-chevron{color:#777981;font-size:20px;line-height:1}
+.ios-choice-list .ios-row-nav{min-height:52px}
+.ios-choice-list .ios-row-nav.is-selected .ios-row-label{color:var(--accent)}
+.ios-check{font-size:22px;color:var(--accent);font-weight:700;line-height:1}
+.ios-choice-list .ios-row-nav .ios-row-label{flex:1}
+.ios-color-button{background:transparent;padding:4px 0;display:flex;align-items:center;gap:9px;color:#aeb0b8;font-size:13px}
+.ios-color-chip{width:32px;height:32px;background:var(--swatch);border:1px solid #ffffff50;border-radius:10px;flex:none;box-shadow:inset 0 1px 3px #0003}
+.ios-color-picker-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;padding:8px 1px 15px}
+.ios-color-option{background:transparent;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;padding:7px 0;border-radius:12px}
+.ios-color-option .swatch{display:flex;align-items:center;justify-content:center;width:43px;height:43px;border-radius:50%;border:1px solid #ffffff33;background:var(--swatch)}
+.ios-color-option.selected .swatch{outline:2px solid var(--accent);outline-offset:3px}
+.ios-color-option .swatch svg{width:20px;height:20px;stroke:var(--check-color);stroke-width:3}
+.ios-custom-color{display:flex;align-items:center;gap:10px}
+.ios-custom-color input[type=color]{width:46px;height:38px;border:0;padding:0;background:transparent;flex:none}
+.ios-custom-color input[type=text]{min-width:0;flex:1;text-align:left;text-transform:uppercase;letter-spacing:.02em;border:0;
+  border-radius:8px;background:#19191c;color:#fff;padding:11px;font-size:16px}
+.ios-custom-color .apply-color{background:var(--accent);color:#121316;border-radius:9px;font-weight:700;min-width:64px;min-height:40px}
+.ios-switch{appearance:none;-webkit-appearance:none;display:inline-block;position:relative;width:51px;height:31px;flex:none;
+  border:0!important;border-radius:20px;background:#626269!important;transition:background .2s ease;cursor:pointer}
+.ios-switch:checked{background:var(--accent)!important}
+.ios-switch:before{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px #0007;transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.ios-switch:checked:before{transform:translateX(20px)}
+.ios-switch:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+/* Thumb stays in the same scroll context while the track receives horizontal input. */
+.ios-row-value input[type=range]{touch-action:pan-x;min-width:45px;min-height:35px;user-select:none;-webkit-user-select:none}
+.sheet-body,.ios-row{overflow-anchor:none}
+.ios-row-value output{flex:none;min-width:48px}
+/* Functional toast and non-blocking launch indicator. */
+.toast{position:fixed;z-index:60;left:50%;bottom:calc(25px + env(safe-area-inset-bottom));
+  width:max-content;max-width:min(calc(100% - 36px),420px);padding:11px 16px;border-radius:15px;
+  text-align:center;font-size:14px;line-height:1.35;font-weight:600;color:#f7f7f8;background:rgba(45,46,51,.96);
+  border:1px solid #ffffff23;box-shadow:0 14px 40px #0008;backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);opacity:0;transform:translate(-50%,18px) scale(.96);
+  pointer-events:none;transition:opacity .23s ease,transform .23s ease}
+.toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast[data-tone=error]{border-color:#fb767680}
+.card.launching{border-color:var(--accent)!important;filter:brightness(1.10)}
+.card.launching .card-label{opacity:.88}
+.card.launching:after{content:"";position:absolute;top:7px;right:7px;width:12px;height:12px;
+  border-radius:50%;border:2px solid transparent;border-top-color:var(--accent);border-right-color:var(--accent);
+  animation:radio-spin .75s linear infinite}
+@keyframes radio-spin{to{transform:rotate(360deg)}}
+/* iOS-style destructive confirmation instead of blocking browser confirm() */
+.confirm-overlay{position:fixed;inset:0;z-index:80;display:flex;justify-content:center;align-items:flex-end;
+  padding:16px max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom));background:#0009;
+  opacity:0;transition:opacity .2s ease}
+.confirm-overlay.open{opacity:1}
+.confirm-panel{width:min(100%,420px);transform:translateY(22px);transition:transform .26s cubic-bezier(.2,.75,.3,1)}
+.confirm-overlay.open .confirm-panel{transform:translateY(0)}
+.confirm-info{background:#2e2e33;border-radius:14px;overflow:hidden;text-align:center;margin-bottom:9px;padding-top:19px}
+.confirm-info h3{font-size:16px;font-weight:650;margin:0 14px 6px}
+.confirm-info p{font-size:13px;line-height:1.4;color:#b8b8bd;margin:0 16px 17px}
+.confirm-info button{width:100%;min-height:57px;background:transparent;border-top:1px solid #ffffff23;
+  font-size:19px;color:#ff7771;font-weight:550}
+.confirm-cancel{width:100%;min-height:57px;border-radius:14px;background:#38383d;font-size:18px;font-weight:650;color:#f9f9fc}
+@media (prefers-reduced-motion:reduce){.nav-screen,.toast,.confirm-overlay,.confirm-panel,.ios-switch,.ios-switch:before{transition:none!important}.card.launching:after{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -254,14 +344,13 @@ body { background:var(--bg); }
 <section id="sheet" class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true">
  <div class="grabber"></div>
  <header class="sheet-head"><button id="sheetBack" class="sheet-action" type="button">Close</button><h2 id="sheetTitle">Settings</h2><button id="sheetDone" class="sheet-action" type="button">Done</button></header>
- <div class="settings-preview" id="settingsPreview" aria-label="Live miniature RadioGrid preview"></div>
- <div class="sheet-body" id="sheetBody"></div>
+ <div id="navStack" class="nav-stack"></div>
 </section>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <input id="importPicker" class="sr-only" type="file" accept="application/json,.json">
 <script>
 "use strict";
-const KEY="media-jt-sport-v2";
+const KEY="media-jt-sport-v2"; // Keep original storage key for backward compatibility.
 const LEGACY=["trail-media-path-2-v1","radio-grid-settings-v1"];
 const PALETTE=["#e77d20","#d97a1d","#cf6726","#f3a144","#e9e9ea","#8f959e","#2f8fb8","#a775bd","#cb4540"];
 // All options use built-in iOS/browser fonts; no downloads are required.
@@ -333,7 +422,8 @@ const ICONS={
  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6m4-6v6"/>',
  grip:'<circle cx="8" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="8" cy="19" r="1"/><circle cx="15" cy="19" r="1"/>',
  up:'<path d="m5 15 7-7 7 7"/>',down:'<path d="m5 9 7 7 7-7"/>',
- backup:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>'
+ backup:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+ check:'<path d="m4 12 5 5L20 6"/>'
 };
 const ICON_CHOICES=[["podcast","Podcast"],["broadcast","Broadcast"],["radio","Radio"],["mic","Microphone"],["book","Book"],["cassette","Cassette"],["guitar","Guitar"],["music","Music"],["cross","Cross"],["rock","Rock"],["coffee","Coffee"],["hat","Cowboy hat"],["headphones","Headphones"],["heart","Heart"],["vinyl","Record"],["football","Football"],["tower","Radio tower"]];
 const $=id=>document.getElementById(id);
@@ -463,6 +553,7 @@ function fitTitle(){
  heading.style.fontSize=size+"px";
  while(size>17 && heading.scrollWidth>available){size-=1;heading.style.fontSize=size+"px";}
 }
+let identityLayoutFrame=0;
 function applyIdentity(){
  const title=(state.appTitle||DEFAULT_APP_TITLE).trim().slice(0,32)||DEFAULT_APP_TITLE;
  document.querySelector(".app-title").textContent=title;
@@ -506,7 +597,10 @@ function theme(){const root=document.documentElement;root.style.setProperty("--a
  const [image,size,opacity]=patternStyle(state.theme.pattern);
  root.style.setProperty("--pattern-image",image);root.style.setProperty("--pattern-size",size);root.style.setProperty("--pattern-opacity",opacity);
  applyButtonStyle();applyIdentity();}
-function notify(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.add("show");toastTimer=setTimeout(()=>$("toast").classList.remove("show"),1800);}
+function notify(message,tone="info",duration=2200){
+ const toast=$("toast");clearTimeout(toastTimer);toast.textContent=message;toast.dataset.tone=tone;
+ toast.classList.add("show");toastTimer=setTimeout(()=>toast.classList.remove("show"),duration);
+}
 function changed(message="Saved"){save();theme();render();if($("sheet").classList.contains("open"))showCurrentPage();if(message)notify(storageWorks?message:"Change made — export a backup");}
 function activeSection(){return state.sections.find(s=>s.id===state.active)||state.sections[0]||null;}
 function iconFor(name,cl){const x=el("span",cl);x.append(svg(name));return x;}
@@ -573,7 +667,7 @@ function render(){
      if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
      else label.textContent=item.name;
      card.append(label);
-     card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item);};
+     card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item,card);};
      grid.append(card);
    }
    slide.append(grid);track.append(slide);
@@ -677,109 +771,287 @@ function returnURL(){
  const url=new URL(location.href);url.hash="";url.searchParams.delete("result");url.searchParams.delete("errorMessage");
  return state.returnMethod==="webapp"?"webapp://"+url.host+url.pathname+url.search:url.href;
 }
-function run(item){
- if(item.action==="url"){
-   if(!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(item.target)){notify("Invalid link. Edit this button.");return;}
-   location.href=item.target;return;
+let launchLockUntil=0,launchResetTimer=0,launchingCard=null;
+function resetLaunching(){
+ clearTimeout(launchResetTimer);
+ if(launchingCard?.isConnected){launchingCard.classList.remove("launching");launchingCard.removeAttribute("aria-busy");}
+ launchingCard=null;launchLockUntil=0;
+}
+function run(item,card=null){
+ const now=performance.now();if(now<launchLockUntil)return;
+ if(item.action==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(item.target)){
+   notify("Invalid link. Edit this button.","error");return;
  }
- if(!item.target?.trim()){notify("Missing Shortcut name");return;}
+ if(item.action!=="url"&&!item.target?.trim()){notify("Missing Shortcut name","error");return;}
+ resetLaunching();launchLockUntil=now+1200;
+ launchingCard=card;
+ if(card){card.classList.add("launching");card.setAttribute("aria-busy","true");}
+ notify(item.action==="url"?"Opening "+item.name+"…":"Running "+item.name+"…","info",1800);
+ launchResetTimer=setTimeout(resetLaunching,2200);
+ if(item.action==="url"){location.href=item.target;return;}
  const base="shortcuts://run-shortcut?name="+encodeURIComponent(item.target);
  if(item.noReturn){location.href=base;return;}
  const ret=returnURL();
  location.href="shortcuts://x-callback-url/run-shortcut?name="+encodeURIComponent(item.target)+"&x-success="+encodeURIComponent(ret)+"&x-cancel="+encodeURIComponent(ret)+"&x-error="+encodeURIComponent(ret);
 }
-// RadioGrid V16: native-style appearance Settings and separate hierarchical editor.
-let editorPage="settings";
-let editorArgs={};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)resetLaunching();});
+window.addEventListener("pageshow",resetLaunching);
+// RadioGrid V19: screen stack. An active screen owns its own scroll and preview.
+let editorPage="settings",editorArgs={};
 let previewSection=state.sections.find(s=>s.items.length>=6)?.id||state.active;
-// Appearance changes update CSS and measurements in place. Rebuilding the
-// entire app on each slider tick caused needless layout shifts on mobile.
-let activeSettingsSlider = null;
+let navHistory=[], navGesture=null,appearanceFrame=0,miniFrame=0,liveSaveTimer=0;
+const activeEntry=()=>navHistory[navHistory.length-1]||null;
+const activeBody=()=>activeEntry()?.body||null;
+const activePreview=()=>activeEntry()?.preview||null;
+const PAGE_LABELS={settings:"Settings",title:"Title",background:"Background",design:"Buttons",
+ playback:"Playback",backup:"Backup",organize:"Edit Categories",section:"Category",button:"Button",choice:"Select",color:"Color"};
+function flushLiveSave(){if(liveSaveTimer){clearTimeout(liveSaveTimer);liveSaveTimer=0;save();}}
 function liveUpdate(){
- const scroller=$("sheetBody");
- const position=activeSettingsSlider !== null ? activeSettingsSlider : scroller.scrollTop;
- save();theme();
- fitTitle();fitTabText();sizeGrid();drawMini();
- scroller.scrollTop=position;
- // Safari may perform scroll anchoring after a layout pass; restore once more.
- requestAnimationFrame(()=>{
-   if($("sheetBody")===scroller)scroller.scrollTop=position;
+ // Frames coalesce finger events; never rebuild any control or write scrollTop.
+ clearTimeout(liveSaveTimer);liveSaveTimer=setTimeout(()=>{save();liveSaveTimer=0;},180);
+ if(appearanceFrame)return;
+ appearanceFrame=requestAnimationFrame(()=>{
+  appearanceFrame=0;theme();
+  // Size the home grid first, then update the retained miniature from its final geometry.
+  if(!miniFrame)miniFrame=requestAnimationFrame(()=>{miniFrame=0;updateMini();});
  });
 }
-function structuralUpdate(message){save();theme();render();showCurrentPage();if(message)notify(storageWorks?message:"Changes made — export a backup");}
-function showModal(page="settings",args={}){
- lastFocus=document.activeElement;
+function structuralUpdate(message){flushLiveSave();save();theme();render();showCurrentPage(true);
+ if(message)notify(storageWorks?message:"Changes made — export a backup");}
+function makeScreen(page,args){
+ const screen=el("div","nav-screen is-entering");screen.dataset.page=page;
+ const preview=el("div","settings-preview");preview.setAttribute("aria-label","Live miniature RadioGrid preview");
+ preview.hidden=!(["title","background","design","color"].includes(page));
+ const body=el("div","sheet-body");body.tabIndex=-1;
+ screen.append(preview,body);
+ return {page,args,screen,preview,body};
+}
+function paintPage(entry){
+ const {page,args,body}=entry;
  editorPage=page;editorArgs=args;
- $("scrim").classList.add("open");$("sheet").classList.add("open");$("sheet").setAttribute("aria-hidden","false");
- document.body.style.overflow="hidden";
- showCurrentPage();
+ body.replaceChildren();body.classList.toggle("settings-hub",page==="settings");
+ if(page==="settings")settingsPage(body);
+ else if(page==="title")titlePage(body);
+ else if(page==="background")backgroundPage(body);
+ else if(page==="design")designPage(body);
+ else if(page==="playback")playbackPage(body);
+ else if(page==="backup")backupPage(body);
+ else if(page==="organize")organizePage(body);
+ else if(page==="section")editSectionPage(body,args.id);
+ else if(page==="button")editButtonPage(body,args.id,args.sectionId);
+ else if(page==="choice")choicePage(body,args);
+ else if(page==="color")colorPage(body,args);
+ if(!entry.preview.hidden)drawMini(true);
+}
+function syncNavHeader(){
+ const entry=activeEntry();if(!entry)return;
+ editorPage=entry.page;editorArgs=entry.args;
+ const title=entry.page==="section"?(entry.args.id?"Edit Category":"New Category"):
+  entry.page==="button"?(entry.args.id?"Edit Button":"New Button"):
+  (entry.page==="choice"||entry.page==="color")?entry.args.title:PAGE_LABELS[entry.page];
+ $("sheetTitle").textContent=title;$("sheetTitle").tabIndex=-1;
+ const back=$("sheetBack");back.replaceChildren();
+ if(navHistory.length>1){
+   back.append(el("span","nav-chevron","‹"),document.createTextNode(
+    navHistory[navHistory.length-2].page==="settings"?"Settings":
+    navHistory[navHistory.length-2].page==="organize"?"Edit":
+    navHistory[navHistory.length-2].page==="title"?"Title":
+    navHistory[navHistory.length-2].page==="design"?"Buttons":
+    navHistory[navHistory.length-2].page==="background"?"Background":"Back"));
+ }else back.textContent="Close";
+ back.onclick=navHistory.length>1?goBack:closeModal;
+ const done=$("sheetDone");done.textContent=["section","button"].includes(entry.page)?"Save":"Done";
+ done.onclick=["section","button"].includes(entry.page)?()=>entry.body.querySelector("#editSave")?.click():closeModal;
+}
+function syncNavClasses(){
+ const last=navHistory.length-1;
+ navHistory.forEach((entry,i)=>{
+  entry.screen.classList.remove("is-entering","is-active","is-behind","is-far","is-exiting","is-dragging");
+  entry.screen.classList.add(i===last?"is-active":i===last-1?"is-behind":"is-far");
+  entry.screen.inert=i!==last;entry.screen.setAttribute("aria-hidden",String(i!==last));
+ });
+}
+function pushScreen(page,args={},animate=true){
+ flushLiveSave();
+ const parent=activeEntry();const entry=makeScreen(page,args);entry.returnFocus=document.activeElement;entry.screen.inert=true;
+ $("navStack").append(entry.screen);navHistory.push(entry);paintPage(entry);
+ if(!animate||!parent){syncNavClasses();}
+ else{
+  parent.screen.classList.remove("is-active");parent.screen.classList.add("is-behind");
+  parent.screen.inert=true;parent.screen.setAttribute("aria-hidden","true");
+  for(const older of navHistory.slice(0,-2)){older.screen.classList.remove("is-behind");older.screen.classList.add("is-far");}
+  // Double frame makes the starting 100% translation reliably animate in WebKit.
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   if(!navHistory.includes(entry))return;
+   entry.screen.classList.remove("is-entering");entry.screen.classList.add("is-active");
+   entry.screen.inert=false;entry.screen.setAttribute("aria-hidden","false");
+   if(activeEntry()===entry)$("sheetTitle").focus({preventScroll:true});
+  }));
+ }
+ syncNavHeader();
+}
+function goBack(){
+ if(navHistory.length<=1){closeModal();return;}
+ flushLiveSave();
+ const exiting=navHistory.pop(),current=activeEntry();
+ current.screen.classList.remove("is-behind","is-far");current.screen.classList.add("is-active");
+ current.screen.inert=false;current.screen.setAttribute("aria-hidden","false");
+ const underlying=navHistory[navHistory.length-2];
+ if(underlying){underlying.screen.classList.remove("is-far");underlying.screen.classList.add("is-behind");}
+ exiting.screen.classList.remove("is-active","is-entering");exiting.screen.classList.add("is-exiting");
+ exiting.screen.inert=true;exiting.screen.setAttribute("aria-hidden","true");
+ syncNavHeader();
+ if(!current.preview.hidden)updateMini();
+ const remove=()=>exiting.screen.remove();
+ exiting.screen.addEventListener("transitionend",e=>{if(e.target===exiting.screen)remove();},{once:true});
+ setTimeout(remove,420);
+}
+function showModal(page="settings",args={}){
+ lastFocus=document.activeElement;navHistory=[];$("navStack").replaceChildren();
+ $("scrim").classList.add("open");$("sheet").classList.add("open");
+ $("sheet").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+ pushScreen(page,args,false);
+ $("sheetBack").focus({preventScroll:true});
 }
 function closeModal(){
- activeSettingsSlider=null;
- $("scrim").classList.remove("open");$("sheet").classList.remove("open");$("sheet").setAttribute("aria-hidden","true");
- $("settingsPreview").hidden=true;
- document.body.style.overflow="";lastFocus?.focus?.();
+ flushLiveSave();if(appearanceFrame){cancelAnimationFrame(appearanceFrame);appearanceFrame=0;theme();}
+ if(miniFrame){cancelAnimationFrame(miniFrame);miniFrame=0;}
+ $("scrim").classList.remove("open");$("sheet").classList.remove("open");
+ $("sheet").setAttribute("aria-hidden","true");
+ document.body.style.overflow="";const restore=lastFocus;
+ // Keep content until sheet finishes its dismissal animation.
+ setTimeout(()=>{if(!$("sheet").classList.contains("open")){navHistory=[];$("navStack").replaceChildren();}},300);
+ restore?.focus?.({preventScroll:true});
 }
-function navigate(page,args={}){editorPage=page;editorArgs=args;showCurrentPage();}
-function showCurrentPage(){
- activeSettingsSlider=null;
- const pages={
-  settings:["Settings",null],
-  title:["Title","settings"],
-  background:["Background","settings"],
-  design:["Buttons","settings"],
-  playback:["Playback","settings"],
-  backup:["Backup","settings"],
-  organize:["Edit Categories",null],
-  section:[editorArgs.id?"Edit Category":"New Category","organize"],
-  button:[editorArgs.id?"Edit Button":"New Button","organize"]
+function navigate(page,args={}){
+ // Returning to Edit after a save should pop, not stack another copy of Edit.
+ if(page==="organize"&&["button","section"].includes(activeEntry()?.page)){
+  goBack();showCurrentPage(true);return;
+ }
+ pushScreen(page,args,true);
+}
+function showCurrentPage(preserveScroll=false){
+ const entry=activeEntry();if(!entry)return;
+ const y=preserveScroll?entry.body.scrollTop:0;
+ paintPage(entry);
+ if(preserveScroll)entry.body.scrollTop=y;
+ syncNavHeader();
+}
+// An edge swipe parallels iOS's interactive back gesture without consuming
+// ordinary vertical settings scrolling or horizontal sliders.
+function installNavBackSwipe(){
+ const stack=$("navStack");
+ stack.addEventListener("touchstart",e=>{
+  navGesture=null;if(navHistory.length<=1||e.touches.length!==1)return;
+  const t=e.touches[0];if(t.clientX>36||e.target.closest("input,select,button,textarea"))return;
+  navGesture={x:t.clientX,y:t.clientY,dx:0,started:performance.now(),horizontal:false};
+ },{passive:true});
+ stack.addEventListener("touchmove",e=>{
+  if(!navGesture||e.touches.length!==1)return;
+  const g=navGesture,t=e.touches[0],dx=t.clientX-g.x,dy=t.clientY-g.y;
+  if(!g.horizontal&&Math.abs(dy)>Math.abs(dx)*1.3&&Math.abs(dy)>12){navGesture=null;return;}
+  if(dx>12&&dx>Math.abs(dy)*1.3)g.horizontal=true;
+  if(!g.horizontal)return;
+  if(e.cancelable)e.preventDefault();g.dx=Math.max(0,Math.min(dx,stack.clientWidth));
+  const top=activeEntry()?.screen,prev=navHistory[navHistory.length-2]?.screen;
+  if(!top||!prev)return;
+  top.classList.add("is-dragging");prev.classList.add("is-dragging");
+  top.style.transform=`translate3d(${g.dx}px,0,0)`;
+  prev.style.transform=`translate3d(${-27+27*g.dx/Math.max(1,stack.clientWidth)}%,0,0)`;
+ },{passive:false});
+ const end=()=>{
+  if(!navGesture)return;const g=navGesture;navGesture=null;
+  const top=activeEntry()?.screen,prev=navHistory[navHistory.length-2]?.screen;
+  if(top){top.style.transform="";top.classList.remove("is-dragging");}
+  if(prev){prev.style.transform="";prev.classList.remove("is-dragging");}
+  if(g.horizontal&&(g.dx>stack.clientWidth*.33||(g.dx>55&&g.dx/Math.max(1,performance.now()-g.started)>.55)))goBack();
  };
- const [title,parent]=pages[editorPage]||pages.settings;
- $("sheetTitle").textContent=title;
- $("sheetBack").textContent=parent?(parent==="settings"?"‹ Settings":"‹ Edit"):"Close";
- $("sheetBack").onclick=()=>parent?navigate(parent):closeModal();
- $("sheetDone").textContent=editorPage==="section"||editorPage==="button"?"Save":"Done";
- $("sheetDone").onclick=editorPage==="section"||editorPage==="button"?()=>$("editSave").click():closeModal;
- $("settingsPreview").hidden=!(["title","background","design"].includes(editorPage));
- const body=$("sheetBody");body.replaceChildren();body.classList.toggle("settings-hub",editorPage==="settings");body.scrollTop=0;
- if(editorPage==="settings")settingsPage(body);
- if(editorPage==="title")titlePage(body);
- if(editorPage==="background")backgroundPage(body);
- if(editorPage==="design")designPage(body);
- if(editorPage==="playback")playbackPage(body);
- if(editorPage==="backup")backupPage(body);
- if(editorPage==="organize")organizePage(body);
- if(editorPage==="section")editSectionPage(body,editorArgs.id);
- if(editorPage==="button")editButtonPage(body,editorArgs.id,editorArgs.sectionId);
- if(!$("settingsPreview").hidden)drawMini();
+ stack.addEventListener("touchend",end,{passive:true});stack.addEventListener("touchcancel",end,{passive:true});
 }
 function sectionLabel(text){return el("div","ios-group-title",text)}
 function grouped(...rows){const g=el("div","ios-group");rows.forEach(r=>g.append(r));return g;}
-function settingRow(label,control){const r=el("div","ios-row");r.append(el("span","ios-row-label",label));const v=el("div","ios-row-value");v.append(control);r.append(v);return r;}
+function settingRow(label,control){const r=el("div","ios-row");r.append(el("span","ios-row-label",label));const v=el("div","ios-row-value");v.append(control);r.append(v);if(control.dataset.picker==="true"){control.dataset.pickerTitle=label;control.setAttribute("aria-label","Select "+label);}return r;}
 function textControl(value,placeholder="") {const i=el("input");i.type="text";i.value=value||"";i.placeholder=placeholder;i.autocomplete="off";return i;}
-function choiceControl(values,current) {const s=el("select");for(const [key,name] of values){const o=el("option","",name);o.value=key;s.append(o)}s.value=current;return s;}
+function choiceControl(values,current){
+ const button=el("button","ios-picker");button.type="button";button.value=current;
+ button.dataset.picker="true";button._choices=values.map(([value,label])=>[value,label]);
+ const label=el("span","ios-picker-text");const chevron=el("span","ios-picker-chevron","›");
+ const sync=()=>{label.textContent=button._choices.find(([v])=>v===button.value)?.[1]||"Select";};
+ button.append(label,chevron);sync();
+ button.onclick=()=>navigate("choice",{
+  title:button.dataset.pickerTitle||"Select",choices:button._choices,
+  selected:()=>button.value,
+  onSelect(value){button.value=value;sync();button.onchange?.();}
+ });
+ return button;
+}
+function choicePage(body,args){
+ body.append(sectionLabel(args.title));
+ const options=grouped();options.classList.add("ios-choice-list");
+ for(const [value,name] of args.choices){
+  const row=navigationRow(name,"",()=>{args.onSelect(value);goBack();});
+  row.setAttribute("aria-pressed",String(args.selected()===value));
+  row.classList.toggle("is-selected",args.selected()===value);
+  row.lastElementChild.replaceWith(el("span","ios-check",args.selected()===value?"✓":""));
+  options.append(row);
+ }
+ body.append(options);
+}
 function sliderRow(label,value,min,max,unit,callback){
  const r=el("div","ios-row"),l=el("label","ios-row-label",label),v=el("div","ios-row-value");
  const input=el("input");input.type="range";input.min=min;input.max=max;input.step="1";input.value=value;
  input.id=uid();l.htmlFor=input.id;
- const output=el("output","ios-value",value+unit);
- // On iOS a finger moving on a range can otherwise scroll the Settings
- // sheet as its live preview is redrawn. Pin only the editing scroll position
- // during that gesture; scrolling normally resumes on finger release.
- const pin=()=>{activeSettingsSlider=$("sheetBody").scrollTop;};
- const unpin=()=>{const scroller=$("sheetBody"),at=activeSettingsSlider;
-   if(at!==null){scroller.scrollTop=at;requestAnimationFrame(()=>{if($("sheetBody")===scroller)scroller.scrollTop=at;});}
-   activeSettingsSlider=null;};
- input.addEventListener("pointerdown",pin,{passive:true});
- input.addEventListener("touchstart",pin,{passive:true});
- input.addEventListener("pointerup",unpin,{passive:true});
- input.addEventListener("pointercancel",unpin,{passive:true});
- input.addEventListener("touchend",unpin,{passive:true});
- input.addEventListener("touchcancel",unpin,{passive:true});
+ const output=el("output","ios-value",value+unit);output.htmlFor=input.id;
+ // The preview and scroll content are retained; no scroll pinning or forced scrollTop.
  input.oninput=()=>{output.textContent=input.value+unit;callback(Number(input.value));};
+ input.onchange=flushLiveSave;
  v.append(input,output);r.append(l,v);return r;
 }
-function colorRow(label,value,callback){const picker=el("input");picker.type="color";picker.value=safeColor(value)||"#ffffff";picker.setAttribute("aria-label",label+" color");const text=el("span","ios-value",picker.value.toUpperCase());picker.oninput=()=>{text.textContent=picker.value.toUpperCase();callback(picker.value);};const v=el("div","ios-row-value");v.append(text,picker);const row=el("div","ios-row");row.append(el("span","ios-row-label",label),v);return row;}
+const COLOR_PRESETS=["#0b0d10","#1b1c20","#2c2c2e","#373a41","#777b83",
+ "#a3a7af","#f3f4f5","#ffffff","#e77d20","#ff9f0a","#ff453a","#ff375f",
+ "#30d158","#64d2ff","#0a84ff","#5e5ce6","#bf5af2","#ac8e68","#f3a144","#cb4540"];
+function colorRow(label,value,callback){
+ const button=el("button","ios-color-button");button.type="button";
+ const text=el("span","ios-color-code",String(value).toUpperCase());
+ const chip=el("span","ios-color-chip");chip.style.setProperty("--swatch",value);
+ button.append(text,chip);button.setAttribute("aria-label","Choose "+label+" color");
+ button.onclick=()=>navigate("color",{title:label,selected:()=>text.textContent,
+  onSelect(hex){text.textContent=hex.toUpperCase();chip.style.setProperty("--swatch",hex);callback(hex);}});
+ return settingRow(label,button);
+}
+function colorPage(body,args){
+ body.append(sectionLabel("Preset Colors"));
+ const picks=el("div","ios-color-picker-grid"),buttons=[];
+ function apply(hex){
+  args.onSelect(hex);buttons.forEach(b=>{
+   const selected=b.dataset.hex===hex.toLowerCase();b.classList.toggle("selected",selected);
+   b.setAttribute("aria-pressed",String(selected));
+   b.querySelector(".swatch").replaceChildren(...(selected?[svg("check")]:[]));
+  });
+  custom.value=hex;hexText.value=hex.toUpperCase();
+ }
+ for(const hex of COLOR_PRESETS){
+  const b=el("button","ios-color-option");b.type="button";b.dataset.hex=hex.toLowerCase();
+  b.setAttribute("aria-label","Choose color "+hex);b.setAttribute("aria-pressed",String(args.selected().toLowerCase()===hex.toLowerCase()));
+  const sw=el("span","swatch");sw.style.setProperty("--swatch",hex);
+  sw.style.setProperty("--check-color",["#ffffff","#f3f4f5","#f3a144","#64d2ff","#30d158","#ff9f0a"].includes(hex)?"#161616":"#ffffff");
+  b.append(sw);b.classList.toggle("selected",args.selected().toLowerCase()===hex.toLowerCase());
+  if(args.selected().toLowerCase()===hex.toLowerCase())sw.append(svg("check"));
+  b.onclick=()=>{apply(hex);buttons.forEach(n=>n.setAttribute("aria-pressed",String(n===b)));};
+  buttons.push(b);picks.append(b);
+ }
+ body.append(picks,sectionLabel("Custom Color"));
+ const customRow=el("div","ios-row"),inner=el("div","ios-custom-color");
+ const custom=el("input");custom.type="color";custom.value=safeColor(args.selected())||"#ffffff";
+ custom.setAttribute("aria-label","Custom color picker");
+ const hexText=textControl(args.selected(),"#RRGGBB");hexText.maxLength=7;hexText.setAttribute("aria-label","Hex color");
+ const applyButton=el("button","apply-color","Apply");applyButton.type="button";
+ applyButton.onclick=()=>{const value=safeColor(hexText.value);if(value)apply(value);else notify("Enter a six-digit hex color","error");};
+ hexText.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();applyButton.click();}});
+ custom.oninput=()=>apply(custom.value);
+ inner.append(custom,hexText,applyButton);customRow.append(inner);body.append(grouped(customRow));
+ body.append(el("p","ios-help","Changes appear immediately in the preview and are saved automatically. Use Back when finished."));
+}
 function styleRow(prefix){
  const r=el("div","ios-row");r.append(el("span","ios-row-label","Style"));
  const v=el("div","ios-row-value"),group=el("div","ios-segments");
@@ -871,45 +1143,66 @@ function backupPage(body){
  body.append(grouped(reset));
  body.append(el("p","ios-help",storageWorks?"Changes are saved automatically on this device. Export a backup before changing your website address or reinstalling.":"Local browser storage is unavailable. Export a backup before leaving."));
 }
-function drawMini(){
- const host=$("settingsPreview");if(host.hidden||!host.isConnected)return;
+function drawMini(force=false){
+ const host=activePreview();if(!host||host.hidden||!host.isConnected)return;
  const selected=state.sections.find(s=>s.id===previewSection)||activeSection()||state.sections[0];
  if(!selected)return;previewSection=selected.id;
+ if(!force&&host.dataset.category===selected.id&&host.querySelector(".preview-mini")){updateMini();return;}
+ host.dataset.category=selected.id;
+ // Build only upon entering an appearance screen or intentionally changing category.
  host.replaceChildren();
  const cap=el("div","preview-caption");cap.append(el("span","","LIVE PREVIEW"));
- const chooser=choiceControl(state.sections.map(s=>[s.id,s.name]),previewSection);chooser.setAttribute("aria-label","Preview category");
- chooser.style.cssText="color:var(--accent);border:0;background:transparent;font-size:12px;max-width:57%;text-align:right";
- chooser.onchange=()=>{previewSection=chooser.value;drawMini();};cap.append(chooser);host.append(cap);
- const stage=el("div","preview-stage"),wrap=el("div"),mini=el("div","preview-mini");
- const app=document.querySelector(".app");const nativeWidth=app?.clientWidth||390;
- const rowHeight=(()=>{const grid=[...document.querySelectorAll("#pageTrack .page-slide")].find(s=>s.dataset.sectionId===selected.id)?.querySelector(".grid");return grid?Number.parseFloat(getComputedStyle(grid).getPropertyValue("--card-height"))||80:80;})();
- mini.style.width=nativeWidth+"px";
+ const chooser=el("button","preview-category",selected.name+"  ›");chooser.type="button";
+ chooser.setAttribute("aria-label","Preview category: "+selected.name);
+ chooser.onclick=()=>navigate("choice",{title:"Preview Category",
+  choices:state.sections.map(s=>[s.id,s.name]),selected:()=>previewSection,
+  onSelect(value){previewSection=value;drawMini(true);}});
+ cap.append(chooser);host.append(cap);
+ const stage=el("div","preview-stage"),wrap=el("div","preview-frame"),mini=el("div","preview-mini");
  const header=el("div","header");header.append(el("div","header-action edit-home","Edit"),el("h1","app-title",state.appTitle),el("div","menu header-action"));
  mini.append(header);
  const tabs=el("div","tabs");tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
- state.sections.forEach(s=>{const t=el("div","tab"+(s.id===selected.id?" active":""));t.append(el("span","",s.name));tabs.append(t)});mini.append(tabs);
- const grid=el("div","grid");grid.style.setProperty("--card-height",rowHeight+"px");
+ state.sections.forEach(s=>{const t=el("div","tab"+(s.id===selected.id?" active":""));t.append(el("span","",s.name));tabs.append(t);});mini.append(tabs);
+ const grid=el("div","grid");
  const samples=selected.items.slice(0,6);
  if(!samples.length)grid.append(el("p","grid-empty","Empty category"));
- for(const item of samples){const c=el("div","card"),label=el("span","card-label");const radio=selected.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
- if(radio)label.append(el("span","frequency",radio[1]),el("span","callsign",radio[2]));else label.textContent=item.name;c.append(label);grid.append(c);}
- mini.append(grid);
- const rows=Math.max(1,Math.ceil(Math.max(1,samples.length)/3));
+ for(const item of samples){
+  const c=el("div","card"),label=el("span","card-label");
+  const radio=selected.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
+  if(radio)label.append(el("span","frequency",radio[1]),el("span","callsign",radio[2]));else label.textContent=item.name;
+  c.append(label);grid.append(c);
+ }
+ mini.append(grid);wrap.append(mini);stage.append(wrap);host.append(stage);
+ updateMini();
+}
+function updateMini(){
+ const host=activePreview();if(!host||host.hidden)return;
+ const mini=host.querySelector(".preview-mini");if(!mini)return;
+ const selected=state.sections.find(s=>s.id===host.dataset.category);
+ if(!selected)return;
+ // Only modify existing nodes and inline sizes. Never touch the scroll container.
+ const main=$("pageViewport"),nativeWidth=document.querySelector(".app")?.clientWidth||390;
+ const heading=mini.querySelector(".app-title");heading.textContent=state.appTitle;
+ const grid=mini.querySelector(".grid");
+ const homeGrid=[...document.querySelectorAll("#pageTrack .page-slide")].find(s=>s.dataset.sectionId===selected.id)?.querySelector(".grid");
+ const rowHeight=homeGrid?(Number.parseFloat(homeGrid.style.getPropertyValue("--card-height"))||80):80;
+ grid.style.setProperty("--card-height",rowHeight+"px");
+ mini.style.width=nativeWidth+"px";
+ const rows=Math.max(1,Math.ceil(Math.max(1,Math.min(selected.items.length,6))/3));
  const height=68+66+rows*rowHeight+(rows-1)*state.buttonStyle.gapY+20;
- const available=Math.min(164,window.innerHeight<720?115:164);
+ const available=host.querySelector(".preview-stage")?.clientHeight-14||164;
  const scale=Math.min(.62,(host.clientWidth-36)/nativeWidth,available/height);
- wrap.style.width=(nativeWidth*scale)+"px";wrap.style.height=(height*scale)+"px";wrap.style.position="relative";mini.style.transform=`scale(${scale})`;mini.style.transformOrigin="top left";mini.style.position="absolute";mini.style.left="0";mini.style.top="0";mini.style.height=height+"px";
- mini.style.setProperty("--pattern-image",getComputedStyle(document.documentElement).getPropertyValue("--pattern-image"));
- mini.style.setProperty("--pattern-size",getComputedStyle(document.documentElement).getPropertyValue("--pattern-size"));
- mini.style.setProperty("--pattern-opacity",getComputedStyle(document.documentElement).getPropertyValue("--pattern-opacity"));
- wrap.append(mini);stage.append(wrap);host.append(stage);
- // Match home-screen label fitting at native dimensions, before scaling.
- requestAnimationFrame(()=>{
-  if(!mini.isConnected)return;
-  let ts=state.titleFontSize;const heading=mini.querySelector(".app-title");heading.style.fontSize=ts+"px";
-  while(ts>17&&heading.scrollWidth>nativeWidth-138)heading.style.fontSize=(--ts)+"px";
-  mini.querySelectorAll(".tab span").forEach(label=>{let fs=15;label.style.fontSize=fs+"px";while(fs>10&&label.scrollWidth>label.clientWidth)label.style.fontSize=(--fs)+"px";});
-  mini.querySelectorAll(".card").forEach(c=>{const l=c.querySelector(".card-label");let fs=state.buttonFontSize;l.style.fontSize=fs+"px";const p=getComputedStyle(c);const room=c.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom);while(fs>10&&(l.scrollHeight>room+1||l.scrollWidth>l.clientWidth+1))l.style.fontSize=(--fs)+"px";});
+ const wrap=host.querySelector(".preview-frame");
+ wrap.style.cssText=`width:${nativeWidth*scale}px;height:${height*scale}px;position:relative;flex:none`;
+ mini.style.cssText=`width:${nativeWidth}px;height:${height}px;position:absolute;left:0;top:0;transform-origin:top left;transform:scale(${scale})`;
+ let ts=state.titleFontSize;heading.style.fontSize=ts+"px";
+ while(ts>17&&heading.scrollWidth>nativeWidth-138)heading.style.fontSize=(--ts)+"px";
+ mini.querySelectorAll(".tab span").forEach(label=>{let fs=15;label.style.fontSize=fs+"px";
+  while(fs>10&&label.scrollWidth>label.clientWidth)label.style.fontSize=(--fs)+"px";});
+ mini.querySelectorAll(".card").forEach(c=>{
+  const l=c.querySelector(".card-label");let fs=state.buttonFontSize;l.style.fontSize=fs+"px";
+  const p=getComputedStyle(c),room=c.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom);
+  while(fs>10&&(l.scrollHeight>room+1||l.scrollWidth>l.clientWidth+1))l.style.fontSize=(--fs)+"px";
  });
 }
 function tinyButton(icon,label,handler,extra=""){
@@ -946,9 +1239,18 @@ function organizePage(body){
  const addCat=el("button","org-add org-add-section","+ Add Category");addCat.onclick=()=>navigate("section",{id:null});body.append(addCat);
  body.append(el("p","editor-footer","Each button belongs to exactly one category. Edit a button to move it to another category."));
 }
-function removeCategory(id){const s=state.sections.find(x=>x.id===id);if(!s||!confirm(`Delete “${s.name}” and its ${s.items.length} buttons?`))return;
- state.sections=state.sections.filter(x=>x.id!==id);if(state.active===id)state.active=state.sections[0]?.id||"";structuralUpdate("Category deleted");}
-function removeButton(id){const f=findButton(id);if(!f||!confirm(`Delete “${f.item.name}”?`))return;f.sec.items=f.sec.items.filter(x=>x.id!==id);structuralUpdate("Button deleted");}
+async function removeCategory(id){
+ const s=state.sections.find(x=>x.id===id);if(!s)return;
+ if(!await iosConfirm("Delete Category?",`Delete “${s.name}” and its ${s.items.length} buttons?`,"Delete Category"))return;
+ state.sections=state.sections.filter(x=>x.id!==id);
+ if(state.active===id)state.active=state.sections[0]?.id||"";
+ structuralUpdate("Category deleted");
+}
+async function removeButton(id){
+ const f=findButton(id);if(!f)return;
+ if(!await iosConfirm("Delete Button?",`Delete “${f.item.name}”?`,"Delete Button"))return;
+ f.sec.items=f.sec.items.filter(x=>x.id!==id);structuralUpdate("Button deleted");
+}
 function enableDrag(handle,row,kind){
  let pointer=null,moved=false;
  handle.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"&&e.button!==0)return;pointer=e.pointerId;moved=false;handle.setPointerCapture(pointer);row.classList.add("dragging");e.preventDefault()});
@@ -986,7 +1288,7 @@ function editButtonPage(body,id,sectionId){
  const type=choiceControl([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
  const target=textControl(item?.target||"","Exact Shortcut name");
  const targetRow=settingRow("Shortcut",target);
- const ret=el("input");ret.type="checkbox";ret.checked=!item?.noReturn;ret.style.cssText="width:22px;height:22px;accent-color:var(--accent)";const retRow=settingRow("Return to Grid",ret);
+ const ret=el("input");ret.type="checkbox";ret.checked=!item?.noReturn;ret.className="ios-switch";ret.setAttribute("role","switch");ret.setAttribute("aria-label","Return to Grid");ret.onchange=()=>ret.setAttribute("aria-checked",String(ret.checked));ret.setAttribute("aria-checked",String(ret.checked));const retRow=settingRow("Return to Grid",ret);
  function toggleType(){targetRow.querySelector(".ios-row-label").textContent=type.value==="url"?"URL":"Shortcut";target.placeholder=type.value==="url"?"https://...":"Exact Shortcut name";retRow.hidden=type.value==="url";}
  type.onchange=toggleType;toggleType();
  body.append(grouped(settingRow("Name",name),settingRow("Category",sec),settingRow("Action",type),targetRow,retRow));
@@ -1006,22 +1308,58 @@ function editButtonPage(body,id,sectionId){
 function exportSettings(){
  const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(b),a=el("a");a.href=url;a.download="RadioGrid-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Backup download requested");
 }
+function iosConfirm(title,message,destructiveLabel="Continue"){
+ return new Promise(resolve=>{
+  const old=document.querySelector(".confirm-overlay");old?.remove();
+  const overlay=el("div","confirm-overlay");overlay.setAttribute("role","alertdialog");overlay.setAttribute("aria-modal","true");
+  overlay.setAttribute("aria-label",title);
+  const panel=el("div","confirm-panel"),info=el("div","confirm-info");
+  const heading=el("h3","",title),paragraph=el("p","",message);
+  const destructive=el("button","",destructiveLabel);destructive.type="button";
+  const cancel=el("button","confirm-cancel","Cancel");cancel.type="button";
+  info.append(heading,paragraph,destructive);panel.append(info,cancel);overlay.append(panel);document.body.append(overlay);
+  const focus=document.activeElement;
+  const finish=value=>{overlay.remove();focus?.focus?.({preventScroll:true});resolve(value);};
+  destructive.onclick=()=>finish(true);cancel.onclick=()=>finish(false);
+  overlay.addEventListener("click",e=>{if(e.target===overlay)finish(false);});
+  overlay.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();finish(false);}
+   if(e.key==="Tab"){e.preventDefault();(document.activeElement===cancel?destructive:cancel).focus();}});
+  requestAnimationFrame(()=>{overlay.classList.add("open");cancel.focus({preventScroll:true});});
+ });
+}
 $("importPicker").onchange=async e=>{const f=e.target.files?.[0];if(!f)return;
- try{const data=normalise(JSON.parse(await f.text()));if(confirm("Replace your current settings with this backup?")){state=data;save();theme();render();showCurrentPage();notify("Backup restored");}}
- catch(_){alert("Import failed. Select a RadioGrid JSON backup.");}finally{e.target.value="";}
+ try{
+  const data=normalise(JSON.parse(await f.text()));
+  if(await iosConfirm("Replace Settings?","Replace your current settings with this backup?", "Replace Settings")){
+   state=data;save();theme();render();showCurrentPage(true);notify("Backup restored");
+  }
+ }catch(_){notify("Import failed. Select a RadioGrid JSON backup.","error",3500);}
+ finally{e.target.value="";}
 };
-function resetDefaults(){if(!confirm("Restore all original categories, buttons and appearance? Export a backup first if needed."))return;state=defaults();save();theme();render();showCurrentPage();notify("Defaults restored");}
+async function resetDefaults(){
+ if(!await iosConfirm("Restore Defaults?","Restore all original categories, buttons, and appearance? Export a backup first if needed.","Restore Defaults"))return;
+ state=defaults();save();theme();render();showCurrentPage(true);notify("Defaults restored");
+}
 ["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 $("openSettings").onclick=()=>showModal("settings");
 $("openEdit").onclick=()=>showModal("organize");
 $("scrim").onclick=closeModal;
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("sheet").classList.contains("open")){if(["title","background","design","playback","backup"].includes(editorPage))navigate("settings");else if(["section","button"].includes(editorPage))navigate("organize");else closeModal();}});
+document.addEventListener("keydown",e=>{
+ if(!$("sheet").classList.contains("open")||document.querySelector(".confirm-overlay"))return;
+ if(e.key==="Escape"){e.preventDefault();if(navHistory.length>1)goBack();else closeModal();return;}
+ if(e.key!=="Tab")return;
+ const targets=[...$("sheet").querySelectorAll(".sheet-head button, .nav-screen.is-active button, .nav-screen.is-active input, .nav-screen.is-active select, .nav-screen.is-active textarea")]
+  .filter(n=>!n.disabled&&!n.closest("[hidden]")&&n.getClientRects().length);
+ if(!targets.length)return;
+ if(e.shiftKey&&document.activeElement===targets[0]){e.preventDefault();targets[targets.length-1].focus();}
+ else if(!e.shiftKey&&document.activeElement===targets[targets.length-1]){e.preventDefault();targets[0].focus();}
+});
 // The new button typography can use a different family from the title.
 const oldApplyIdentity=applyIdentity;
 applyIdentity=function(){oldApplyIdentity();document.documentElement.style.setProperty("--button-font",FONT_STACKS[state.buttonFontStyle]||FONT_STACKS[state.fontStyle]||FONT_STACKS.system);};
 
-theme();render();installCategorySwipe();
+theme();render();installCategorySwipe();installNavBackSwipe();
 </script>
 </body>
 </html>

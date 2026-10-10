@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
 <title>RadioGrid</title>
-<!-- V21: iOS long-press selection suppression and single-action Settings navigation -->
+<!-- V22: Categories appearance and accessible More menu; tap-only options -->
 <style>
   :root {
     color-scheme:dark;
@@ -96,7 +96,6 @@ body { background:var(--bg); }
 .app-title { color:var(--title-color); }
 .header { padding-left:66px; padding-right:66px; }
 .header-action { position:absolute;top:50%;transform:translateY(-50%);height:46px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:14px;background:#22252a;color:var(--accent); }
-.edit-home { left:0;min-width:61px;padding:0 12px;font-weight:700;font-size:16px; }
 .menu {right:0;width:46px;height:46px;}
 .menu svg{width:23px;height:23px;}
 .header-action:active { filter:brightness(1.25); }
@@ -121,7 +120,6 @@ body { background:var(--bg); }
 .preview-mini::before{content:"";position:absolute;inset:0;background-image:var(--pattern-image);background-size:var(--pattern-size);opacity:var(--pattern-opacity);z-index:0;pointer-events:none}
 .preview-mini>*{position:relative;z-index:1}
 .preview-mini .header{height:68px;padding:4px 65px 7px}
-.preview-mini .edit-home,.preview-mini .menu{pointer-events:none}
 .preview-mini .tabs{flex:none;margin:0 -14px 10px;padding:0 14px;}
 .preview-mini .tab{min-height:46px}
 .preview-mini .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -187,10 +185,9 @@ body { background:var(--bg); }
 @media(prefers-reduced-motion:reduce){.sheet,.scrim{transition-duration:.01ms!important}}
 
 
-/* V17: unframed header controls and five-option iOS Settings landing page. */
+/* Unframed header controls and native-style Settings landing page. */
 .header .header-action,
-.header .menu.header-action,
-.header .edit-home {
+.header .menu.header-action {
   border:0 !important;
   border-radius:0 !important;
   background:transparent !important;
@@ -200,7 +197,6 @@ body { background:var(--bg); }
   -webkit-appearance:none;
   appearance:none;
 }
-.header .edit-home { padding:0 7px; font-weight:650; font-size:17px; }
 .header .menu.header-action { padding:0; }
 .header .menu.header-action svg { width:25px; height:25px; }
 .header .header-action:active,
@@ -326,7 +322,7 @@ body { background:var(--bg); }
 .confirm-cancel{width:100%;min-height:57px;border-radius:14px;background:#38383d;font-size:18px;font-weight:650;color:#f9f9fc}
 @media (prefers-reduced-motion:reduce){.nav-screen,.toast,.confirm-overlay,.confirm-panel,.ios-switch,.ios-switch:before{transition:none!important}.card.launching:after{animation:none!important}}
 
-/* V20 — adaptive categories, smooth selection indicator, and direct manipulation */
+/* Adaptive categories, smooth selection indicator, and direct-manipulation Edit */
 #tabs{position:relative;scrollbar-width:none;scroll-padding-inline:14px}
 #tabs::-webkit-scrollbar{display:none}
 #tabs.is-scrollable{display:flex;grid-template-columns:none!important;gap:4px;overflow-x:auto;overflow-y:hidden;
@@ -339,31 +335,7 @@ body { background:var(--bg); }
  transition:transform .31s cubic-bezier(.2,.83,.28,1),width .31s cubic-bezier(.2,.83,.28,1)}
 #tabs .tab-indicator.no-animation{transition:none!important}
 .card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-/* iOS-like press-and-hold context action menu */
-.context-backdrop{position:fixed;inset:0;z-index:47;background:rgba(0,0,0,.31);
- opacity:0;transition:opacity .17s ease;touch-action:manipulation}
-.context-backdrop.open{opacity:1}
-.context-menu{position:fixed;z-index:48;width:min(290px,calc(100vw - 24px));max-height:min(65dvh,550px);
- overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:rgba(45,45,49,.97);
- border:1px solid #ffffff22;box-shadow:0 18px 45px #000a;border-radius:15px;
- backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
- opacity:0;transform:translateY(7px) scale(.97);transition:transform .2s cubic-bezier(.18,.83,.28,1),opacity .2s}
-.context-menu.open{opacity:1;transform:translateY(0) scale(1)}
-.context-title{min-height:47px;display:flex;align-items:center;padding:11px 15px;
- font-size:14px;font-weight:700;color:#ececf0;overflow-wrap:anywhere;border-bottom:1px solid #ffffff18}
-.context-action{width:100%;min-height:53px;display:flex;align-items:center;gap:11px;padding:9px 15px;
- background:transparent;color:#f4f4f7;text-align:left;font-size:16px;font-weight:450;
- border-bottom:1px solid #ffffff1a}
-.context-action:last-child{border-bottom:0}
-.context-action:active,.context-action:focus-visible{background:#ffffff1c}
-.context-action svg{width:20px;height:20px;flex:none;color:#cbd0d8}
-.context-action span{min-width:0;flex:1;overflow-wrap:anywhere}
-.context-action.is-danger,.context-action.is-danger svg{color:#ff7973}
-.context-action .context-check,.context-action .context-chevron{flex:none;color:var(--accent);font-size:22px}
-.context-action.is-current{color:#b7bac2}
-.context-back{background:transparent;color:var(--accent);font-size:14px;min-height:41px;
- padding:9px 14px;width:100%;text-align:left;border-bottom:1px solid #ffffff1c}
-/* Cleaner Edit hierarchy: one obvious drag handle, tappable text and discrete delete. */
+/* Cleaner Edit hierarchy: one drag handle, tappable text, and discrete delete. */
 .organize-header{gap:7px;padding:5px 9px;min-height:59px}
 .organize-item{gap:6px;min-height:55px;padding:3px 7px 3px 0}
 .org-row-main{background:transparent;display:flex;align-items:center;min-width:0;flex:1;
@@ -393,21 +365,9 @@ body { background:var(--bg); }
  border-radius:12px!important;box-shadow:0 15px 45px #000b!important;overflow:hidden;
  transform-origin:center center;will-change:transform}
 .drag-ghost .org-btn{pointer-events:none}
-@media(prefers-reduced-motion:reduce){#tabs .tab-indicator,.context-backdrop,.context-menu{transition:none!important}}
+@media(prefers-reduced-motion:reduce){#tabs .tab-indicator,.more-backdrop,.more-menu{transition:none!important}}
 
-/* V21 — prevent WebKit native text-selection handles and Copy/Look Up callout.
-   Scope strictly to the launcher, NOT Settings/Editors where selection is needed.
-   In iOS WebKit, disabling selection only on the button is insufficient when
-   nested labels, browser hit-testing or long-press callouts are involved. */
-.app, .app *, .app *::before, .app *::after,
-.context-menu, .context-menu * {
-  -webkit-user-select:none!important;
-  user-select:none!important;
-  -webkit-touch-callout:none!important;
-}
-.app ::selection, .context-menu ::selection {background:transparent;color:inherit}
-.card, .card * {-webkit-user-drag:none}
-/* The left side stays in the grid for a centered title but is not a second
+/* The left side stays in the grid/* The left side stays in the grid for a centered title but is not a second
    dismissal button on the root Settings / Edit screen. */
 .sheet-head #sheetBack.is-placeholder {visibility:hidden;pointer-events:none}
 .sheet-head #sheetBack:not(.is-placeholder) {
@@ -417,15 +377,45 @@ body { background:var(--bg); }
 .sheet-head #sheetBack .nav-back-icon {width:25px;height:25px;display:block;flex:none;stroke:var(--accent)}
 .sheet-head #sheetBack:not(.is-placeholder):active {opacity:.56}
 
+
+/* V22: iOS ellipsis More menu; only opens on a deliberate tap/click. */
+.more-backdrop{position:fixed;inset:0;z-index:46;background:transparent;touch-action:manipulation}
+.more-menu{position:fixed;z-index:47;width:220px;max-width:calc(100vw - 24px);
+ background:rgba(45,45,49,.98);border:1px solid #ffffff22;border-radius:14px;
+ box-shadow:0 18px 48px #000a;overflow:hidden;opacity:0;transform:translateY(-7px) scale(.96);
+ transform-origin:top right;transition:opacity .18s ease,transform .18s cubic-bezier(.22,.8,.25,1);
+ -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)}
+.more-menu.open{opacity:1;transform:translateY(0) scale(1)}
+.more-item{width:100%;min-height:53px;display:flex;align-items:center;gap:12px;
+ padding:12px 15px;text-align:left;background:transparent;color:#f6f6f8;font-size:16px;font-weight:450}
+.more-item+.more-item{border-top:1px solid #ffffff20}
+.more-item svg{width:21px;height:21px;flex:none;color:var(--accent)}
+.more-item:active,.more-item:focus-visible{background:#ffffff1d}
+/* Independent category typography and active underline. */
+#tabs .tab{font-family:var(--category-font,var(--app-font));font-size:var(--category-font-size,15px);
+ font-weight:var(--category-font-weight,700);font-style:var(--category-font-style,normal);
+ color:var(--category-text,#a5aab2)}
+#tabs .tab.active{color:var(--category-active,var(--accent))}
+#tabs .tab-indicator{background:var(--category-underline,var(--accent));height:var(--category-underline-height,4px)}
+.preview-mini .tab{font-family:var(--category-font,var(--app-font));
+ font-weight:var(--category-font-weight,700);font-style:var(--category-font-style,normal);
+ color:var(--category-text,#a5aab2)}
+.preview-mini .tab.active{color:var(--category-active,var(--accent))}
+.preview-mini .tab.active::after{background:var(--category-underline,var(--accent));height:var(--category-underline-height,4px)}
+.preview-mini .tabs.is-scrollable{display:flex;grid-template-columns:none!important;gap:4px;
+ overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.preview-mini .tabs.is-scrollable::-webkit-scrollbar{display:none}
+.preview-mini .tabs.is-scrollable .tab{flex:0 0 auto;min-width:87px;padding-left:13px;padding-right:13px}
+.preview-mini .tabs.is-scrollable .tab span{max-width:min(68vw,255px);text-overflow:ellipsis}
+
 </style>
 </head>
 <body>
 <main class="app">
  <header class="header">
-  <button type="button" id="openEdit" class="header-action edit-home" aria-label="Edit categories and buttons">Edit</button>
   <h1 class="app-title">RadioGrid</h1>
-  <button type="button" class="menu header-action" id="openSettings" aria-label="Settings" title="Settings">
-   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a2 2 0 0 0 .4 2.2l.1.1-2.3 2.3-.2-.1a2 2 0 0 0-2.2-.4 2 2 0 0 0-1.2 1.8V21h-3.2v-.2a2 2 0 0 0-1.2-1.8 2 2 0 0 0-2.2.4l-.2.1-2.3-2.3.1-.1A2 2 0 0 0 5.4 15a2 2 0 0 0-1.8-1.2H3.4v-3.2h.2A2 2 0 0 0 5.4 9.4a2 2 0 0 0-.4-2.2l-.1-.1 2.3-2.3.2.1a2 2 0 0 0 2.2.4 2 2 0 0 0 1.2-1.8V3h3.2v.2A2 2 0 0 0 15.2 5a2 2 0 0 0 2.2-.4l.2-.1 2.3 2.3-.1.1a2 2 0 0 0-.4 2.2 2 2 0 0 0 1.8 1.2h.2v3.2h-.2A2 2 0 0 0 19.4 15Z"/></svg>
+  <button type="button" class="menu header-action" id="openMore" aria-label="More options" aria-haspopup="menu" aria-expanded="false" title="More options">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><g fill="currentColor" stroke="none"><circle cx="7.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="16.5" cy="12" r="1.2"/></g></svg>
   </button>
  </header>
  <nav class="tabs" id="tabs" aria-label="RadioGrid categories"></nav>
@@ -464,6 +454,8 @@ const FONT_STACKS={
 const DEFAULT_APP_TITLE="RadioGrid";
 const DEFAULT_FONT_STYLE="system";
 const DEFAULT_TYPOGRAPHY={titleFontSize:32,buttonFontSize:20,titleBold:true,titleItalic:false,buttonBold:true,buttonItalic:false};
+const DEFAULT_CATEGORY_STYLE={categoryFontStyle:"system",categoryFontSize:15,categoryBold:true,categoryItalic:false,
+ categoryTextColor:"#a5aab2",categoryActiveColor:"",categoryUnderlineColor:"",categoryUnderlineHeight:4};
 // Width is a percentage of each grid cell. Height is a preferred pixel height;
 // it is reduced when needed to keep every row visible without scrolling.
 const DEFAULT_BUTTON_STYLE={width:100,height:96,outlineColor:"#777b83",outlineWidth:1,cornerRadius:13,gapX:10,gapY:10};
@@ -487,6 +479,8 @@ const DEFAULT_SECTIONS=[
 ];
 const ICONS={
  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a2 2 0 0 0 .4 2.2l.1.1-2.3 2.3-.2-.1a2 2 0 0 0-2.2-.4 2 2 0 0 0-1.2 1.8V21h-3.2v-.2a2 2 0 0 0-1.2-1.8 2 2 0 0 0-2.2.4l-.2.1-2.3-2.3.1-.1A2 2 0 0 0 5.4 15a2 2 0 0 0-1.8-1.2H3.4v-3.2h.2A2 2 0 0 0 5.4 9.4a2 2 0 0 0-.4-2.2l-.1-.1 2.3-2.3.2.1a2 2 0 0 0 2.2.4 2 2 0 0 0 1.2-1.8V3h3.2v.2A2 2 0 0 0 15.2 5a2 2 0 0 0 2.2-.4l.2-.1 2.3 2.3-.1.1a2 2 0 0 0-.4 2.2 2 2 0 0 0 1.8 1.2h.2v3.2h-.2A2 2 0 0 0 19.4 15Z"/>',
+ ellipsis:'<circle cx="12" cy="12" r="9"/><circle cx="7.5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="16.5" cy="12" r="1.2" fill="currentColor" stroke="none"/>',
  podcast:'<circle cx="12" cy="12" r="2"/><path d="M12 14v7M8.5 16a5.5 5.5 0 1 1 7 0M5.5 18a9.5 9.5 0 1 1 13 0"/>',
  broadcast:'<circle cx="12" cy="12" r="2"/><path d="M7.6 7.7a6 6 0 0 0 0 8.6m8.8-8.6a6 6 0 0 1 0 8.6M4.5 4.6a10 10 0 0 0 0 14.8m15-14.8a10 10 0 0 1 0 14.8"/>',
  radio:'<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M7 8l10-5M7 12h8M7 15h5"/><circle cx="17" cy="16" r="2"/>',
@@ -539,7 +533,7 @@ function normalizeSections(source){
 }
 function inferSectionIcon(id){return id==="podcasts"?"podcast":id==="radio"?"radio":"broadcast";}
 function inferItemIcon(name){const n=String(name).toLowerCase();if(n.includes("bible"))return "book";if(n.includes("ksr"))return "mic";if(n.includes("rock"))return "rock";if(n.includes("coffee"))return "coffee";if(n.includes("americana"))return "guitar";if(n.includes("wuky"))return "tower";return "music";}
-const defaults=()=>({sections:clone(DEFAULT_SECTIONS),active:"podcasts",theme:clone(DEFAULT_THEME),returnMethod:"website",appTitle:DEFAULT_APP_TITLE,fontStyle:DEFAULT_FONT_STYLE,buttonFontStyle:DEFAULT_FONT_STYLE,...DEFAULT_TYPOGRAPHY,buttonStyle:clone(DEFAULT_BUTTON_STYLE)});
+const defaults=()=>({sections:clone(DEFAULT_SECTIONS),active:"podcasts",theme:clone(DEFAULT_THEME),returnMethod:"website",appTitle:DEFAULT_APP_TITLE,fontStyle:DEFAULT_FONT_STYLE,buttonFontStyle:DEFAULT_FONT_STYLE,...DEFAULT_TYPOGRAPHY,...DEFAULT_CATEGORY_STYLE,buttonStyle:clone(DEFAULT_BUTTON_STYLE)});
 function normalise(data){
  if(!data||typeof data!=="object")throw Error("Invalid backup");
  const sections=normalizeSections(data.sections);
@@ -552,6 +546,14 @@ function normalise(data){
    buttonFontSize:clampNumber(data.buttonFontSize,15,25,DEFAULT_TYPOGRAPHY.buttonFontSize),
    titleBold:typeof data.titleBold==="boolean"?data.titleBold:DEFAULT_TYPOGRAPHY.titleBold,
    titleItalic:typeof data.titleItalic==="boolean"?data.titleItalic:DEFAULT_TYPOGRAPHY.titleItalic,
+   categoryFontStyle:Object.hasOwn(FONT_STACKS,data.categoryFontStyle)?data.categoryFontStyle:DEFAULT_CATEGORY_STYLE.categoryFontStyle,
+   categoryFontSize:clampNumber(data.categoryFontSize,12,24,DEFAULT_CATEGORY_STYLE.categoryFontSize),
+   categoryBold:typeof data.categoryBold==="boolean"?data.categoryBold:DEFAULT_CATEGORY_STYLE.categoryBold,
+   categoryItalic:typeof data.categoryItalic==="boolean"?data.categoryItalic:DEFAULT_CATEGORY_STYLE.categoryItalic,
+   categoryTextColor:safeColor(data.categoryTextColor)||DEFAULT_CATEGORY_STYLE.categoryTextColor,
+   categoryActiveColor:safeColor(data.categoryActiveColor)||"",
+   categoryUnderlineColor:safeColor(data.categoryUnderlineColor)||"",
+   categoryUnderlineHeight:clampNumber(data.categoryUnderlineHeight,2,7,DEFAULT_CATEGORY_STYLE.categoryUnderlineHeight),
    buttonBold:typeof data.buttonBold==="boolean"?data.buttonBold:DEFAULT_TYPOGRAPHY.buttonBold,
    buttonItalic:typeof data.buttonItalic==="boolean"?data.buttonItalic:DEFAULT_TYPOGRAPHY.buttonItalic,
    buttonStyle:{
@@ -659,6 +661,14 @@ function applyIdentity(){
  root.setProperty("--button-font-size",state.buttonFontSize+"px");
  root.setProperty("--button-font-weight",state.buttonBold?"800":"450");
  root.setProperty("--button-font-style",state.buttonItalic?"italic":"normal");
+ root.setProperty("--category-font",FONT_STACKS[state.categoryFontStyle]||FONT_STACKS.system);
+ root.setProperty("--category-font-size",state.categoryFontSize+"px");
+ root.setProperty("--category-font-weight",state.categoryBold?"700":"450");
+ root.setProperty("--category-font-style",state.categoryItalic?"italic":"normal");
+ root.setProperty("--category-text",state.categoryTextColor);
+ root.setProperty("--category-active",state.categoryActiveColor||state.theme.accent);
+ root.setProperty("--category-underline",state.categoryUnderlineColor||state.theme.accent);
+ root.setProperty("--category-underline-height",state.categoryUnderlineHeight+"px");
  requestAnimationFrame(()=>{fitTitle();fitTabText();sizeGrid();});
 }
 function applyButtonStyle(){
@@ -727,23 +737,16 @@ function centerActiveTab(animated=true){
 function fitTabText(){
  const bar=$("tabs"),labels=[...bar.querySelectorAll(".tab")];
  if(!labels.length)return;
- const base=labels.length>=4?15:17;
+ const size=state.categoryFontSize;
  bar.classList.remove("is-scrollable");
  bar.style.gridTemplateColumns=`repeat(${labels.length},minmax(0,1fr))`;
- let fits=false;
- if(labels.length<=4){
-  for(let size=base;size>=14;size--){
-   labels.forEach(t=>t.style.fontSize=size+"px");
-   if(labels.every(t=>t.firstElementChild.scrollWidth<=t.firstElementChild.clientWidth+1)){
-    fits=true;break;
-   }
-  }
- }
- if(labels.length>4||!fits){
-  bar.classList.add("is-scrollable");
-  labels.forEach(t=>t.style.fontSize="15px");
-  tabLayoutMode="scrollable";
- }else tabLayoutMode="fixed";
+ labels.forEach(t=>t.style.fontSize=size+"px");
+ // Scroll instead of overriding the user-selected size or squeezing long names.
+ const fits=labels.length<=4&&labels.every(t=>{
+  const span=t.firstElementChild;return span.scrollWidth<=span.clientWidth+1;
+ });
+ if(!fits){bar.classList.add("is-scrollable");tabLayoutMode="scrollable";}
+ else tabLayoutMode="fixed";
  updateTabIndicator(false);
  if(tabScrollFrame)cancelAnimationFrame(tabScrollFrame);
  tabScrollFrame=requestAnimationFrame(()=>{tabScrollFrame=0;centerActiveTab(false);});
@@ -782,7 +785,7 @@ function render(){
    slide.dataset.sectionId=section.id;
    const grid=el("div","grid");
    grid.setAttribute("aria-label",section.name+" buttons");
-   if(!section.items.length)grid.append(el("p","grid-empty","Tap Edit to add a button."));
+   if(!section.items.length)grid.append(el("p","grid-empty","Open the ••• menu and choose Edit to add a button."));
    for(const item of section.items){
      const card=el("button","card");card.type="button";
      card.setAttribute("aria-label","Play "+item.name);
@@ -791,8 +794,7 @@ function render(){
      if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
      else label.textContent=item.name;
      card.append(label);
-     card.onclick=()=>{if(performance.now()<suppressCardClickUntil||contextMenuOverlay)return;run(item,card);};
-     installLongPress(card,item);
+     card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item,card);};
      grid.append(card);
    }
    slide.append(grid);track.append(slide);
@@ -891,134 +893,47 @@ function installCategorySwipe(){
  },{passive:true});
  viewport.addEventListener("touchcancel",()=>{pageTouch=null;placeTrack(true);},{passive:true});
 }
-// V20: long-press/secondary-click context actions; do not intercept normal taps or swipes.
-let contextMenuOverlay=null,contextMenuCard=null,contextMenuItem=null,contextMenuPane=null;
-let contextOriginRect=null;
-let ignoreReleaseBackdropClickUntil=0;
-function closeContextMenu(restoreFocus=true){
- const backdrop=contextMenuOverlay,card=contextMenuCard;
- if(!backdrop)return;
- backdrop.remove();contextMenuPane?.remove();
- contextMenuOverlay=null;contextMenuPane=null;contextMenuCard=null;contextMenuItem=null;contextOriginRect=null;
- card?.removeAttribute("aria-expanded");
- if(restoreFocus&&card?.isConnected)card.focus({preventScroll:true});
+// V22: deliberate tap-only More menu.
+let moreOverlay=null,morePanel=null;
+function closeMoreMenu(restoreFocus=true){
+ const old=moreOverlay;
+ if(!old)return;
+ moreOverlay=null;morePanel=null;
+ old.remove();document.querySelector(".more-menu")?.remove();
+ const button=$("openMore");button.setAttribute("aria-expanded","false");
+ if(restoreFocus)button.focus({preventScroll:true});
 }
-function positionContextMenu(){
- const menu=contextMenuPane,rect=contextOriginRect;if(!menu||!rect)return;
- const width=menu.getBoundingClientRect().width||290,height=menu.getBoundingClientRect().height||220;
- const vw=window.innerWidth,vh=window.innerHeight;
- const left=Math.max(12,Math.min(vw-width-12,rect.left+(rect.width-width)/2));
- const below=rect.bottom+11;
- const above=rect.top-height-11;
- const top=below+height<=vh-14?below:above>=12?above:Math.max(12,Math.min(vh-height-12,rect.top));
- menu.style.left=Math.round(left)+"px";menu.style.top=Math.round(top)+"px";
+function placeMoreMenu(){
+ if(!morePanel)return;
+ const button=$("openMore"),rect=button.getBoundingClientRect(),box=morePanel.getBoundingClientRect();
+ const left=Math.max(12,Math.min(window.innerWidth-box.width-12,rect.right-box.width));
+ const top=Math.min(window.innerHeight-box.height-12,Math.max(12,rect.bottom+8));
+ morePanel.style.left=Math.round(left)+"px";morePanel.style.top=Math.round(top)+"px";
 }
-function contextAction(label,icon,handler,extra=""){
- const b=el("button","context-action "+extra);b.type="button";b.setAttribute("role","menuitem");
- if(icon)b.append(svg(icon));b.append(el("span","",label));
- b.onclick=e=>{e.stopPropagation();handler();};return b;
-}
-function moveContextButton(sectionId){
- const match=findButton(contextMenuItem?.id),dest=state.sections.find(s=>s.id===sectionId);
- if(!match||!dest){closeContextMenu();return;}
- closeContextMenu();
- if(dest===match.sec){notify("Already in "+dest.name);return;}
- match.sec.items=match.sec.items.filter(i=>i.id!==match.item.id);
- dest.items.push(match.item);state.active=dest.id;save();render();notify("Moved to "+dest.name);
-}
-function paintContextMenu(mode="actions"){
- const menu=contextMenuPane,item=contextMenuItem;
- if(!menu||!item)return;
- menu.replaceChildren();menu.setAttribute("role","menu");menu.setAttribute("aria-label",mode==="move"?"Choose destination category":"Actions for "+item.name);
- if(mode==="move"){
-  const back=el("button","context-back","‹  Move to Category");back.type="button";back.onclick=()=>paintContextMenu("actions");menu.append(back);
-  state.sections.forEach(s=>{
-   const active=findButton(item.id)?.sec.id===s.id;
-   const action=contextAction(s.name,"",()=>moveContextButton(s.id),active?"is-current":"");
-   if(active)action.append(el("span","context-check","✓"));
-   menu.append(action);
-  });
- }else{
-  menu.append(el("div","context-title",item.name));
-  menu.append(contextAction("Edit Button","pencil",()=>{closeContextMenu();showModal("button",{id:item.id});}));
-  const move=contextAction("Move to Category","move",()=>paintContextMenu("move"));
-  move.append(el("span","context-chevron","›"));menu.append(move);
-  menu.append(contextAction("Delete Button","trash",()=>{closeContextMenu();removeButton(item.id);},"is-danger"));
+function toggleMoreMenu(){
+ if(moreOverlay){closeMoreMenu();return;}
+ if($("sheet").classList.contains("open"))return;
+ const backdrop=el("div","more-backdrop"),menu=el("div","more-menu");
+ menu.id="moreMenu";menu.setAttribute("role","menu");menu.setAttribute("aria-label","RadioGrid options");
+ backdrop.onclick=()=>closeMoreMenu();
+ for(const [label,icon,page] of [["Edit","pencil","organize"],["Settings","gear","settings"]]){
+  const item=el("button","more-item");item.type="button";item.setAttribute("role","menuitem");
+  item.append(svg(icon),el("span","",label));
+  item.onclick=()=>{closeMoreMenu(false);showModal(page);};menu.append(item);
  }
- positionContextMenu();
- const first=menu.querySelector(".context-action,.context-back");first?.focus({preventScroll:true});
-}
-function clearHomeSelection(){
- const selection=window.getSelection?.();
- if(selection && !selection.isCollapsed)selection.removeAllRanges();
-}
-function openContextMenu(card,item){
- if($("sheet").classList.contains("open")||!findButton(item.id))return;
- clearHomeSelection();
- closeContextMenu(false);resetLaunching();
- pageTouch=null;placeTrack(true);
- suppressCardClickUntil=performance.now()+1050;
- contextMenuCard=card;contextMenuItem=item;contextOriginRect=card.getBoundingClientRect();
- const backdrop=el("div","context-backdrop"),menu=el("div","context-menu");
- backdrop.setAttribute("aria-hidden","true");
- backdrop.onclick=()=>{
-  // Prevent the finger-release click from closing a just-opened menu.
-  if(performance.now()<ignoreReleaseBackdropClickUntil)return;
-  closeContextMenu();
- };
- document.body.append(backdrop,menu);contextMenuOverlay=backdrop;contextMenuPane=menu;
- card.setAttribute("aria-expanded","true");
- paintContextMenu();
- requestAnimationFrame(()=>{if(contextMenuOverlay===backdrop){clearHomeSelection();backdrop.classList.add("open");menu.classList.add("open");positionContextMenu();}});
-}
-function installLongPress(card,item){
- let timer=0,point=null;
- const cancel=()=>{if(timer){clearTimeout(timer);timer=0;}point=null;};
- card.setAttribute("aria-haspopup","menu");
- // A title tooltip can independently trigger WebKit's native long-press popover.
- // Accessible menu description is preserved without the browser tooltip.
- card.removeAttribute("title");
- card.setAttribute("aria-description","Press and hold for button actions");
- card.addEventListener("pointerdown",e=>{
-  if(contextMenuOverlay||(e.pointerType==="mouse"&&e.button!==0))return;
-  cancel();point={id:e.pointerId,x:e.clientX,y:e.clientY};
-  timer=setTimeout(()=>{
-   if(!point||point.id!==e.pointerId)return;
-   timer=0;point=null;openContextMenu(card,item);
-  },490);
- });
- card.addEventListener("pointermove",e=>{
-  if(point?.id===e.pointerId&&Math.hypot(e.clientX-point.x,e.clientY-point.y)>11)cancel();
- });
- card.addEventListener("pointerup",()=>{
-  if(contextMenuCard===card)ignoreReleaseBackdropClickUntil=performance.now()+280;
-  cancel();
- });
- card.addEventListener("pointercancel",cancel);
- card.addEventListener("contextmenu",e=>{
-  e.preventDefault();e.stopPropagation();cancel();
-  // iOS may fire contextmenu AFTER the 490ms timer. Do not reopen the sheet.
-  if(!contextMenuOverlay)openContextMenu(card,item);
- });
- card.addEventListener("keydown",e=>{
-  if(e.key==="ContextMenu"||(e.shiftKey&&e.key==="F10")){
-   e.preventDefault();openContextMenu(card,item);
+ menu.onkeydown=e=>{
+  if(e.key==="Escape"){e.preventDefault();e.stopPropagation();closeMoreMenu();}
+  else if(["ArrowUp","ArrowDown"].includes(e.key)){
+   e.preventDefault();const choices=[...menu.querySelectorAll(".more-item")];
+   const i=choices.indexOf(document.activeElement);choices[(i+(e.key==="ArrowDown"?1:-1)+choices.length)%choices.length].focus();
   }
- });
+ };
+ document.body.append(backdrop,menu);moreOverlay=backdrop;morePanel=menu;
+ $("openMore").setAttribute("aria-expanded","true");
+ requestAnimationFrame(()=>{if(morePanel===menu){placeMoreMenu();menu.classList.add("open");menu.querySelector(".more-item")?.focus({preventScroll:true});}});
 }
-document.addEventListener("keydown",e=>{
- if(e.key==="Escape"&&contextMenuOverlay){e.preventDefault();e.stopImmediatePropagation();closeContextMenu();}
-},true);
-window.addEventListener("resize",()=>{if(contextMenuOverlay)positionContextMenu();});
-// iOS Safari sometimes synthesizes a selection even when the pressed button has
-// user-select:none. Cancel only gestures in the non-editable Home Screen.
-const homeApp=document.querySelector(".app");
-homeApp.addEventListener("selectstart",e=>e.preventDefault(),{passive:false});
-homeApp.addEventListener("contextmenu",e=>e.preventDefault(),{passive:false});
-document.addEventListener("selectionchange",()=>{
- const selection=window.getSelection?.(),anchor=selection?.anchorNode;
- if(anchor&&homeApp.contains(anchor)&&!selection.isCollapsed)selection.removeAllRanges();
-});
+window.addEventListener("resize",placeMoreMenu);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&moreOverlay){e.preventDefault();closeMoreMenu();}},true);
 function returnURL(){
  if(state.returnMethod==="shortcut"||!/^https?:$/.test(location.protocol))return "shortcuts://run-shortcut?name="+encodeURIComponent("Radio Grid");
  const url=new URL(location.href);url.hash="";url.searchParams.delete("result");url.searchParams.delete("errorMessage");
@@ -1056,7 +971,7 @@ let navHistory=[], navGesture=null,appearanceFrame=0,miniFrame=0,liveSaveTimer=0
 const activeEntry=()=>navHistory[navHistory.length-1]||null;
 const activeBody=()=>activeEntry()?.body||null;
 const activePreview=()=>activeEntry()?.preview||null;
-const PAGE_LABELS={settings:"Settings",title:"Title",background:"Background",design:"Buttons",
+const PAGE_LABELS={settings:"Settings",title:"Title",background:"Background",design:"Buttons",categories:"Categories",
  playback:"Playback",backup:"Backup",organize:"Edit Categories",section:"Category",button:"Button",choice:"Select",color:"Color"};
 function flushLiveSave(){if(liveSaveTimer){clearTimeout(liveSaveTimer);liveSaveTimer=0;save();}}
 function liveUpdate(){
@@ -1074,7 +989,7 @@ function structuralUpdate(message){flushLiveSave();save();theme();render();showC
 function makeScreen(page,args){
  const screen=el("div","nav-screen is-entering");screen.dataset.page=page;
  const preview=el("div","settings-preview");preview.setAttribute("aria-label","Live miniature RadioGrid preview");
- preview.hidden=!(["title","background","design","color"].includes(page));
+ preview.hidden=!(["title","background","design","categories","color"].includes(page));
  const body=el("div","sheet-body");body.tabIndex=-1;
  screen.append(preview,body);
  return {page,args,screen,preview,body};
@@ -1087,6 +1002,7 @@ function paintPage(entry){
  else if(page==="title")titlePage(body);
  else if(page==="background")backgroundPage(body);
  else if(page==="design")designPage(body);
+ else if(page==="categories")categoriesPage(body);
  else if(page==="playback")playbackPage(body);
  else if(page==="backup")backupPage(body);
  else if(page==="organize")organizePage(body);
@@ -1343,11 +1259,12 @@ function settingsPage(body){
   ["Title","title"],
   ["Background","background"],
   ["Buttons","design"],
+  ["Categories","categories"],
   ["Playback","playback"],
   ["Backup","backup"]
  ];
  body.append(grouped(...rows.map(([name,page])=>navigationRow(name,"",()=>navigate(page)))));
- body.append(el("p","ios-help","Customize RadioGrid here. To organize categories and stations, use Edit on the home screen."));
+ body.append(el("p","ios-help","Customize RadioGrid here. To organize categories and stations, open More (•••) and choose Edit."));
 }
 function titlePage(body){
  body.append(sectionLabel("Title"));
@@ -1365,7 +1282,7 @@ function titlePage(body){
  ));
  body.append(sectionLabel("Interface Accent"));
  body.append(grouped(colorRow("Accent Color",state.theme.accent,v=>{state.theme.accent=v;liveUpdate();})));
- body.append(el("p","ios-help","The accent color also changes the Edit text, Settings gear, selected category, and interactive controls."));
+ body.append(el("p","ios-help","The accent color also changes the three-dot menu and other interactive controls. Category colors can be customized separately in Categories."));
 }
 function backgroundPage(body){
  body.append(sectionLabel("Background"));
@@ -1395,6 +1312,33 @@ function designPage(body){
  body.append(sectionLabel("Spacing"));
  body.append(grouped(sliderRow("Horizontal",state.buttonStyle.gapX,0,24," px",v=>{state.buttonStyle.gapX=v;liveUpdate();}),sliderRow("Vertical",state.buttonStyle.gapY,0,24," px",v=>{state.buttonStyle.gapY=v;liveUpdate();})));
  body.append(el("p","ios-help","Button height adapts when a category has many rows. Text automatically fits within each button; the live preview uses the same proportions as the home screen."));
+}
+function categoriesPage(body){
+ body.append(sectionLabel("Category Text"));
+ const font=choiceControl(FONT_OPTIONS,state.categoryFontStyle);
+ font.onchange=()=>{state.categoryFontStyle=font.value;liveUpdate();};
+ body.append(grouped(
+  settingRow("Font",font),
+  sliderRow("Size",state.categoryFontSize,12,24," px",v=>{state.categoryFontSize=v;liveUpdate();}),
+  styleRow("category"),
+  colorRow("Text Color",state.categoryTextColor,v=>{state.categoryTextColor=v;liveUpdate();})
+ ));
+ body.append(sectionLabel("Selected Category"));
+ const activeCustom=el("input");activeCustom.type="checkbox";activeCustom.className="ios-switch";
+ activeCustom.checked=!!state.categoryActiveColor;
+ const activeColor=colorRow("Selected Text",state.categoryActiveColor||state.theme.accent,v=>{state.categoryActiveColor=v;activeCustom.checked=true;liveUpdate();});
+ const activeRow=settingRow("Custom Color",activeCustom);
+ activeCustom.onchange=()=>{state.categoryActiveColor=activeCustom.checked?(state.categoryActiveColor||state.theme.accent):"";liveUpdate();};
+ body.append(grouped(activeRow,activeColor));
+ body.append(sectionLabel("Selection Underline"));
+ const indicatorCustom=el("input");indicatorCustom.type="checkbox";indicatorCustom.className="ios-switch";
+ indicatorCustom.checked=!!state.categoryUnderlineColor;
+ const indicatorRow=settingRow("Custom Color",indicatorCustom);
+ const indicatorColor=colorRow("Underline Color",state.categoryUnderlineColor||state.theme.accent,v=>{state.categoryUnderlineColor=v;indicatorCustom.checked=true;liveUpdate();});
+ indicatorCustom.onchange=()=>{state.categoryUnderlineColor=indicatorCustom.checked?(state.categoryUnderlineColor||state.theme.accent):"";liveUpdate();};
+ body.append(grouped(indicatorRow,indicatorColor,
+  sliderRow("Thickness",state.categoryUnderlineHeight,2,7," px",v=>{state.categoryUnderlineHeight=v;liveUpdate();})));
+ body.append(el("p","ios-help","Custom Color off follows the global accent automatically. Long category names scroll rather than shrink the chosen font size. Changes appear in the live preview."));
 }
 function playbackPage(body){
  body.append(sectionLabel("Return After Playing"));
@@ -1428,7 +1372,8 @@ function drawMini(force=false){
   onSelect(value){previewSection=value;drawMini(true);}});
  cap.append(chooser);host.append(cap);
  const stage=el("div","preview-stage"),wrap=el("div","preview-frame"),mini=el("div","preview-mini");
- const header=el("div","header");header.append(el("div","header-action edit-home","Edit"),el("h1","app-title",state.appTitle),el("div","menu header-action"));
+ const header=el("div","header"),morePreview=el("div","menu header-action");
+ morePreview.append(svg("ellipsis"));header.append(el("h1","app-title",state.appTitle),morePreview);
  mini.append(header);
  const tabs=el("div","tabs"+(state.sections.length>4||$("tabs").classList.contains("is-scrollable")?" is-scrollable":""));tabs.style.gridTemplateColumns=`repeat(${Math.max(1,state.sections.length)},minmax(0,1fr))`;
  state.sections.forEach(s=>{const t=el("div","tab"+(s.id===selected.id?" active":""));t.append(el("span","",s.name));tabs.append(t);});mini.append(tabs);
@@ -1442,7 +1387,7 @@ function drawMini(force=false){
   c.append(label);grid.append(c);
  }
  mini.append(grid);wrap.append(mini);stage.append(wrap);host.append(stage);
- const mt=tabs.querySelector(".tab.active");if(mt&&tabs.classList.contains("is-scrollable"))tabs.scrollLeft=Math.max(0,mt.offsetLeft-(nativeWidth-mt.offsetWidth)/2);
+ const mt=tabs.querySelector(".tab.active");if(mt&&tabs.classList.contains("is-scrollable"))tabs.scrollLeft=Math.max(0,mt.offsetLeft-(tabs.clientWidth-mt.offsetWidth)/2);
  updateMini();
 }
 function updateMini(){
@@ -1473,8 +1418,7 @@ function updateMini(){
  mini.style.cssText=`width:${nativeWidth}px;height:${height}px;position:absolute;left:0;top:0;transform-origin:top left;transform:scale(${scale})`;
  let ts=state.titleFontSize;heading.style.fontSize=ts+"px";
  while(ts>17&&heading.scrollWidth>nativeWidth-138)heading.style.fontSize=(--ts)+"px";
- mini.querySelectorAll(".tab span").forEach(label=>{let fs=15;label.style.fontSize=fs+"px";
-  while(fs>10&&label.scrollWidth>label.clientWidth)label.style.fontSize=(--fs)+"px";});
+ mini.querySelectorAll(".tab span").forEach(label=>{label.style.fontSize=state.categoryFontSize+"px";});
  mini.querySelectorAll(".card").forEach(c=>{
   const l=c.querySelector(".card-label");let fs=state.buttonFontSize;l.style.fontSize=fs+"px";
   const p=getComputedStyle(c),room=c.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom);
@@ -1487,7 +1431,7 @@ function tinyButton(icon,label,handler,extra=""){
 function findButton(id){for(const sec of state.sections){const item=sec.items.find(i=>i.id===id);if(item)return {sec,item};}return null;}
 function swapIndex(items,i,delta){const j=i+delta;if(j<0||j>=items.length)return;[items[i],items[j]]=[items[j],items[i]];structuralUpdate("Order saved");}
 function organizePage(body){
- body.append(el("p","organize-intro","Tap a name to edit. Hold and drag the handle on the right to reorder buttons or categories. Use the trash icon to delete, or press and hold a home-screen tile for quick actions."));
+ body.append(el("p","organize-intro","Tap a name to edit. Hold and drag the handle on the right to reorder buttons or categories. Use the trash icon to delete. Open the ••• menu on the Home Screen to return to Edit."));
  const root=el("div");root.id="hierarchyRoot";
  state.sections.forEach((sec)=>{
   const block=el("section","organize-section");block.dataset.sectionId=sec.id;
@@ -1520,7 +1464,7 @@ function organizePage(body){
  });
  body.append(root);
  const addCat=el("button","org-add org-add-section","+ Add Category");addCat.onclick=()=>navigate("section",{id:null});body.append(addCat);
- body.append(el("p","editor-footer","Drag a button into another category or choose Move to Category from its long-press menu."));
+ body.append(el("p","editor-footer","Drag a button into another category, or open the button editor to change its category."));
 }
 async function removeCategory(id){
  const s=state.sections.find(x=>x.id===id);if(!s)return;
@@ -1683,8 +1627,7 @@ async function resetDefaults(){
 }
 ["gesturestart","gesturechange","gestureend"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 document.addEventListener("touchmove",e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
-$("openSettings").onclick=()=>{closeContextMenu(false);showModal("settings");};
-$("openEdit").onclick=()=>{closeContextMenu(false);showModal("organize");};
+$("openMore").onclick=toggleMoreMenu;
 $("scrim").onclick=closeModal;
 document.addEventListener("keydown",e=>{
  if(!$("sheet").classList.contains("open")||document.querySelector(".confirm-overlay"))return;

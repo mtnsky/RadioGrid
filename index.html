@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RadioGrid">
 <meta name="theme-color" content="#0b0d10">
-<title>RadioGrid V31</title>
-<!-- V31: streamlined button customization, explicit fit and reliable typography. -->
+<title>RadioGrid</title>
+<!-- V34: durable backup choices, storage transparency, accessibility and code cleanup. -->
 <!-- V22: Categories appearance and accessible More menu; tap-only options -->
 <style>
   :root {
@@ -152,36 +152,9 @@ body { background:var(--bg); }
 .ios-pattern{display:flex;flex-direction:column;gap:6px;align-items:center;padding:9px 5px 8px;border:1px solid #ffffff20;border-radius:12px;background:#2c2c2e;color:#d5d6da;font-size:11px}
 .ios-pattern.selected{border:2px solid var(--accent);padding:8px 4px 7px;color:#fff}
 .pattern-sample{width:100%;height:35px;border-radius:7px;border:1px solid #ffffff24;background-color:var(--bg);background-image:var(--chip-image);background-size:var(--chip-size);opacity:.95}
-@media(max-width:365px){.ios-row-label{flex-basis:90px}.ios-row{padding:9px 10px}.ios-row-value{gap:6px}.ios-value{min-width:31px;font-size:11px}.organize-count{display:none}.org-btn{width:25px;min-width:25px}}
+@media(max-width:365px){.ios-row-label{flex-basis:90px}.ios-row{padding:9px 10px}.ios-row-value{gap:6px}.ios-value{min-width:31px;font-size:11px}}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-/* Organize screen */
-.organize-intro{color:#a5a8b1;font-size:12px;line-height:1.45;padding:0 5px 12px}
-.organize-section{border:1px solid #ffffff14;border-radius:14px;background:#25272d;overflow:hidden;margin-bottom:12px}
-.organize-section>.organize-header{background:#37393e}
-.organize-header{display:flex;align-items:center;gap:6px;padding:7px 9px;min-height:52px}
-.organize-marker{width:4px;background:var(--accent);align-self:stretch;border-radius:3px;flex:none}
-.organize-name{font-weight:750;font-size:15px;min-width:0;flex:1;overflow-wrap:anywhere}
-.organize-count{font-size:12px;color:#a8aab1}
-.organize-items{margin:0 0 0 22px;border-left:2px solid #72757c44}
-.organize-item{display:flex;align-items:center;gap:6px;margin:0 0 0 10px;padding:3px 7px 3px 0;min-height:47px;border-bottom:1px solid #ffffff10}
-.organize-item:last-child{border-bottom:0}
-.organize-item-name{flex:1;min-width:0;font-size:14px;overflow-wrap:anywhere;color:#ededf0}
-.organize-item-name small{display:block;color:#969ba5;font-size:10px;margin-top:2px}
-.org-btn{width:30px;min-width:30px;height:36px;border-radius:8px;display:grid;place-items:center;color:#bfc3c9;background:transparent}
-.org-btn svg{width:17px;height:17px}
-.org-btn:disabled{opacity:.2}
-.org-btn:active{background:#ffffff15}
-.org-btn.danger{color:#ff6d65}
-.org-btn.handle{touch-action:none;cursor:grab;color:#81848d}
-.organize-item.dragging,.organize-section.dragging{background:#bf6d2330}
-.org-add{display:block;width:100%;background:#2b2d33;text-align:left;min-height:43px;color:var(--accent);padding:10px 15px;font-size:14px;font-weight:640;border-top:1px solid #ffffff12}
-.org-add:active{background:#ffffff10}
-.org-add-section{background:#2c2c2e;border-radius:13px;border:0;margin:10px 0}
-.editor-footer{font-size:12px;color:#8c909a;padding:4px 8px 20px}
 .error-line{color:#ff8b83;font-size:13px;margin-top:8px}
-.edit-actions{display:flex;gap:9px;margin-top:12px}
-.edit-actions button{min-height:45px;flex:1;background:#45464a;border-radius:10px;font-weight:700}
-.edit-actions button.primary{background:var(--accent);color:#161616}
 @media(max-height:700px){.settings-preview{padding:5px 8px 6px}.preview-stage{padding:3px 0}.sheet-body{padding-top:12px}}
 @media(prefers-reduced-motion:reduce){.sheet,.scrim{transition-duration:.01ms!important}}
 
@@ -337,35 +310,6 @@ body { background:var(--bg); }
 #tabs .tab-indicator.no-animation{transition:none!important}
 .card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 /* Cleaner Edit hierarchy: one drag handle, tappable text, and discrete delete. */
-.organize-header{gap:7px;padding:5px 9px;min-height:59px}
-.organize-item{gap:6px;min-height:55px;padding:3px 7px 3px 0}
-.org-row-main{background:transparent;display:flex;align-items:center;min-width:0;flex:1;
- gap:8px;text-align:left;padding:7px 2px;color:#eeeef0}
-.org-row-main:active{opacity:.66}
-.org-row-main .organize-name{font-weight:700;font-size:16px;flex:1;min-width:0}
-.org-row-main .organize-item-name{font-size:15px;flex:1;min-width:0}
-.org-row-main small{display:block;color:#999ba4;font-size:11px;margin-top:3px;font-weight:400}
-.org-row-main .ios-chevron{font-size:20px;color:#888994}
-.org-btn.handle{height:45px;width:37px;min-width:37px;color:#a9aab2;cursor:grab;touch-action:none}
-.org-btn.handle svg{width:21px;height:21px}
-.org-btn.handle:active{cursor:grabbing}
-.org-btn.danger{width:34px;min-width:34px;height:44px}
-.org-btn.danger svg{width:18px;height:18px}
-.organize-item.dragging,.organize-section.dragging{opacity:.24;box-shadow:none!important;pointer-events:none}
-.organize-item,.organize-section{position:relative}
-.organize-item.drop-before::before,.organize-section.drop-before::before,
-.organize-item.drop-after::after,.organize-section.drop-after::after{
- content:"";position:absolute;left:5px;right:5px;height:3px;border-radius:4px;
- background:var(--accent);z-index:4;pointer-events:none;box-shadow:0 0 0 1px #171718}
-.organize-item.drop-before::before,.organize-section.drop-before::before{top:-2px}
-.organize-item.drop-after::after,.organize-section.drop-after::after{bottom:-2px}
-.organize-items.drop-into{outline:2px dashed var(--accent);outline-offset:-3px;border-radius:8px;min-height:48px}
-.organize-items:empty{min-height:45px}
-.drag-ghost{position:fixed;z-index:95;pointer-events:none;opacity:.97;box-sizing:border-box;
- background:#4c4140!important;border:1px solid color-mix(in srgb,var(--accent) 70%,transparent)!important;
- border-radius:12px!important;box-shadow:0 15px 45px #000b!important;overflow:hidden;
- transform-origin:center center;will-change:transform}
-.drag-ghost .org-btn{pointer-events:none}
 @media(prefers-reduced-motion:reduce){#tabs .tab-indicator,.more-backdrop,.more-menu{transition:none!important}}
 
 /* The left side stays in the grid/* The left side stays in the grid for a centered title but is not a second
@@ -462,9 +406,7 @@ body { background:var(--bg); }
 .app.is-editing #tabs .edit-tab-wrap>.tab span{max-width:100%;text-overflow:ellipsis}
 .edit-tab-tool{position:absolute;right:22px;top:50%;transform:translateY(-50%);width:23px;height:35px;
  color:var(--accent);background:transparent;display:grid;place-items:center;touch-action:manipulation}
-.edit-tab-grip{right:0;touch-action:none;color:#a3a8b2;cursor:grab}
 .edit-tab-tool svg{width:16px;height:16px}
-.edit-tab-grip svg{width:18px;height:18px}
 .edit-tab-wrap.category-drop-before:before,.edit-tab-wrap.category-drop-after:after{content:"";
  position:absolute;top:5px;bottom:5px;width:3px;background:var(--accent);z-index:5;border-radius:4px}
 .edit-tab-wrap.category-drop-before:before{left:0}.edit-tab-wrap.category-drop-after:after{right:0}
@@ -537,6 +479,98 @@ body { background:var(--bg); }
 .v31-inspect .card{flex:none;justify-self:initial;width:110px;height:96px;pointer-events:none}
 .v31-inspect-caption{font-size:10px;font-weight:550;color:#afb0b9;text-align:center;margin:0;max-width:96%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nav-screen[data-page="design"] .preview-stage{position:relative;align-items:center;justify-content:center;overflow:hidden}
+
+/* V32: editing uses independent, valid buttons rather than nested interactions.
+   The label owns a protected center and the outer controls sit inside the tile. */
+.app.is-editing .card.edit-card{position:relative;cursor:default;padding:0;min-height:112px;
+ overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.app.is-editing .card.edit-card:active{filter:none;transform:none}
+.edit-card .edit-label-trigger{position:absolute;inset:31px 27px;z-index:1;min-width:0;
+ display:flex;align-items:center;justify-content:center;flex-direction:column;
+ padding:0;background:transparent;border:0;color:inherit;overflow:hidden;
+ touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.edit-card .edit-label-trigger:active .card-label{opacity:.65}
+.edit-card .edit-label-trigger:focus-visible{outline:2px solid var(--accent);outline-offset:-1px;border-radius:5px}
+.edit-card .edit-label-trigger .card-label{width:100%;min-width:0;max-height:100%;font-size:min(var(--button-font-size),16px);
+ line-height:1.1;hyphens:auto;overflow-wrap:anywhere}
+.edit-card .edit-tile-action{top:3px;width:28px;height:28px;z-index:4;
+ cursor:pointer;touch-action:manipulation}
+.edit-card .edit-tile-remove{left:3px}
+.edit-card .edit-tile-edit{right:3px}
+.edit-card .edit-tile-directions{z-index:3}
+.edit-card .edit-direction{z-index:3}
+.edit-card .edit-direction:disabled{cursor:default;color:#777982;opacity:.38}
+.card-label .label-primary{display:block;font:inherit;line-height:1.12}
+.card-label .label-secondary{display:block;margin-top:3px;font-size:.82em;font-weight:600;
+ letter-spacing:0;line-height:1.13;opacity:.83}
+@media(prefers-reduced-motion:reduce){.edit-card{transition:none!important}}
+
+/* V33: selected-category-only actions. No drag handle or dense tab controls. */
+.app.is-editing #tabs .edit-tab-wrap{min-width:0;padding-right:0;min-height:54px}
+.app.is-editing #tabs .edit-tab-wrap>.tab{min-width:76px;max-width:205px;padding:12px 12px 15px}
+.app.is-editing #tabs .edit-tab-wrap.is-current{padding-right:29px}
+.app.is-editing #tabs .edit-tab-tool{display:none;right:0;top:50%;width:28px;height:44px;transform:translateY(-50%)}
+.app.is-editing #tabs .edit-tab-wrap.is-current .edit-tab-tool{display:grid}
+.app.is-editing #tabs .edit-tab-tool svg{width:16px;height:16px}
+.v33-destructive .ios-row-label{color:#ff7771}
+.ios-row-nav:disabled{opacity:.36;pointer-events:none}
+/* In-sheet iOS selection navigation for Category and Action; no browser selects. */
+.edit-panel{position:relative;overflow:hidden}
+.edit-panel.picker-active{min-height:min(68dvh,510px)}
+.edit-picker-page{position:absolute;z-index:7;inset:0;background:#1b1c20;display:flex;flex-direction:column;
+ border-radius:24px 24px 0 0;overflow:hidden}
+.edit-picker-nav{min-height:59px;flex:none;display:grid;grid-template-columns:62px 1fr 62px;
+ align-items:center;padding:9px 15px 8px;border-bottom:1px solid #ffffff17}
+.edit-picker-nav strong{font-size:17px;text-align:center;font-weight:650;color:#f6f6f7}
+.edit-picker-back{background:transparent;color:var(--accent);display:flex;align-items:center;
+ justify-content:flex-start;min-height:44px;padding:0}
+.edit-picker-back svg{width:26px;height:26px}
+.edit-picker-options{padding:19px 16px 30px;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.edit-picker-option{width:100%;background:#2c2c2e;display:flex;align-items:center;justify-content:space-between;
+ gap:15px;padding:0 15px;min-height:54px;font-size:16px;color:#f3f3f6;text-align:left;
+ border-bottom:1px solid #ffffff1a}
+.edit-picker-option:first-child{border-radius:12px 12px 0 0}
+.edit-picker-option:last-child{border-radius:0 0 12px 12px;border-bottom:0}
+.edit-picker-option:only-child{border-radius:12px}
+.edit-picker-option:active{background:#44444a}
+.edit-picker-option .ios-check{min-width:25px;text-align:right}
+@media(prefers-reduced-motion:reduce){.edit-picker-page{animation:none!important}}
+
+
+/* V34 — accessible hit areas, system preferences and quiet status information. */
+.edit-card .edit-direction{width:36px;height:36px}
+.edit-card .edit-direction[data-direction="up"] svg{transform:translateY(-7px)}
+.edit-card .edit-direction[data-direction="down"] svg{transform:translateY(7px)}
+.edit-card .edit-direction[data-direction="left"] svg{transform:translateX(-7px)}
+.edit-card .edit-direction[data-direction="right"] svg{transform:translateX(7px)}
+.edit-card .edit-tile-action{width:34px;height:34px}
+.edit-card .edit-label-trigger{inset:37px 36px}
+.app .card:focus-visible,.edit-card button:focus-visible,.tab:focus-visible,
+.ios-row-nav:focus-visible,.more-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.backup-status{display:flex;gap:10px;align-items:start;margin:9px 4px 13px;
+ padding:12px;border-radius:12px;background:#292c32;color:#e5e6e9;font-size:13px;line-height:1.45}
+.backup-status svg{width:19px;height:19px;flex:none;color:var(--accent)}
+.backup-status.warning{border:1px solid #f1b45c77}
+.backup-status strong{display:block;font-weight:700;margin-bottom:2px}
+.backup-note{font-size:12px;color:#aaaeb7;line-height:1.5;margin:9px 10px 14px}
+.contrast-note{font-size:12px;line-height:1.45;padding:9px 11px;margin:10px 4px;border-radius:10px;background:#292c32;color:#cdd0d5}
+.contrast-note.is-low{border:1px solid #f1b45c8f;color:#ffcf8a}
+@media(prefers-contrast:more){
+ .ios-help,.backup-note,.ios-nav-meta{color:#e0e0e5}
+ .tab:not(.active){color:#f0f0f2}
+ .edit-direction.is-disabled{opacity:.55}
+ .ios-group,.edit-card{border:1px solid #b0b1b7}
+}
+@media(forced-colors:active){
+ .ios-color-chip,.swatch{forced-color-adjust:none}
+ .edit-card,.ios-group{border:1px solid CanvasText}
+ .tab-indicator{background:Highlight!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .page-track,.card,.edit-card,.tab-indicator,.more-menu,.edit-picker-page,
+ .edit-overlay,.edit-panel,.scrim,.sheet,.nav-screen{transition:none!important;animation:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -557,7 +591,7 @@ body { background:var(--bg); }
  <header class="sheet-head"><button id="sheetBack" class="sheet-action" type="button">Close</button><h2 id="sheetTitle">Settings</h2><button id="sheetDone" class="sheet-action" type="button">Done</button></header>
  <div id="navStack" class="nav-stack"></div>
 </section>
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 <input id="importPicker" class="sr-only" type="file" accept="application/json,.json">
 <script>
 "use strict";
@@ -658,7 +692,7 @@ function normalizeSections(source){
    return {id,name:s.name.trim().slice(0,50)||"Untitled",icon:ICONS[s.icon]?s.icon:inferSectionIcon(id),items:s.items.map(i=>{
      if(!i||typeof i.name!=="string")throw Error("Invalid item");
      const iid=String(i.id||uid());if(ids.has(iid))throw Error("Duplicate id");ids.add(iid);
-     return {id:iid,name:i.name.trim().slice(0,80)||"Untitled",icon:ICONS[i.icon]?i.icon:inferItemIcon(i.name),action:i.action==="url"?"url":"shortcut",target:String(i.target||"").slice(0,2000),noReturn:!!i.noReturn,color:safeColor(i.color)||""};
+     return {id:iid,name:i.name.trim().slice(0,80)||"Untitled",secondaryLabel:typeof i.secondaryLabel==="string"?i.secondaryLabel.trim().slice(0,50):"",icon:ICONS[i.icon]?i.icon:inferItemIcon(i.name),action:i.action==="url"?"url":"shortcut",target:String(i.target||"").slice(0,2000),noReturn:!!i.noReturn,color:safeColor(i.color)||""};
    })};
  });
 }
@@ -704,25 +738,23 @@ function normalise(data){
    }};
 }
 let state=defaults(),storageWorks=false,shown="home",lastFocus=null,toastTimer=null;
-let migratedFromLegacy=false;
+let storageFailure="",unreadableSettings="",migratedFromLegacy=false;
+// Local storage is convenient, but iOS may isolate/clear it between web views.
+// Never confuse a malformed saved file with an unavailable storage API.
 try{
  localStorage.setItem(KEY+"probe","1");localStorage.removeItem(KEY+"probe");storageWorks=true;
  const saved=localStorage.getItem(KEY);
  if(saved){
-   // Saved settings are authoritative, including any intentionally deleted categories.
-   state=normalise(JSON.parse(saved));
- } else {
-   // Import an old layout only on the first launch without an existing saved layout.
-   for(const legacy of LEGACY){
-     const v=localStorage.getItem(legacy);
-     if(!v)continue;
-     const obj=JSON.parse(v);
-     state=normalise(Array.isArray(obj)?{sections:obj,active:"podcasts",theme:DEFAULT_THEME}:obj);
-     migratedFromLegacy=true;
-     break;
-   }
+  try{state=normalise(JSON.parse(saved));}
+  catch(e){unreadableSettings=saved;storageFailure="Existing local settings could not be read. Export the unreadable data or restore a backup before making changes.";}
+ }else{
+  for(const legacy of LEGACY){
+   const raw=localStorage.getItem(legacy);if(!raw)continue;
+   try{const obj=JSON.parse(raw);state=normalise(Array.isArray(obj)?{sections:obj,active:"podcasts",theme:DEFAULT_THEME}:obj);migratedFromLegacy=true;break;}
+   catch(e){storageFailure="An older saved layout could not be read. You may import an earlier backup.";}
+  }
  }
-}catch(e){storageWorks=false;state=defaults();}
+}catch(e){storageWorks=false;storageFailure="Browser storage is unavailable in this view. Changes last only while this page remains open.";state=defaults();}
 // Preserve existing customized buttons while restoring the Playlists tab.
 // Existing older builds stored these same playlist buttons in a group called Stations.
 function restorePlaylists(){
@@ -773,7 +805,14 @@ if(migratedFromLegacy){
  restorePlaylists();
  restoreFourCategories();
 }
-function save(){if(!storageWorks)return;try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){storageWorks=false;}}
+function save(){
+ // Do not overwrite an unreadable saved file merely because the user switched tabs.
+ // A confirmed restore or reset must explicitly clear this recovery guard.
+ if(unreadableSettings)return false;
+ if(!storageWorks)return false;
+ try{localStorage.setItem(KEY,JSON.stringify(state));storageFailure="";unreadableSettings="";return true;}
+ catch(e){storageWorks=false;storageFailure="Browser storage could not save this configuration. Export a backup before leaving.";return false;}
+}
 function fitTitle(){
  const heading=document.querySelector(".app-title");
  const header=heading?.parentElement;
@@ -895,6 +934,10 @@ function updateTabs(){
   const selected=state.sections[i]?.id===active;
   tab.classList.toggle("active",selected);
   tab.setAttribute("aria-current",selected?"page":"false");
+  if(homeEditing){
+   const wrap=tab.closest(".edit-tab-wrap");
+   if(wrap)wrap.classList.toggle("is-current",selected);
+  }
  });
  $("pageTrack").querySelectorAll(".page-slide").forEach((slide,i)=>{
   const isCurrent=state.sections[i]?.id===active;
@@ -909,9 +952,47 @@ function activate(index,animate=true){
  if(state.active===state.sections[index].id){placeTrack(animate);centerActiveTab(animate);return;}
  state.active=state.sections[index].id;
  save();updateTabs();sizeGrid();placeTrack(animate);
+ if(homeEditing)requestAnimationFrame(()=>{updateTabIndicator(false);centerActiveTab(animate);});
+}
+function putButtonLabel(label,item,sectionId){
+ label.replaceChildren();
+ if(item.secondaryLabel){
+  label.append(el("span","label-primary",item.name),el("span","label-secondary",item.secondaryLabel));
+  return;
+ }
+ const radioParts=sectionId==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
+ if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
+ else label.textContent=item.name;
+}
+function visibleButtonName(item){return item.name+(item.secondaryLabel?", "+item.secondaryLabel:"");}
+function editCardControls(card,item,section){
+ const del=el("button","edit-tile-action edit-tile-remove");del.type="button";
+ del.setAttribute("aria-label","Delete "+visibleButtonName(item));del.append(svg("minus"));
+ del.onclick=()=>deleteHomeButton(item.id);
+ const edit=el("button","edit-tile-action edit-tile-edit");edit.type="button";
+ edit.setAttribute("aria-label","Edit "+visibleButtonName(item));edit.append(svg("pencil"));
+ edit.onclick=()=>openButtonEditor(item.id,section.id);
+ const directions=el("div","edit-tile-directions");directions.setAttribute("role","group");
+ directions.setAttribute("aria-label","Move "+visibleButtonName(item));
+ for(const [direction,iconName] of [["left","left"],["up","up"],["down","down"],["right","chevron"]]){
+  const control=el("button","edit-direction");control.type="button";control.dataset.direction=direction;
+  control.setAttribute("aria-label","Move "+visibleButtonName(item)+" "+direction);
+  control.append(svg(iconName));
+  control.onclick=()=>moveHomeButton(item.id,section.id,direction);
+  directions.append(control);
+ }
+ card.append(del,edit,directions);
+}
+function updateDirectionAvailability(card,index,length){
+ for(const control of card.querySelectorAll(".edit-direction")){
+  const allowed=directionTarget(index,length,control.dataset.direction)>=0;
+  control.disabled=!allowed;control.classList.toggle("is-disabled",!allowed);
+ }
 }
 function render(){
  const tabs=$("tabs"),track=$("pageTrack");
+ const scrollByCategory=new Map([...track.querySelectorAll(".page-slide")].map(slide=>[slide.dataset.sectionId,slide.scrollTop]));
+ const previousTabScroll=tabs.scrollLeft;
  tabs.replaceChildren();track.replaceChildren();
  document.querySelector(".app").classList.toggle("is-editing",homeEditing);
  $("openMore").hidden=homeEditing;$("editDone").hidden=!homeEditing;
@@ -925,53 +1006,29 @@ function render(){
    const edit=el("button","edit-tab-tool");edit.type="button";edit.append(svg("pencil"));
    edit.setAttribute("aria-label","Edit category "+section.name);
    edit.onclick=e=>{e.stopPropagation();openCategoryEditor(section.id);};
-   const grip=el("button","edit-tab-tool edit-tab-grip");grip.type="button";grip.append(svg("grip"));
-   grip.setAttribute("aria-label","Drag to reorder category "+section.name);
-   grip.addEventListener("pointerdown",e=>startCategoryDrag(e,section.id,wrap));
-   wrap.append(edit,grip);tabs.append(wrap);
+   edit.setAttribute("aria-label","Category options for "+section.name);
+   edit.onclick=e=>{e.stopPropagation();openCategoryActions(section.id);};
+   wrap.append(edit);tabs.append(wrap);
   }else tabs.append(b);
   const slide=el("div","page-slide");slide.dataset.sectionId=section.id;
   const grid=el("div","grid");grid.setAttribute("aria-label",section.name+" buttons");
   if(!section.items.length&&!homeEditing)grid.append(el("p","grid-empty","Choose Edit from More to add a button."));
-  for(const item of section.items){
-   const card=el("button","card");card.type="button";card.dataset.itemId=item.id;
-   card.setAttribute("aria-label",(homeEditing?"Edit ":"Play ")+item.name);
-   const label=el("span","card-label");
-   const radioParts=section.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
-   if(radioParts)label.append(el("span","frequency",radioParts[1]),el("span","callsign",radioParts[2]));
-   else label.textContent=item.name;
-   card.append(label);
-   card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;if(homeEditing)openButtonEditor(item.id,section.id);else run(item,card);};
+  for(const [itemIndex,item] of section.items.entries()){
+   const card=el(homeEditing?"div":"button","card"+(homeEditing?" edit-card":""));
+   if(!homeEditing)card.type="button";
+   card.dataset.itemId=item.id;
+   const label=el("span","card-label");putButtonLabel(label,item,section.id);
    if(homeEditing){
-    const del=el("span","edit-tile-action edit-tile-remove");del.setAttribute("role","button");
-    del.setAttribute("tabindex","0");del.setAttribute("aria-label","Delete "+item.name);del.append(svg("minus"));
-    del.onclick=e=>{e.stopPropagation();deleteHomeButton(item.id);};
-    del.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();deleteHomeButton(item.id);}};
-    const editBtn=el("span","edit-tile-action edit-tile-edit");editBtn.setAttribute("role","button");
-    editBtn.setAttribute("tabindex","0");editBtn.setAttribute("aria-label","Edit "+item.name);editBtn.append(svg("pencil"));
-    editBtn.onclick=e=>{e.stopPropagation();openButtonEditor(item.id,section.id);};
-    editBtn.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();openButtonEditor(item.id,section.id);}};
-    // Tap controls replace the former six-dot tile drag handle.
-    const directions=el("span","edit-tile-directions");directions.setAttribute("role","group");
-    directions.setAttribute("aria-label","Move "+item.name);
-    const itemIndex=section.items.indexOf(item);
-    for(const [direction,iconName] of [["left","left"],["up","up"],["down","down"],["right","chevron"]]){
-     const control=el("span","edit-direction");
-     control.dataset.direction=direction;
-     control.setAttribute("role","button");
-     control.setAttribute("aria-label","Move "+item.name+" "+direction);
-     const allowed=directionTarget(itemIndex,section.items.length,direction)>=0;
-     control.setAttribute("aria-disabled",allowed?"false":"true");
-     control.tabIndex=allowed?0:-1;
-     if(!allowed)control.classList.add("is-disabled");
-     control.append(svg(iconName));
-     control.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(allowed)moveHomeButton(item.id,section.id,direction);});
-     control.addEventListener("keydown",e=>{
-      if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();if(allowed)moveHomeButton(item.id,section.id,direction);}
-     });
-     directions.append(control);
-    }
-    card.append(del,editBtn,directions);
+    const labelButton=el("button","edit-label-trigger");labelButton.type="button";
+    labelButton.setAttribute("aria-label","Edit "+visibleButtonName(item));
+    labelButton.append(label);labelButton.onclick=()=>openButtonEditor(item.id,section.id);
+    card.append(labelButton);
+    editCardControls(card,item,section);
+    updateDirectionAvailability(card,itemIndex,section.items.length);
+   }else{
+    card.setAttribute("aria-label","Play "+visibleButtonName(item));
+    card.append(label);
+    card.onclick=()=>{if(performance.now()<suppressCardClickUntil)return;run(item,card);};
    }
    grid.append(card);
   }
@@ -990,6 +1047,11 @@ function render(){
  }
  const indicator=el("span","tab-indicator no-animation");indicator.setAttribute("aria-hidden","true");tabs.append(indicator);
  updateTabs();fitTabText();sizeGrid();placeTrack(false);
+ for(const slide of track.querySelectorAll(".page-slide")){
+  const previous=scrollByCategory.get(slide.dataset.sectionId);
+  if(previous!=null)slide.scrollTop=previous;
+ }
+ if(homeEditing)tabs.scrollLeft=previousTabScroll;
 }
 // Landscape-oriented cards; reduce height only when more rows won't fit.
 // Each button starts at the common requested text size. Shrink only when the
@@ -999,15 +1061,18 @@ function render(){
 // through the button's full aria-label and the edit form.
 function fitOneButtonLabel(card){
  const label=card.querySelector(".card-label");if(!label)return false;
- const selected=state.buttonFontSize;
+ const editing=card.classList.contains("edit-card");
+ const selected=editing?Math.min(state.buttonFontSize,16):state.buttonFontSize;
+ const minimum=editing?13:15;
  label.classList.remove("is-truncated");
  label.style.webkitLineClamp="";
  label.style.display="block";
  label.style.fontSize=selected+"px";
- const p=getComputedStyle(card);
- const room=Math.max(1,card.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom));
+ const area=editing?card.querySelector(".edit-label-trigger"):card;
+ const p=getComputedStyle(area);
+ const room=Math.max(1,area.clientHeight-parseFloat(p.paddingTop)-parseFloat(p.paddingBottom));
  let trial=selected;
- while(trial>15 && (label.scrollHeight>room+1||label.scrollWidth>label.clientWidth+1)){
+ while(trial>minimum && (label.scrollHeight>room+1||label.scrollWidth>label.clientWidth+1)){
   label.style.fontSize=(--trial)+"px";
  }
  const clipped=label.scrollHeight>room+1||label.scrollWidth>label.clientWidth+1;
@@ -1036,8 +1101,8 @@ function sizeGrid(){
   // No aspect-ratio or width cap: Height now means the requested pixel height.
   // The only exception is an explicit Fit on Screen preference; in that mode
   // never squeeze tiles below a usable minimum — scroll the remaining rows.
-  const minimum=homeEditing?76:56;
-  const requestedHeight=Math.max(spec.height,homeEditing?76:0);
+  const minimum=homeEditing?112:56;
+  const requestedHeight=Math.max(spec.height,homeEditing?112:0);
   const rowHeight=spec.fitScreen?Math.max(minimum,Math.min(requestedHeight,fitHeight)):requestedHeight;
   grid.style.setProperty("--card-height",rowHeight+"px");
   const requiresScroll=rows*rowHeight+gap*(rows-1)+inset>available+1;
@@ -1055,12 +1120,12 @@ function installCategorySwipe(){
  const viewport=$("pageViewport");
  viewport.addEventListener("touchstart",e=>{
    pageTouch=null;
-   if(e.touches.length!==1||$("sheet").classList.contains("open")||transitionLocked||editDrag||e.target.closest(".edit-tab-grip"))return;
+   if(e.touches.length!==1||$("sheet").classList.contains("open")||transitionLocked)return;
    const finger=e.touches[0];
    pageTouch={id:finger.identifier,x:finger.clientX,y:finger.clientY,t:performance.now(),dx:0,dy:0,axis:null};
  },{passive:true});
  viewport.addEventListener("touchmove",e=>{
-   const g=pageTouch;if(!g||editDrag)return;
+   const g=pageTouch;if(!g)return;
    if(e.touches.length!==1){pageTouch=null;placeTrack(true);return;}
    const finger=Array.from(e.touches).find(f=>f.identifier===g.id);if(!finger)return;
    g.dx=finger.clientX-g.x;g.dy=finger.clientY-g.y;
@@ -1119,10 +1184,10 @@ function toggleMoreMenu(){
  const backdrop=el("div","more-backdrop"),menu=el("div","more-menu");
  menu.id="moreMenu";menu.setAttribute("role","menu");menu.setAttribute("aria-label","RadioGrid options");
  backdrop.onclick=()=>closeMoreMenu();
- for(const [label,icon,page] of [["Edit","pencil","organize"],["Settings","gear","settings"]]){
+ for(const [label,icon,page] of [["Edit","pencil","edit"],["Settings","gear","settings"]]){
   const item=el("button","more-item");item.type="button";item.setAttribute("role","menuitem");
   item.append(svg(icon),el("span","",label));
-  item.onclick=()=>{closeMoreMenu(false);if(page==="organize")enterHomeEdit();else showModal(page);};menu.append(item);
+  item.onclick=()=>{closeMoreMenu(false);if(page==="edit")enterHomeEdit();else showModal(page);};menu.append(item);
  }
  menu.onkeydown=e=>{
   if(e.key==="Escape"){e.preventDefault();e.stopPropagation();closeMoreMenu();}
@@ -1157,7 +1222,6 @@ function run(item,card=null){
  resetLaunching();launchLockUntil=now+1200;
  launchingCard=card;
  if(card){card.classList.add("launching");card.setAttribute("aria-busy","true");}
- notify(item.action==="url"?"Opening "+item.name+"…":"Running "+item.name+"…","info",1800);
  launchResetTimer=setTimeout(resetLaunching,2200);
  if(item.action==="url"){location.href=item.target;return;}
  const base="shortcuts://run-shortcut?name="+encodeURIComponent(item.target);
@@ -1182,7 +1246,7 @@ function liveUpdate(){
  clearTimeout(liveSaveTimer);liveSaveTimer=setTimeout(()=>{save();liveSaveTimer=0;},180);
  if(appearanceFrame)return;
  appearanceFrame=requestAnimationFrame(()=>{
-  appearanceFrame=0;theme();
+  appearanceFrame=0;theme();updateContrastWarnings();
   // Size the home grid first, then update the retained miniature from its final geometry.
   if(!miniFrame)miniFrame=requestAnimationFrame(()=>{miniFrame=0;updateMini();});
  });
@@ -1290,7 +1354,7 @@ function goBack(){
 function showModal(page="settings",args={}){
  lastFocus=document.activeElement;navHistory=[];$("navStack").replaceChildren();
  $("scrim").classList.add("open");$("sheet").classList.add("open");
- $("sheet").setAttribute("aria-hidden","false");document.body.style.overflow="hidden";
+ $("sheet").setAttribute("aria-hidden","false");document.querySelector(".app").inert=true;document.body.style.overflow="hidden";
  pushScreen(page,args,false);
  // Root has only Done (or Save for direct button editing); the chevron exists
  // only when there is a previous Settings screen to return to.
@@ -1300,7 +1364,7 @@ function closeModal(){
  flushLiveSave();if(appearanceFrame){cancelAnimationFrame(appearanceFrame);appearanceFrame=0;theme();}
  if(miniFrame){cancelAnimationFrame(miniFrame);miniFrame=0;}
  $("scrim").classList.remove("open");$("sheet").classList.remove("open");
- $("sheet").setAttribute("aria-hidden","true");
+ $("sheet").setAttribute("aria-hidden","true");document.querySelector(".app").inert=false;
  document.body.style.overflow="";const restore=lastFocus;
  // Keep content until sheet finishes its dismissal animation.
  setTimeout(()=>{if(!$("sheet").classList.contains("open")){navHistory=[];$("navStack").replaceChildren();}},300);
@@ -1502,17 +1566,19 @@ function titlePage(body){
  body.append(grouped(
   settingRow("Name",name),
   settingRow("Font",font),
-  sliderRow("Size",state.titleFontSize,22,48," px",v=>{state.titleFontSize=v;liveUpdate();}),
+  sliderRow("Font Size",state.titleFontSize,22,48," px",v=>{state.titleFontSize=v;liveUpdate();}),
   styleRow("title"),
   colorRow("Text Color",state.theme.titleColor,v=>{state.theme.titleColor=v;liveUpdate();})
  ));
- body.append(sectionLabel("Interface Accent"));
- body.append(grouped(colorRow("Accent Color",state.theme.accent,v=>{state.theme.accent=v;liveUpdate();})));
- body.append(el("p","ios-help","The accent color also changes the three-dot menu and other interactive controls. Category colors can be customized separately in Categories."));
+ body.append(el("p","ios-help","The title font, style, and text color are independent of button and category typography."));
 }
 function backgroundPage(body){
  body.append(sectionLabel("Background"));
  body.append(grouped(colorRow("Background Color",state.theme.background,v=>{state.theme.background=v;liveUpdate();})));
+ body.append(sectionLabel("Interface Colors"));
+ body.append(grouped(colorRow("Accent Color",state.theme.accent,v=>{state.theme.accent=v;liveUpdate();})));
+ body.append(el("p","ios-help","Accent Color controls the three-dot menu, selection highlights, and other interactive elements unless a specific custom color is selected."));
+ const contrast=el("p","contrast-note");contrast.dataset.contrast="categories";body.append(contrast);updateContrastWarnings();
  body.append(sectionLabel("Pattern"));
  const patterns=[["none","Plain"],["terrain","Terrain"],["carbon","Carbon"],["grid","Grid"],["brushed","Brushed"],["glow","Glow"]];
  const picks=el("div","ios-choice-grid");
@@ -1527,6 +1593,7 @@ function backgroundPage(body){
  body.append(picks,el("p","ios-help","These original textures take inspiration from classic automotive displays. The preview above updates instantly."));
 }
 function designPage(body){
+ const colorContrast=el("p","contrast-note");colorContrast.dataset.contrast="buttons";
  body.append(sectionLabel("Text"));
  const bf=choiceControl(FONT_OPTIONS,state.buttonFontStyle||state.fontStyle);
  bf.onchange=()=>{state.buttonFontStyle=bf.value;liveUpdate();};
@@ -1567,6 +1634,7 @@ function designPage(body){
  reset.classList.add("v31-reset");body.append(grouped(reset));
  body.append(el("p","ios-help","Button width always fills each of the three columns; Horizontal Spacing controls the gaps. Use the 1:1 preview above to inspect button text and borders at their actual size."));
  updateButtonDesignStatus();
+ body.append(colorContrast);updateContrastWarnings();
 }
 async function resetButtonAppearance(){
  if(!await iosConfirm("Reset Button Appearance?","Restore default text, colors, borders, height, spacing and fit behavior? Your categories and button actions will not change.","Reset Appearance"))return;
@@ -1586,7 +1654,7 @@ function categoriesPage(body){
  font.onchange=()=>{state.categoryFontStyle=font.value;liveUpdate();};
  body.append(grouped(
   settingRow("Font",font),
-  sliderRow("Size",state.categoryFontSize,12,24," px",v=>{state.categoryFontSize=v;liveUpdate();}),
+  sliderRow("Font Size",state.categoryFontSize,12,24," px",v=>{state.categoryFontSize=v;liveUpdate();}),
   styleRow("category"),
   colorRow("Text Color",state.categoryTextColor,v=>{state.categoryTextColor=v;liveUpdate();})
  ));
@@ -1595,27 +1663,66 @@ function categoriesPage(body){
  activeCustom.checked=!!state.categoryActiveColor;
  const activeColor=colorRow("Selected Text",state.categoryActiveColor||state.theme.accent,v=>{state.categoryActiveColor=v;activeCustom.checked=true;liveUpdate();});
  const activeRow=settingRow("Custom Color",activeCustom);
- activeCustom.onchange=()=>{state.categoryActiveColor=activeCustom.checked?(state.categoryActiveColor||state.theme.accent):"";liveUpdate();};
+ activeColor.hidden=!activeCustom.checked;
+ activeCustom.onchange=()=>{state.categoryActiveColor=activeCustom.checked?(state.categoryActiveColor||state.theme.accent):"";activeColor.hidden=!activeCustom.checked;liveUpdate();};
  body.append(grouped(activeRow,activeColor));
  body.append(sectionLabel("Selection Underline"));
  const indicatorCustom=el("input");indicatorCustom.type="checkbox";indicatorCustom.className="ios-switch";
  indicatorCustom.checked=!!state.categoryUnderlineColor;
  const indicatorRow=settingRow("Custom Color",indicatorCustom);
  const indicatorColor=colorRow("Underline Color",state.categoryUnderlineColor||state.theme.accent,v=>{state.categoryUnderlineColor=v;indicatorCustom.checked=true;liveUpdate();});
- indicatorCustom.onchange=()=>{state.categoryUnderlineColor=indicatorCustom.checked?(state.categoryUnderlineColor||state.theme.accent):"";liveUpdate();};
+ indicatorColor.hidden=!indicatorCustom.checked;
+ indicatorCustom.onchange=()=>{state.categoryUnderlineColor=indicatorCustom.checked?(state.categoryUnderlineColor||state.theme.accent):"";indicatorColor.hidden=!indicatorCustom.checked;liveUpdate();};
  body.append(grouped(indicatorRow,indicatorColor,
   sliderRow("Thickness",state.categoryUnderlineHeight,2,7," px",v=>{state.categoryUnderlineHeight=v;liveUpdate();})));
  body.append(el("p","ios-help","Custom Color off follows the global accent automatically. Long category names scroll rather than shrink the chosen font size. Changes appear in the live preview."));
 }
+
+function luminance(hex){
+ const h=safeColor(hex);if(!h)return 0;
+ const rgb=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);
+ const linear=rgb.map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+ return linear[0]*.2126+linear[1]*.7152+linear[2]*.0722;
+}
+function contrastRatio(a,b){const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+function updateContrastWarnings(){
+ const checks={
+  categories:{ratio:contrastRatio(state.categoryTextColor,state.theme.background),name:"Unselected category labels"},
+  buttons:{ratio:contrastRatio(state.theme.buttonText,state.theme.card),name:"Button text"}
+ };
+ for(const node of document.querySelectorAll("[data-contrast]")){
+  const c=checks[node.dataset.contrast];if(!c)continue;
+  const low=c.ratio<4.5;node.classList.toggle("is-low",low);
+  node.textContent=`${c.name}: ${c.ratio.toFixed(1)}:1 contrast — `+(low?"Below the recommended 4.5:1 text contrast. Choose more distinct colors.":"Meets the 4.5:1 normal-text contrast guideline.");
+ }
+}
+
 function backupPage(body){
- body.append(sectionLabel("Backup & Restore"));
- body.append(grouped(navigationRow("Export Settings","JSON file",exportSettings),navigationRow("Import Settings","Choose a backup",()=>$('importPicker').click())));
+ body.append(sectionLabel("Storage Status"));
+ const status=el("div","backup-status"+(storageWorks&&!storageFailure?"":" warning"));
+ status.append(svg(storageWorks&&!storageFailure?"check":"backup"));
+ const info=el("div");
+ info.append(el("strong","",storageWorks&&!storageFailure?"Stored in this browser":"Storage needs attention"));
+ info.append(el("span","",storageFailure||"Preferences are saved in this browser or web view. This is not an iCloud backup and can be lost if browser data is cleared."));
+ status.append(info);body.append(status);
+ body.append(sectionLabel("Back Up Your Settings"));
+ body.append(grouped(
+  navigationRow("Share / Save to Files","Uses iOS Share when available",shareSettings),
+  navigationRow("Download JSON File","Browser download",exportSettings),
+  navigationRow("Copy Backup JSON","Clipboard or selectable text",copySettingsJSON),
+  navigationRow("Restore from JSON","Choose a saved backup",()=>$('importPicker').click())
+ ));
+ body.append(el("p","backup-note","For an iCloud Drive backup, use Share → Save to Files → iCloud Drive (if offered). Some Shortcuts web views do not support sharing or downloading. Copy Backup JSON is an alternate manual recovery method. Automatic iCloud synchronization is not available from this HTML alone."));
+ if(unreadableSettings){
+  body.append(sectionLabel("Recovery"));
+  body.append(grouped(navigationRow("Export Unreadable Local Data","Preserve original bytes",()=>downloadBackupText(unreadableSettings,"RadioGrid-Unreadable-Settings.json"))));
+ }
  body.append(sectionLabel("Reset"));
  const reset=navigationRow("Restore Defaults","Remove customizations",resetDefaults);
  reset.querySelector(".ios-row-label").style.color="#ff7b72";
  body.append(grouped(reset));
- body.append(el("p","ios-help",storageWorks?"Changes are saved automatically on this device. Export a backup before changing your website address or reinstalling.":"Local browser storage is unavailable. Export a backup before leaving."));
 }
+
 function drawMini(force=false){
  const host=activePreview();if(!host||host.hidden||!host.isConnected)return;
  const selected=state.sections.find(s=>s.id===previewSection)||activeSection()||state.sections[0];
@@ -1655,8 +1762,7 @@ function drawMini(force=false){
  if(!samples.length)grid.append(el("p","grid-empty","Empty category"));
  for(const item of samples){
   const c=el("div","card"),label=el("span","card-label");
-  const radio=selected.id==="radio"?item.name.match(/^(\d+(?:\.\d+)?)\s+(.+)$/):null;
-  if(radio)label.append(el("span","frequency",radio[1]),el("span","callsign",radio[2]));else label.textContent=item.name;
+  putButtonLabel(label,item,selected.id);
   c.append(label);grid.append(c);
  }
  mini.append(grid);wrap.append(mini);stage.append(wrap);
@@ -1709,7 +1815,7 @@ function updateMini(){
    const sample=inspect.querySelector(".v31-inspected-card");
    const label=sample.querySelector(".card-label");
    const sampleItem=[...selected.items].sort((a,b)=>b.name.length-a.name.length)[0];
-   label.textContent=sampleItem?.name||"Sample Button";
+   if(sampleItem)putButtonLabel(label,sampleItem,selected.id);else label.textContent="Sample Button";
    sample.style.width=Math.min(140,Math.max(72,homeGrid?.querySelector(".card")?.clientWidth||104))+"px";
    sample.style.height=rowHeight+"px";
    fitOneButtonLabel(sample);
@@ -1720,9 +1826,53 @@ function updateMini(){
  updateButtonDesignStatus();
 }
 function findButton(id){for(const sec of state.sections){const item=sec.items.find(i=>i.id===id);if(item)return {sec,item};}return null;}
-function exportSettings(){
- const b=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const url=URL.createObjectURL(b),a=el("a");a.href=url;a.download="RadioGrid-Settings.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);notify("Backup download requested");
+// Export remains compatible with V18–V33: backup metadata is additive and ignored by old importers.
+function backupData(){
+ flushLiveSave();
+ return JSON.stringify({...state,_backup:{format:"RadioGrid JSON",version:34,exportedAt:new Date().toISOString()}},null,2);
 }
+function downloadBackupText(content,filename="RadioGrid-Settings.json"){
+ try{
+  const blob=new Blob([content],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=el("a");a.href=url;a.download=filename;
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+  notify("Download requested. Verify the file appears in Files or Downloads.");
+ }catch(e){notify("Download unavailable. Try Copy Backup JSON.","error",3500);}
+}
+function exportSettings(){downloadBackupText(backupData());}
+async function shareSettings(){
+ const content=backupData();
+ if(typeof File!=="function"||typeof navigator.share!=="function"||typeof navigator.canShare!=="function"){
+  notify("Sharing files is unavailable here. Use Download or Copy.","error",3500);return;
+ }
+ const file=new File([content],"RadioGrid-Settings.json",{type:"application/json"});
+ let available=false;try{available=navigator.canShare({files:[file]});}catch(_){available=false;}
+ if(!available){
+  notify("Sharing files is unavailable here. Use Download or Copy.","error",3500);return;
+ }
+ try{await navigator.share({files:[file],title:"RadioGrid settings backup"});
+  notify("Share sheet closed. Confirm that you saved the file in Files.");
+ }catch(e){if(e?.name!=="AbortError")notify("Could not share. Use Download or Copy.","error",3500);}
+}
+async function copySettingsJSON(){
+ const content=backupData();
+ try{if(!navigator.clipboard?.writeText)throw Error("clipboard unavailable");await navigator.clipboard.writeText(content);notify("Backup JSON copied. Paste it into a file or note to retain it.");}
+ catch(e){
+  // Restricted WebViews may not permit clipboard writes. Make the whole backup selectable.
+  const overlay=el("div","confirm-overlay open"),panel=el("div","confirm-panel"),info=el("div","confirm-info");
+  const title=el("h3","","Copy Backup JSON"),description=el("p","","Select all text below and copy it, then save it in Files or Notes.");
+  const textarea=el("textarea");textarea.value=content;textarea.readOnly=true;
+  textarea.setAttribute("aria-label","Backup JSON text");
+  textarea.style.cssText="display:block;width:calc(100% - 28px);height:210px;margin:12px 14px;padding:12px;background:#19191c;border:1px solid #777b83;border-radius:10px;color:#fff;font:12px ui-monospace,monospace;resize:none;user-select:text;-webkit-user-select:text";
+  const close=el("button","confirm-cancel","Done");close.type="button";
+  const previous=document.activeElement;
+  info.append(title,description,textarea);panel.append(info,close);overlay.append(panel);document.body.append(overlay);
+  close.onclick=()=>{overlay.remove();previous?.focus?.({preventScroll:true});};
+  overlay.addEventListener("keydown",e=>{if(e.key==="Escape"){e.preventDefault();close.click();}});
+  textarea.focus();textarea.select();
+ }
+}
+
 function iosConfirm(title,message,destructiveLabel="Continue"){
  return new Promise(resolve=>{
   const old=document.querySelector(".confirm-overlay");old?.remove();
@@ -1744,11 +1894,16 @@ function iosConfirm(title,message,destructiveLabel="Continue"){
 }
 $("importPicker").onchange=async e=>{const f=e.target.files?.[0];if(!f)return;
  try{
-  const data=normalise(JSON.parse(await f.text()));
-  if(await iosConfirm("Replace Settings?","Replace your current settings with this backup?", "Replace Settings")){
-   state=data;save();theme();render();showCurrentPage(true);notify("Backup restored");
+  if(f.size>5*1024*1024)throw Error("Backup exceeds the 5 MB safety limit.");
+  const raw=JSON.parse(await f.text());
+  if(!Array.isArray(raw?.sections))throw Error("Not a RadioGrid settings backup.");
+  const data=normalise(raw),buttons=data.sections.reduce((n,sec)=>n+sec.items.length,0);
+  const message=`Replace current settings with “${data.appTitle}” (${data.sections.length} categories, ${buttons} buttons)? Export your current configuration first if you need to keep it.`;
+  if(await iosConfirm("Restore This Backup?",message,"Replace Settings")){
+   state=data;unreadableSettings="";const saved=save();theme();render();showCurrentPage(true);
+   notify(saved?"Backup restored and stored locally":"Backup loaded for this session. Local storage is unavailable.",saved?"":"error",3500);
   }
- }catch(_){notify("Import failed. Select a RadioGrid JSON backup.","error",3500);}
+ }catch(e){notify(e?.message||"Import failed. Choose a valid RadioGrid JSON backup.","error",3500);}
  finally{e.target.value="";}
 };
 async function resetDefaults(){
@@ -1775,14 +1930,13 @@ applyIdentity=function(){oldApplyIdentity();document.documentElement.style.setPr
 
 
 // V23 — direct editing. All gestures originate from visible handles, never a long press.
-let homeEditing=false,editDrag=null,editOverlay=null,undoTimeout=0,undoElement=null,dragHoverTimer=0;
+let homeEditing=false,editOverlay=null,undoTimeout=0,undoElement=null;
 function enterHomeEdit(){
  if($("sheet").classList.contains("open"))return;
  closeMoreMenu(false);homeEditing=true;render();$("editDone").focus({preventScroll:true});
 }
 function exitHomeEdit(){
  if(editOverlay)closeHomeEditor();
- if(editDrag)endEditDrag(null,true);
  homeEditing=false;render();save();$("openMore").focus({preventScroll:true});
 }
 $("editDone").onclick=exitHomeEdit;
@@ -1799,16 +1953,41 @@ function directionTarget(index,length,direction){
  return -1;
 }
 function moveHomeButton(itemId,sectionId,direction){
- if(!homeEditing||editOverlay||editDrag)return;
+ if(!homeEditing||editOverlay)return;
  const section=state.sections.find(s=>s.id===sectionId);if(!section)return;
  const index=section.items.findIndex(item=>item.id===itemId);
  const destination=directionTarget(index,section.items.length,direction);
  if(destination<0)return;
+ const slide=[...$("pageTrack").querySelectorAll(".page-slide")].find(s=>s.dataset.sectionId===sectionId);
+ const grid=slide?.querySelector(".grid");
+ const tiles=grid?[...grid.querySelectorAll(":scope > .edit-card")]:[];
+ const a=tiles[index],b=tiles[destination];if(!a||!b)return;
+ const originals=new Map([[a,a.getBoundingClientRect()],[b,b.getBoundingClientRect()]]);
+ const scroll=slide.scrollTop;
+ const movingControl=a.querySelector(`.edit-direction[data-direction="${direction}"]`);
+ const hadFocus=!!movingControl&&document.activeElement===movingControl;
  [section.items[index],section.items[destination]]=[section.items[destination],section.items[index]];
- persistHomeEdit("");
- // Preserve keyboard focus on the same direction after rerendering the moved tile.
- const moved=[...document.querySelectorAll(".card")].find(c=>c.dataset.itemId===itemId);
- moved?.querySelector(`.edit-direction[aria-label="Move ${CSS.escape(section.items[destination].name)} ${direction}"]`)?.focus({preventScroll:true});
+ // Swap the two existing DOM nodes, not the entire grid or its event handlers.
+ if(a.nextElementSibling===b)b.after(a);
+ else if(b.nextElementSibling===a)a.after(b);
+ else {const marker=document.createComment("swap");a.replaceWith(marker);b.replaceWith(a);marker.replaceWith(b);}
+ updateDirectionAvailability(a,destination,section.items.length);
+ updateDirectionAvailability(b,index,section.items.length);
+ save();slide.scrollTop=scroll;
+ if(hadFocus){
+  const target=movingControl.disabled?a.querySelector(".edit-label-trigger"):movingControl;
+  target?.focus({preventScroll:true});
+ }
+ if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+  for(const tile of [a,b]){
+   const was=originals.get(tile),now=tile.getBoundingClientRect();
+   if(!was||!now)continue;
+   const dx=was.left-now.left,dy=was.top-now.top;
+   if((dx||dy)&&typeof tile.animate==="function")tile.animate([
+     {transform:`translate3d(${dx}px,${dy}px,0)`},{transform:"translate3d(0,0,0)"}
+    ],{duration:220,easing:"cubic-bezier(.22,1,.36,1)"});
+  }
+ }
 }
 function offerUndo(message,snapshot){
  clearTimeout(undoTimeout);undoElement?.remove();
@@ -1819,7 +1998,7 @@ function offerUndo(message,snapshot){
 }
 function closeHomeEditor(){
  if(!editOverlay)return;
- const old=editOverlay;editOverlay=null;old.classList.remove("open");
+ const old=editOverlay;editOverlay=null;document.querySelector(".app").inert=false;old.classList.remove("open");
  setTimeout(()=>old.remove(),260);$("editDone").focus({preventScroll:true});
 }
 function buildHomeEditor(title,saveLabel="Save"){
@@ -1840,7 +2019,7 @@ function buildHomeEditor(title,saveLabel="Save"){
   if(e.shiftKey&&document.activeElement===els[0]){e.preventDefault();els.at(-1).focus();}
   else if(!e.shiftKey&&document.activeElement===els.at(-1)){e.preventDefault();els[0].focus();}
  });
- editOverlay=backdrop;requestAnimationFrame(()=>{backdrop.classList.add("open");cancel.focus({preventScroll:true});});
+ editOverlay=backdrop;document.querySelector(".app").inert=true;requestAnimationFrame(()=>{backdrop.classList.add("open");cancel.focus({preventScroll:true});});
  return {body,saveBtn,panel};
 }
 function editorField(name,value,type="text"){
@@ -1853,21 +2032,64 @@ function simpleSelect(options,selected){
   const opt=el("option","",label);opt.value=value;sel.append(opt);
  });sel.value=selected;return sel;
 }
+function editChoiceControl(values,current,title,panel){
+ const picker=el("button","ios-picker");picker.type="button";picker.value=current;
+ picker.dataset.picker="true";
+ const label=el("span","ios-picker-text"),arrow=el("span","ios-picker-chevron","›");
+ const sync=()=>{label.textContent=values.find(([v])=>v===picker.value)?.[1]||"Select";};
+ picker.append(label,arrow);sync();
+ picker.onclick=()=>{
+  if(panel.querySelector(".edit-picker-page"))return;
+  const head=panel.querySelector(".edit-panel-top"),body=panel.querySelector(".edit-panel-scroll");
+  const list=el("section","edit-picker-page");list.setAttribute("role","region");
+  list.setAttribute("aria-label",title);panel.classList.add("picker-active");
+  head.inert=true;body.inert=true;
+  const nav=el("div","edit-picker-nav");
+  const back=el("button","edit-picker-back");back.type="button";back.setAttribute("aria-label","Back to Edit Button");
+  back.append(svg("left"));
+  const titleNode=el("strong","",title),placeholder=el("span","");
+  nav.append(back,titleNode,placeholder);
+  const options=el("div","edit-picker-options");
+  const close=()=>{list.remove();panel.classList.remove("picker-active");head.inert=false;body.inert=false;picker.focus({preventScroll:true});};
+  back.onclick=close;
+  for(const [value,name] of values){
+   const b=el("button","edit-picker-option");b.type="button";
+   b.append(el("span","",name),el("span","ios-check",picker.value===value?"✓":""));
+   b.setAttribute("aria-selected",String(picker.value===value));
+   b.onclick=()=>{picker.value=value;sync();close();picker.onchange?.();};
+   options.append(b);
+  }
+  list.append(nav,options);panel.append(list);
+  list.addEventListener("keydown",e=>{
+   if(e.key==="Escape"){e.preventDefault();e.stopPropagation();close();}
+   if(e.key==="Tab"){
+    const focusable=[...list.querySelectorAll("button")];
+    if(e.shiftKey&&document.activeElement===focusable[0]){e.preventDefault();focusable.at(-1).focus();}
+    else if(!e.shiftKey&&document.activeElement===focusable.at(-1)){e.preventDefault();focusable[0].focus();}
+   }
+  });
+  requestAnimationFrame(()=>back.focus({preventScroll:true}));
+ };
+ return picker;
+}
 function openButtonEditor(id,sectionId){
  const found=id?findButton(id):null,item=found?.item||null;
  const v=buildHomeEditor(item?"Edit Button":"New Button"),b=v.body;
- const name=textControl(item?.name||"","Display name"),sec=simpleSelect(state.sections.map(s=>[s.id,s.name]),found?.sec.id||sectionId||state.sections[0]?.id);
- const type=simpleSelect([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut");
+ const name=textControl(item?.name||"","Primary button name"),secondary=textControl(item?.secondaryLabel||"","Optional second line"),
+  sec=editChoiceControl(state.sections.map(s=>[s.id,s.name]),found?.sec.id||sectionId||state.sections[0]?.id,"Category",v.panel);
+ const type=editChoiceControl([["shortcut","Run Shortcut"],["url","Open Link"]],item?.action||"shortcut","Action",v.panel);
  const target=textControl(item?.target||"","Exact Shortcut name");
- const targetRow=settingRow("Shortcut",target);
+ const targetRow=settingRow("Shortcut Name",target);
  const ret=el("input");ret.type="checkbox";ret.className="ios-switch";ret.checked=!item?.noReturn;
  ret.setAttribute("role","switch");ret.setAttribute("aria-label","Return to Grid");
  const retRow=settingRow("Return to Grid",ret);
- const changeType=()=>{const isUrl=type.value==="url";targetRow.querySelector(".ios-row-label").textContent=isUrl?"URL":"Shortcut";
+ const changeType=()=>{const isUrl=type.value==="url";targetRow.querySelector(".ios-row-label").textContent=isUrl?"URL":"Shortcut Name";
   target.placeholder=isUrl?"https://...":"Exact Shortcut name";retRow.hidden=isUrl;};
  type.onchange=changeType;changeType();
- name.maxLength=80;b.append(sectionLabel("Button"),grouped(settingRow("Name",name),settingRow("Category",sec),settingRow("Action",type),targetRow,retRow));
- b.append(el("p","ios-help","The display name may differ from the exact Shortcut name. Changes are saved when you tap Save."));
+ name.maxLength=80;secondary.maxLength=50;
+ b.append(sectionLabel("Button Label"),grouped(settingRow("Button Name",name),settingRow("Second Line",secondary)));
+ b.append(el("p","ios-help","The optional second line appears beneath the main name. It does not change the Shortcut being run."));
+ b.append(sectionLabel("Action"),grouped(settingRow("Category",sec),settingRow("Action",type),targetRow,retRow));
  const error=el("p","edit-error");b.append(error);
  if(item){const del=el("button","edit-danger","Delete Button");del.type="button";del.onclick=()=>deleteHomeButton(id);b.append(del);}
  const save=()=>{
@@ -1876,7 +2098,7 @@ function openButtonEditor(id,sectionId){
   if(type.value==="url"&&!/^(https?:|music:|podcasts:|spotify:|overcast:|x-apple-music:)/i.test(link)){
    error.textContent="Enter a valid URL or supported audio link.";return;
   }
-  const next={id:item?.id||uid(),name:label,icon:item?.icon||"music",action:type.value,target:link,
+  const next={id:item?.id||uid(),name:label,secondaryLabel:secondary.value.trim().slice(0,50),icon:item?.icon||"music",action:type.value,target:link,
    noReturn:type.value==="shortcut"&&!ret.checked,color:item?.color||""};
   if(found){const oldIndex=found.sec.items.findIndex(i=>i.id===id);found.sec.items.splice(oldIndex,1);
    if(found.sec===dest)dest.items.splice(oldIndex,0,next);else dest.items.push(next);
@@ -1886,12 +2108,34 @@ function openButtonEditor(id,sectionId){
  v.saveBtn.onclick=save;
  b.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT"&&e.target.type==="text"){e.preventDefault();save();}});
 }
+function moveHomeCategory(id,direction){
+ const old=state.sections.findIndex(s=>s.id===id);
+ const next=old+direction;
+ if(old<0||next<0||next>=state.sections.length)return;
+ [state.sections[old],state.sections[next]]=[state.sections[next],state.sections[old]];
+ closeHomeEditor();save();render();
+ const selected=$("tabs").querySelector(`.edit-tab-wrap[data-section-id="${CSS.escape(id)}"] .edit-tab-tool`);
+ selected?.focus({preventScroll:true});
+}
+function openCategoryActions(id){
+ const section=state.sections.find(s=>s.id===id);if(!section)return;
+ const v=buildHomeEditor("Category Options","Done");v.saveBtn.onclick=closeHomeEditor;
+ v.body.append(sectionLabel(section.name));
+ const index=state.sections.indexOf(section);
+ const rename=navigationRow("Rename Category","",()=>openCategoryEditor(id));
+ const left=navigationRow("Move Left","",()=>moveHomeCategory(id,-1));left.disabled=index===0;
+ const right=navigationRow("Move Right","",()=>moveHomeCategory(id,1));right.disabled=index===state.sections.length-1;
+ const remove=navigationRow("Delete Category","",()=>deleteHomeCategory(id));
+ remove.classList.add("v33-destructive");
+ v.body.append(grouped(rename,left,right,remove));
+ v.body.append(el("p","ios-help","Select a category tab to switch categories. Use these actions to rename or change its order."));
+}
 function openCategoryEditor(id){
  const sec=id?state.sections.find(s=>s.id===id):null;
  const v=buildHomeEditor(sec?"Edit Category":"New Category"),b=v.body;
  const name=textControl(sec?.name||"","Category name");name.maxLength=50;
  b.append(sectionLabel("Category"),grouped(settingRow("Name",name)));
- b.append(el("p","ios-help","Drag category grip handles on the Home Screen to change category order."));
+ b.append(el("p","ios-help","To change the category order, select its tab and use Category Options."));
  const error=el("p","edit-error");b.append(error);
  if(sec){
   const del=el("button","edit-danger","Delete Category");del.type="button";
@@ -1919,108 +2163,6 @@ async function deleteHomeCategory(id){
  if(state.active===id)state.active=state.sections[0]?.id||"";
  closeHomeEditor();persistHomeEdit("");offerUndo("Category deleted",before);
 }
-function resetEditDragVisual(){
- document.querySelectorAll(".card.drop-before,.card.drop-after,.grid.drop-empty,.edit-tab-wrap.category-drop-before,.edit-tab-wrap.category-drop-after")
-  .forEach(n=>n.classList.remove("drop-before","drop-after","drop-empty","category-drop-before","category-drop-after"));
-}
-function startCategoryDrag(e,sectionId,source){
- if(!homeEditing||editOverlay||editDrag||(e.pointerType==="mouse"&&e.button!==0))return;
- e.preventDefault();e.stopPropagation();pageTouch=null;
- beginEditDrag(e,"category",sectionId,sectionId,source);
-}
-function beginEditDrag(e,kind,id,fromId,source){
- const rect=source.getBoundingClientRect();
- const ghost=source.cloneNode(true);ghost.classList.add("edit-drag-ghost");
- ghost.removeAttribute("id");ghost.setAttribute("aria-hidden","true");ghost.inert=true;
- ghost.style.left=rect.left+"px";ghost.style.top=rect.top+"px";
- ghost.style.width=rect.width+"px";ghost.style.height=rect.height+"px";
- document.body.append(ghost);source.classList.add("edit-drag-origin");
- editDrag={pointer:e.pointerId,kind,id,fromId,source,ghost,x:e.clientX,y:e.clientY,rect,
-  destinationId:fromId,toIndex:null,categoryIndex:null,categoryHoverId:null,startX:e.clientX,startY:e.clientY,hasMoved:false,validDrop:false};
- document.addEventListener("pointermove",moveEditDrag,{capture:true,passive:false});
- document.addEventListener("pointerup",finishEditDrag,true);
- document.addEventListener("pointercancel",cancelEditDrag,true);
-}
-function dragCategoryAt(x,y){
- const bar=$("tabs").getBoundingClientRect();if(y<bar.top-16||y>bar.bottom+16)return null;
- const wraps=[...$("tabs").querySelectorAll(".edit-tab-wrap")];
- return wraps.find(w=>{const r=w.getBoundingClientRect();return x>=r.left&&x<=r.right;})||null;
-}
-function moveEditDrag(e){
- const d=editDrag;if(!d||e.pointerId!==d.pointer)return;
- if(e.cancelable)e.preventDefault();d.x=e.clientX;d.y=e.clientY;
- if(Math.hypot(e.clientX-d.startX,e.clientY-d.startY)>9)d.hasMoved=true;
- d.validDrop=false;
- // Re-anchor translation to the pointer's starting location; supports both finger and mouse.
- d.ghost.style.transform=`translate3d(${e.clientX-d.startX}px,${e.clientY-d.startY}px,0) scale(1.035)`;
- resetEditDragVisual();
- if(d.kind==="category"){
-  const bar=$("tabs"),barBox=bar.getBoundingClientRect();
-  if(e.clientX<barBox.left+30)bar.scrollLeft-=13;
-  else if(e.clientX>barBox.right-30)bar.scrollLeft+=13;
-  const target=dragCategoryAt(e.clientX,e.clientY);
-  if(!target){d.categoryIndex=null;return;}
-  const i=state.sections.findIndex(s=>s.id===target.dataset.sectionId),r=target.getBoundingClientRect();
-  const before=e.clientX<r.left+r.width/2;
-  target.classList.add(before?"category-drop-before":"category-drop-after");
-  d.categoryIndex=i+(before?0:1);d.validDrop=true;return;
- }
- const tab=dragCategoryAt(e.clientX,e.clientY);
- if(tab){
-  const id=tab.dataset.sectionId;d.destinationId=id;d.toIndex=null;d.validDrop=true;
-  if(id!==state.active&&d.categoryHoverId!==id){
-   clearTimeout(dragHoverTimer);d.categoryHoverId=id;
-   dragHoverTimer=setTimeout(()=>{if(editDrag===d){const i=state.sections.findIndex(s=>s.id===id);
-    if(i>=0){activate(i,false);d.categoryHoverId=null;}}},460);
-  }
-  return;
- }
- clearTimeout(dragHoverTimer);d.categoryHoverId=null;
- const slide=[...$("pageTrack").querySelectorAll(".page-slide")].find(s=>s.dataset.sectionId===state.active);
- const grid=slide?.querySelector(".grid");if(!grid)return;
- const gr=grid.getBoundingClientRect();if(e.clientY<gr.top-15||e.clientY>gr.bottom+22||e.clientX<gr.left-15||e.clientX>gr.right+15)return;
- const candidates=[...grid.querySelectorAll(":scope > .card")].filter(c=>c.dataset.itemId!==d.id);
- d.destinationId=state.active;d.validDrop=true;
- if(!candidates.length){d.toIndex=0;grid.classList.add("drop-empty");return;}
- let closest=null,dist=Infinity;
- for(const card of candidates){const r=card.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;
-  const dis=Math.hypot((e.clientX-cx)*.85,e.clientY-cy);if(dis<dist){dist=dis;closest=card;}}
- const r=closest.getBoundingClientRect();const before=Math.abs(e.clientY-(r.top+r.height/2))>r.height*.3
-  ?e.clientY<r.top+r.height/2:e.clientX<r.left+r.width/2;
- closest.classList.add(before?"drop-before":"drop-after");
- const list=state.sections.find(s=>s.id===d.destinationId)?.items||[];
- const index=list.findIndex(x=>x.id===closest.dataset.itemId);d.toIndex=index+(before?0:1);
-}
-function endEditDrag(e,cancel=false){
- const d=editDrag;if(!d||(!cancel&&e&&e.pointerId!==d.pointer))return;
- editDrag=null;clearTimeout(dragHoverTimer);dragHoverTimer=0;
- document.removeEventListener("pointermove",moveEditDrag,true);
- document.removeEventListener("pointerup",finishEditDrag,true);
- document.removeEventListener("pointercancel",cancelEditDrag,true);
- resetEditDragVisual();d.ghost.remove();d.source.classList.remove("edit-drag-origin");
- suppressCardClickUntil=performance.now()+650;
- if(cancel||!d.hasMoved||!d.validDrop)return;
- if(d.kind==="category"){
-  if(d.categoryIndex===null)return;
-  const old=state.sections.findIndex(s=>s.id===d.id);if(old<0)return;
-  let next=d.categoryIndex;if(next>old)next--;
-  if(next===old)return;
-  const section=state.sections.splice(old,1)[0];state.sections.splice(Math.max(0,next),0,section);
-  persistHomeEdit("");return;
- }
- const from=state.sections.find(s=>s.id===d.fromId),to=state.sections.find(s=>s.id===d.destinationId);
- if(!from||!to)return;
- const index=from.items.findIndex(i=>i.id===d.id);if(index<0)return;
- const [item]=from.items.splice(index,1);
- let at=d.toIndex==null?to.items.length:d.toIndex;
- if(from===to&&index<at)at--;
- at=Math.max(0,Math.min(to.items.length,at));to.items.splice(at,0,item);
- state.active=to.id;
- if(from===to&&at===index){render();return;}
- persistHomeEdit("");
-}
-function finishEditDrag(e){endEditDrag(e,false)}
-function cancelEditDrag(e){endEditDrag(e,true)}
 
 theme();render();installCategorySwipe();installNavBackSwipe();
 </script>

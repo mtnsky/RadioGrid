@@ -409,19 +409,44 @@ body { background:var(--bg); }
 .preview-mini .tabs.is-scrollable .tab span{max-width:min(68vw,255px);text-overflow:ellipsis}
 
 
-/* V23: direct on-Home-screen editing. No long-press, no dedicated Edit page. */
+/* V26: visually edge-hugging chevrons with full, inset touch targets. */
 #openMore[hidden],#editDone[hidden]{display:none!important}
 #editDone{right:0;min-width:52px;font-size:17px;font-weight:650;justify-content:flex-end}
 .app.is-editing .card{cursor:pointer;overflow:visible;-webkit-user-select:none;user-select:none}
 .app.is-editing .card:active{transform:none;filter:none}
-.app.is-editing .card-label{padding:0 17px}
+.app.is-editing .card{padding:24px 23px;min-height:76px}
+.app.is-editing .card-label{padding:0;display:flex;flex-direction:column;justify-content:center;min-height:0}
+/* Edge controls are invisible hit areas with just a chevron glyph, not styled buttons.
+   The overlay itself lets taps pass through to the main tile for editing. */
+.edit-tile-directions{position:absolute;inset:0;z-index:2;pointer-events:none;
+ -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.edit-direction{position:absolute;width:30px;height:30px;display:grid;place-items:center;
+ color:var(--accent);background:transparent;border:0;border-radius:0;box-shadow:none;
+ padding:0;cursor:pointer;pointer-events:auto;touch-action:manipulation;
+ -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+ -webkit-tap-highlight-color:transparent}
+.edit-direction[data-direction="up"]{top:0;left:50%;transform:translateX(-50%)}
+.edit-direction[data-direction="down"]{bottom:0;left:50%;transform:translateX(-50%)}
+.edit-direction[data-direction="left"]{left:0;top:50%;transform:translateY(-50%)}
+.edit-direction[data-direction="right"]{right:0;top:50%;transform:translateY(-50%)}
+/* Keep the invisible 30px hit areas fully inside each tile. Move only the
+   visible glyph 7px toward its associated border. This puts each chevron
+   roughly 5px from the perimeter without reducing the touch target or
+   intruding on neighboring cards. */
+.edit-direction svg{width:17px;height:17px;stroke-width:2.8;pointer-events:none}
+.edit-direction[data-direction="up"] svg{transform:translateY(-7px)}
+.edit-direction[data-direction="right"] svg{transform:translateX(7px)}
+.edit-direction[data-direction="down"] svg{transform:translateY(7px)}
+.edit-direction[data-direction="left"] svg{transform:translateX(-7px)}
+.edit-direction:active:not(.is-disabled){opacity:.48;background:transparent}
+.edit-direction:focus-visible{outline:2px solid var(--accent);outline-offset:-3px;border-radius:6px}
+.edit-direction.is-disabled{color:#777982;opacity:.38;cursor:default}
+
 .edit-tile-action{position:absolute;top:-6px;z-index:3;width:28px;height:28px;border-radius:50%;
  display:grid;place-items:center;box-shadow:0 2px 6px #0009;touch-action:none;-webkit-touch-callout:none;
  -webkit-user-select:none;user-select:none}
 .edit-tile-action svg{height:15px;width:15px;stroke-width:2.6}
 .edit-tile-remove{left:-6px;background:var(--accent);color:#151515}
-.edit-tile-grip{right:-6px;background:#25262b;color:var(--accent);border:1px solid #777b83;cursor:grab}
-.edit-tile-grip:active{cursor:grabbing}
 .edit-add-tile{width:var(--card-width);justify-self:center;display:flex;align-items:center;justify-content:center;
  flex-direction:column;gap:6px;background:transparent;border:1.5px dashed #81848a;
  color:var(--accent);border-radius:var(--card-r);min-height:48px;font-size:13px;font-weight:650}
@@ -579,6 +604,7 @@ const ICONS={
  plus:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/>',
  sections:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
  move:'<path d="M12 3v18m0-18-4 4m4-4 4 4m-4 14-4-4m4 4 4-4"/>',
+ left:'<path d="m15 5-7 7 7 7"/>',
  palette:'<path d="M12 3a9 9 0 0 0 0 18c2 0 3-1 3-2 0-1-.5-1.5-.5-2.2 0-.8.6-1.4 1.5-1.4h1a4 4 0 0 0 4-4A9 9 0 0 0 12 3Z"/><circle cx="7.5" cy="10" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="7" r="1"/><circle cx="17.5" cy="11" r="1"/>',
  chevron:'<path d="m9 5 7 7-7 7"/>',
  pencil:'<path d="m4 20 4.5-1L20 7.5 16.5 4 5 15.5 4 20ZM14.5 6l3.5 3.5"/>',
@@ -888,10 +914,27 @@ function render(){
     del.setAttribute("tabindex","0");del.setAttribute("aria-label","Delete "+item.name);del.append(svg("minus"));
     del.onclick=e=>{e.stopPropagation();deleteHomeButton(item.id);};
     del.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();deleteHomeButton(item.id);}};
-    const grip=el("span","edit-tile-action edit-tile-grip");grip.setAttribute("role","button");
-    grip.setAttribute("tabindex","0");grip.setAttribute("aria-label","Drag "+item.name+" to reorder");
-    grip.append(svg("grip"));grip.addEventListener("pointerdown",e=>startTileDrag(e,item.id,section.id,card));
-    card.append(del,grip);
+    // Tap controls replace the former six-dot tile drag handle.
+    const directions=el("span","edit-tile-directions");directions.setAttribute("role","group");
+    directions.setAttribute("aria-label","Move "+item.name);
+    const itemIndex=section.items.indexOf(item);
+    for(const [direction,iconName] of [["left","left"],["up","up"],["down","down"],["right","chevron"]]){
+     const control=el("span","edit-direction");
+     control.dataset.direction=direction;
+     control.setAttribute("role","button");
+     control.setAttribute("aria-label","Move "+item.name+" "+direction);
+     const allowed=directionTarget(itemIndex,section.items.length,direction)>=0;
+     control.setAttribute("aria-disabled",allowed?"false":"true");
+     control.tabIndex=allowed?0:-1;
+     if(!allowed)control.classList.add("is-disabled");
+     control.append(svg(iconName));
+     control.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();if(allowed)moveHomeButton(item.id,section.id,direction);});
+     control.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();if(allowed)moveHomeButton(item.id,section.id,direction);}
+     });
+     directions.append(control);
+    }
+    card.append(del,directions);
    }
    grid.append(card);
   }
@@ -943,8 +986,9 @@ function sizeGrid(){
    const visibleWidth=columnWidth*spec.width/100;
    const rectangularMax=Math.floor(visibleWidth*.98);
    const requestedHeight=Math.min(spec.height,rectangularMax);
-   // Maintain at least 48px touch height. Scroll only if even that won't fit.
-   const rowHeight=Math.max(48,Math.min(requestedHeight,fitHeight));
+   // Edit mode needs enough height for a readable label plus the in-tile chevrons.
+   // Scroll if necessary rather than squeezing the directional controls offscreen.
+   const rowHeight=Math.max(homeEditing?76:48,Math.min(requestedHeight,fitHeight));
    grid.style.setProperty("--card-height",rowHeight+"px");
    const requiresScroll=rows*rowHeight+gap*(rows-1)>available+1;
    slide.style.overflowY=i===pageIndex() && requiresScroll?"auto":"hidden";
@@ -961,7 +1005,7 @@ function installCategorySwipe(){
  const viewport=$("pageViewport");
  viewport.addEventListener("touchstart",e=>{
    pageTouch=null;
-   if(e.touches.length!==1||$("sheet").classList.contains("open")||transitionLocked||editDrag||e.target.closest(".edit-tile-grip,.edit-tab-grip"))return;
+   if(e.touches.length!==1||$("sheet").classList.contains("open")||transitionLocked||editDrag||e.target.closest(".edit-tab-grip"))return;
    const finger=e.touches[0];
    pageTouch={id:finger.identifier,x:finger.clientX,y:finger.clientY,t:performance.now(),dx:0,dy:0,axis:null};
  },{passive:true});
@@ -1594,6 +1638,30 @@ function exitHomeEdit(){
 }
 $("editDone").onclick=exitHomeEdit;
 function persistHomeEdit(message){save();render();if(message)notify(message);}
+// A directional press swaps with the tile in the adjacent grid slot.
+// Horizontal moves never wrap to the next row; moves into missing cells are disabled.
+function directionTarget(index,length,direction){
+ if(index<0||index>=length)return -1;
+ const column=index%3;
+ if(direction==="left")return column>0?index-1:-1;
+ if(direction==="right")return column<2&&index+1<length?index+1:-1;
+ if(direction==="up")return index>=3?index-3:-1;
+ if(direction==="down")return index+3<length?index+3:-1;
+ return -1;
+}
+function moveHomeButton(itemId,sectionId,direction){
+ if(!homeEditing||editOverlay||editDrag)return;
+ const section=state.sections.find(s=>s.id===sectionId);if(!section)return;
+ const index=section.items.findIndex(item=>item.id===itemId);
+ const destination=directionTarget(index,section.items.length,direction);
+ if(destination<0)return;
+ const before=clone(state);
+ [section.items[index],section.items[destination]]=[section.items[destination],section.items[index]];
+ persistHomeEdit("");offerUndo("Button moved "+direction,before);
+ // Preserve keyboard focus on the same direction after rerendering the moved tile.
+ const moved=[...document.querySelectorAll(".card")].find(c=>c.dataset.itemId===itemId);
+ moved?.querySelector(`.edit-direction[aria-label="Move ${CSS.escape(section.items[destination].name)} ${direction}"]`)?.focus({preventScroll:true});
+}
 function offerUndo(message,snapshot){
  clearTimeout(undoTimeout);undoElement?.remove();
  const n=el("div","edit-undo"),text=el("span","",message),button=el("button","","Undo");button.type="button";
@@ -1706,11 +1774,6 @@ async function deleteHomeCategory(id){
 function resetEditDragVisual(){
  document.querySelectorAll(".card.drop-before,.card.drop-after,.grid.drop-empty,.edit-tab-wrap.category-drop-before,.edit-tab-wrap.category-drop-after")
   .forEach(n=>n.classList.remove("drop-before","drop-after","drop-empty","category-drop-before","category-drop-after"));
-}
-function startTileDrag(e,itemId,fromId,source){
- if(!homeEditing||editOverlay||editDrag||(e.pointerType==="mouse"&&e.button!==0))return;
- e.preventDefault();e.stopPropagation();pageTouch=null;
- beginEditDrag(e,"item",itemId,fromId,source);
 }
 function startCategoryDrag(e,sectionId,source){
  if(!homeEditing||editOverlay||editDrag||(e.pointerType==="mouse"&&e.button!==0))return;

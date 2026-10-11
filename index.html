@@ -505,13 +505,28 @@ body { background:var(--bg); }
  letter-spacing:0;line-height:1.13;opacity:.83}
 @media(prefers-reduced-motion:reduce){.edit-card{transition:none!important}}
 
-/* V33: selected-category-only actions. No drag handle or dense tab controls. */
-.app.is-editing #tabs .edit-tab-wrap{min-width:0;padding-right:0;min-height:54px}
-.app.is-editing #tabs .edit-tab-wrap>.tab{min-width:76px;max-width:205px;padding:12px 12px 15px}
-.app.is-editing #tabs .edit-tab-wrap.is-current{padding-right:29px}
-.app.is-editing #tabs .edit-tab-tool{display:none;right:0;top:50%;width:28px;height:44px;transform:translateY(-50%)}
+/* V38: category-order chevrons flank only the selected tab. The pencil opens
+   category details directly. Real buttons avoid text selection and tap ambiguity. */
+.app.is-editing #tabs .edit-tab-wrap{min-width:0;padding:0;min-height:54px;gap:0}
+.app.is-editing #tabs .edit-tab-wrap>.tab{min-width:76px;max-width:205px;padding:12px 9px 15px}
+.app.is-editing #tabs .edit-tab-wrap .category-order{display:none;position:static;flex:0 0 30px;
+ width:30px;height:44px;align-items:center;justify-content:center;
+ background:transparent;border:0;color:var(--accent);padding:0;
+ -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+ -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.app.is-editing #tabs .edit-tab-wrap.is-current .category-order{display:flex}
+.app.is-editing #tabs .category-order svg{width:19px;height:19px;stroke-width:2.5;pointer-events:none}
+.app.is-editing #tabs .category-order:disabled{opacity:.28;cursor:default}
+.app.is-editing #tabs .category-order:not(:disabled):active{opacity:.55}
+.app.is-editing #tabs .category-order:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:7px}
+.app.is-editing #tabs .edit-tab-tool{display:none;position:static;transform:none;
+ flex:0 0 28px;width:28px;height:44px;min-width:28px;min-height:44px;
+ color:var(--accent);background:transparent;touch-action:manipulation}
 .app.is-editing #tabs .edit-tab-wrap.is-current .edit-tab-tool{display:grid}
 .app.is-editing #tabs .edit-tab-tool svg{width:16px;height:16px}
+.edit-hint{flex:0 0 auto;margin:0;padding:9px 6px 5px;
+ color:var(--muted);font-size:12px;font-weight:450;text-align:center;line-height:1.3;
+ -webkit-user-select:none;user-select:none}
 .v33-destructive .ios-row-label{color:#ff7771}
 .ios-row-nav:disabled{opacity:.36;pointer-events:none}
 /* In-sheet iOS selection navigation for Category and Action; no browser selects. */
@@ -581,6 +596,7 @@ body { background:var(--bg); }
   <button type="button" id="editDone" class="header-action" hidden>Done</button>
  </header>
  <nav class="tabs" id="tabs" aria-label="RadioGrid categories"></nav>
+ <p id="editHint" class="edit-hint" hidden>Tap on a button to edit</p>
  <section class="page-viewport" id="pageViewport" aria-label="Swipe here to change category"><div class="page-track" id="pageTrack"></div></section>
 </main>
 <div id="scrim" class="scrim" aria-hidden="true"></div>
@@ -988,19 +1004,26 @@ function render(){
  tabs.replaceChildren();track.replaceChildren();
  document.querySelector(".app").classList.toggle("is-editing",homeEditing);
  $("openMore").hidden=homeEditing;$("editDone").hidden=!homeEditing;
+ $("editHint").hidden=!homeEditing;
  for(const [index,section] of state.sections.entries()){
   const b=el("button","tab");b.type="button";
   b.append(el("span","",section.name));b.title=section.name;b.setAttribute("aria-label",section.name);
   b.onclick=()=>activate(index,true);
   if(homeEditing){
    const wrap=el("div","edit-tab-wrap");wrap.dataset.sectionId=section.id;
-   wrap.append(b);
+   const left=el("button","category-order");left.type="button";
+   left.dataset.direction="left";left.append(svg("left"));
+   left.disabled=index===0;left.setAttribute("aria-label","Move "+section.name+" left");
+   left.onclick=()=>moveHomeCategory(section.id,-1);
+   const right=el("button","category-order");right.type="button";
+   right.dataset.direction="right";right.append(svg("chevron"));
+   right.disabled=index===state.sections.length-1;
+   right.setAttribute("aria-label","Move "+section.name+" right");
+   right.onclick=()=>moveHomeCategory(section.id,1);
    const edit=el("button","edit-tab-tool");edit.type="button";edit.append(svg("pencil"));
    edit.setAttribute("aria-label","Edit category "+section.name);
    edit.onclick=e=>{e.stopPropagation();openCategoryEditor(section.id);};
-   edit.setAttribute("aria-label","Category options for "+section.name);
-   edit.onclick=e=>{e.stopPropagation();openCategoryActions(section.id);};
-   wrap.append(edit);tabs.append(wrap);
+   wrap.append(left,b,right,edit);tabs.append(wrap);
   }else tabs.append(b);
   const slide=el("div","page-slide");slide.dataset.sectionId=section.id;
   const grid=el("div","grid");grid.setAttribute("aria-label",section.name+" buttons");
@@ -2101,33 +2124,26 @@ function openButtonEditor(id,sectionId){
  b.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT"&&e.target.type==="text"){e.preventDefault();save();}});
 }
 function moveHomeCategory(id,direction){
+ if(!homeEditing||editOverlay)return;
  const old=state.sections.findIndex(s=>s.id===id);
  const next=old+direction;
  if(old<0||next<0||next>=state.sections.length)return;
  [state.sections[old],state.sections[next]]=[state.sections[next],state.sections[old]];
- closeHomeEditor();save();render();
- const selected=$("tabs").querySelector(`.edit-tab-wrap[data-section-id="${CSS.escape(id)}"] .edit-tab-tool`);
- selected?.focus({preventScroll:true});
-}
-function openCategoryActions(id){
- const section=state.sections.find(s=>s.id===id);if(!section)return;
- const v=buildHomeEditor("Category Options","Done");v.saveBtn.onclick=closeHomeEditor;
- v.body.append(sectionLabel(section.name));
- const index=state.sections.indexOf(section);
- const rename=navigationRow("Rename Category","",()=>openCategoryEditor(id));
- const left=navigationRow("Move Left","",()=>moveHomeCategory(id,-1));left.disabled=index===0;
- const right=navigationRow("Move Right","",()=>moveHomeCategory(id,1));right.disabled=index===state.sections.length-1;
- const remove=navigationRow("Delete Category","",()=>deleteHomeCategory(id));
- remove.classList.add("v33-destructive");
- v.body.append(grouped(rename,left,right,remove));
- v.body.append(el("p","ios-help","Select a category tab to switch categories. Use these actions to rename or change its order."));
+ // The category keeps its ID and remains selected as its position changes.
+ save();render();
+ requestAnimationFrame(()=>{
+  centerActiveTab(false);
+  const wrap=[...$("tabs").querySelectorAll(".edit-tab-wrap")].find(n=>n.dataset.sectionId===id);
+  const control=wrap?.querySelector(`.category-order[data-direction="${direction<0?"left":"right"}"]`);
+  (control?.disabled?wrap?.querySelector(".tab"):control)?.focus({preventScroll:true});
+ });
 }
 function openCategoryEditor(id){
  const sec=id?state.sections.find(s=>s.id===id):null;
  const v=buildHomeEditor(sec?"Edit Category":"New Category"),b=v.body;
  const name=textControl(sec?.name||"","Category name");name.maxLength=50;
  b.append(sectionLabel("Category"),grouped(settingRow("Name",name)));
- b.append(el("p","ios-help","To change the category order, select its tab and use Category Options."));
+ b.append(el("p","ios-help","To reorder categories, use the left and right chevrons beside the selected category on the Home Screen."));
  const error=el("p","edit-error");b.append(error);
  if(sec){
   const del=el("button","edit-danger","Delete Category");del.type="button";

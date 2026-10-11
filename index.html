@@ -576,6 +576,24 @@ body { background:var(--bg); }
  .edit-overlay,.edit-panel,.scrim,.sheet,.nav-screen{transition:none!important;animation:none!important}
 }
 
+
+/* V40 — inset iOS Settings separators. Draw a single crisp divider between
+   rows (never around a whole section or below its final row). */
+.ios-group > .ios-row { border-bottom: 0; }
+.ios-group > .ios-row:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 1px;
+  background: rgba(255,255,255,.19);
+  pointer-events: none;
+}
+@media (max-width:365px) {
+  .ios-group > .ios-row:not(:last-child)::after {left:10px;right:10px;}
+}
+
 </style>
 </head>
 <body>

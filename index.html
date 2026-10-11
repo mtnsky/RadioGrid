@@ -400,9 +400,6 @@ body { background:var(--bg); }
  flex:0 0 auto;min-width:108px;min-height:57px;padding-right:42px;border-radius:9px}
 .app.is-editing #tabs .edit-tab-wrap>.tab{min-width:66px;padding:11px 3px 15px 8px;flex:1;max-width:175px}
 .app.is-editing #tabs .edit-tab-wrap>.tab span{max-width:100%;text-overflow:ellipsis}
-.edit-tab-tool{position:absolute;right:22px;top:50%;transform:translateY(-50%);width:23px;height:35px;
- color:var(--accent);background:transparent;display:grid;place-items:center;touch-action:manipulation}
-.edit-tab-tool svg{width:16px;height:16px}
 .edit-tab-wrap.category-drop-before:before,.edit-tab-wrap.category-drop-after:after{content:"";
  position:absolute;top:5px;bottom:5px;width:3px;background:var(--accent);z-index:5;border-radius:4px}
 .edit-tab-wrap.category-drop-before:before{left:0}.edit-tab-wrap.category-drop-after:after{right:0}
@@ -505,8 +502,8 @@ body { background:var(--bg); }
  letter-spacing:0;line-height:1.13;opacity:.83}
 @media(prefers-reduced-motion:reduce){.edit-card{transition:none!important}}
 
-/* V38: category-order chevrons flank only the selected tab. The pencil opens
-   category details directly. Real buttons avoid text selection and tap ambiguity. */
+/* V39: category-order chevrons flank only the selected tab. Tapping the selected
+   category name edits it; tapping a different name switches categories. */
 .app.is-editing #tabs .edit-tab-wrap{min-width:0;padding:0;min-height:54px;gap:0}
 .app.is-editing #tabs .edit-tab-wrap>.tab{min-width:76px;max-width:205px;padding:12px 9px 15px}
 .app.is-editing #tabs .edit-tab-wrap .category-order{display:none;position:static;flex:0 0 30px;
@@ -519,11 +516,6 @@ body { background:var(--bg); }
 .app.is-editing #tabs .category-order:disabled{opacity:.28;cursor:default}
 .app.is-editing #tabs .category-order:not(:disabled):active{opacity:.55}
 .app.is-editing #tabs .category-order:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:7px}
-.app.is-editing #tabs .edit-tab-tool{display:none;position:static;transform:none;
- flex:0 0 28px;width:28px;height:44px;min-width:28px;min-height:44px;
- color:var(--accent);background:transparent;touch-action:manipulation}
-.app.is-editing #tabs .edit-tab-wrap.is-current .edit-tab-tool{display:grid}
-.app.is-editing #tabs .edit-tab-tool svg{width:16px;height:16px}
 .edit-hint{flex:0 0 auto;margin:0;padding:9px 6px 5px;
  color:var(--muted);font-size:12px;font-weight:450;text-align:center;line-height:1.3;
  -webkit-user-select:none;user-select:none}
@@ -948,6 +940,10 @@ function updateTabs(){
   const selected=state.sections[i]?.id===active;
   tab.classList.toggle("active",selected);
   tab.setAttribute("aria-current",selected?"page":"false");
+  const categoryName=state.sections[i]?.name||"Category";
+  const categoryAction=homeEditing?(selected?"Edit category ":"Select category "):"Show category ";
+  tab.setAttribute("aria-label",categoryAction+categoryName);
+  tab.title=categoryAction+categoryName;
   if(homeEditing){
    const wrap=tab.closest(".edit-tab-wrap");
    if(wrap)wrap.classList.toggle("is-current",selected);
@@ -1008,7 +1004,10 @@ function render(){
  for(const [index,section] of state.sections.entries()){
   const b=el("button","tab");b.type="button";
   b.append(el("span","",section.name));b.title=section.name;b.setAttribute("aria-label",section.name);
-  b.onclick=()=>activate(index,true);
+  b.onclick=()=>{
+   if(homeEditing&&state.active===section.id)openCategoryEditor(section.id);
+   else activate(index,true);
+  };
   if(homeEditing){
    const wrap=el("div","edit-tab-wrap");wrap.dataset.sectionId=section.id;
    const left=el("button","category-order");left.type="button";
@@ -1020,10 +1019,7 @@ function render(){
    right.disabled=index===state.sections.length-1;
    right.setAttribute("aria-label","Move "+section.name+" right");
    right.onclick=()=>moveHomeCategory(section.id,1);
-   const edit=el("button","edit-tab-tool");edit.type="button";edit.append(svg("pencil"));
-   edit.setAttribute("aria-label","Edit category "+section.name);
-   edit.onclick=e=>{e.stopPropagation();openCategoryEditor(section.id);};
-   wrap.append(left,b,right,edit);tabs.append(wrap);
+   wrap.append(left,b,right);tabs.append(wrap);
   }else tabs.append(b);
   const slide=el("div","page-slide");slide.dataset.sectionId=section.id;
   const grid=el("div","grid");grid.setAttribute("aria-label",section.name+" buttons");
